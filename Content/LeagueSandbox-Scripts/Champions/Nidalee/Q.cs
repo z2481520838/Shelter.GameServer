@@ -6,6 +6,7 @@ using GameServerCore.Domain.GameObjects.Spell.Missile;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using System;
+using LeagueSandbox.GameServer.API;
 using GameServerCore.Scripting.CSharp;
 
 namespace Spells
@@ -14,14 +15,23 @@ namespace Spells
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
-            TriggersSpellCasts = true
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Circle
+            },
+            TriggersSpellCasts = true,
+            IsDamagingSpell = true
+
             // TODO
         };
 
-        public float finaldamage;
         public Vector2 castcoords;
+        float finaldamage;
+
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new System.Collections.Generic.KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -39,19 +49,16 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var to = Vector2.Normalize(spellPos - castcoords);
-            var range = to * 1500f;
-            var trueCoords = castcoords + range;
-            //spell.AddProjectile("JavelinToss", castcoords, castcoords, trueCoords, HitResult.HIT_Normal, true);
         }
 
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
-            var ap = owner.Stats.AbilityPower.Total;
-            var basedamage = 25 + spell.CastInfo.SpellLevel * 55 + ap;
+            var owner = spell.CastInfo.Owner as IChampion;
+            var APratio = owner.Stats.AbilityPower.Total * 0.4f;
+            var basedamage = 50 + 25 * (spell.CastInfo.SpellLevel - 1) + APratio;
             var hitcoords = new Vector2(missile.Position.X, missile.Position.Y);
             var distance = Math.Sqrt(Math.Pow(castcoords.X - hitcoords.X, 2) + Math.Pow(castcoords.Y - hitcoords.Y, 2));
+
             if (Math.Abs(distance) <= 525f)
             {
                 finaldamage = basedamage;
@@ -59,16 +66,24 @@ namespace Spells
             else if (distance > 525f && !(distance >= 1300f))
             {
                 var damagerampup = (basedamage * (0.02f * (float)Math.Round(Math.Abs(distance - 525f) / 7.75f)));
+                if(damagerampup >= basedamage)
+                {
+                    damagerampup = basedamage;
+                }
                 finaldamage = basedamage + damagerampup;
             }
             else if (distance >= 1300f)
             {
-                finaldamage = (basedamage + (basedamage * 2));
+                finaldamage = basedamage * 3f;
             }
+
             target.TakeDamage(owner, finaldamage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            
+            
             if (!target.IsDead)
             {
-                AddParticleTarget(owner, "Nidalee_Base_Q_Tar.troy", target, 1, "C_BUFFBONE_GLB_CHEST_LOC");
+                AddParticleTarget(target, "Nidalee_Base_Q_Tar.troy", target, 1, "chest", lifetime: 1f);
+                //TODO: Fix particles not working angainst minions for some reason
             }
 
             missile.SetToRemove();

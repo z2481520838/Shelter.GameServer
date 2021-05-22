@@ -13,6 +13,9 @@ namespace Spells
 {
     public class Shatter : ISpellScript
     {
+        ISpell Spell;
+        IObjAiBase Owner;
+        float timeSinceLastTick = 500f;
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
             TriggersSpellCasts = true
@@ -21,7 +24,9 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-
+            //ADD skill levelUp listener
+            Spell = spell;
+            Owner = owner;
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -39,39 +44,26 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
+            var owner = spell.CastInfo.Owner as IChampion;
             var armor = spell.CastInfo.Owner.Stats.Armor.Total;
             var damage = spell.CastInfo.SpellLevel * 40 + armor * 0.2f;
             var reduce = spell.CastInfo.SpellLevel * 5 + armor * 0.05f;
-            AddParticleTarget(spell.CastInfo.Owner, "Shatter_nova.troy", spell.CastInfo.Owner, 1);
+            var buffOwnerDuration = 10f * (1 - owner.Stats.CooldownReduction.Total); //Setting buff duration to spell.CastInfo.Cooldown wasn't working
 
-            foreach (var enemy in GetUnitsInRange(spell.CastInfo.Owner.Position, 375, true)
-                .Where(x => x.Team == CustomConvert.GetEnemyTeam(spell.CastInfo.Owner.Team)))
+            AddParticleTarget(owner, "Shatter_nova.troy", owner, 1, lifetime: 2f);
+
+            var units = GetUnitsInRange(spell.CastInfo.Owner.Position, 375, true);
+            for (int i = 0; i < units.Count; i++)
             {
-                var hasbuff = HasBuff((IObjAiBase)enemy, "TaricWDis");
-                if (enemy is IObjAiBase)
+                if (units[i].Team != owner.Team && !(units[i] is IBaseTurret || units[i] is IObjBuilding || units[i] is IInhibitor))
                 {
-                    enemy.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                    var p2 = AddParticleTarget(spell.CastInfo.Owner, "Shatter_tar.troy", enemy, 1);
-                    AddBuff("TaricWDis", 4.0f, 1, spell, enemy, spell.CastInfo.Owner);
-
-                    if (hasbuff == true)
-                    {
-                        return;
-                    }
-                    if (hasbuff == false)
-                    {
-                        enemy.Stats.Armor.FlatBonus -= reduce;
-                    }
-
-                    CreateTimer(4f, () =>
-                    {
-                        enemy.Stats.Armor.FlatBonus += reduce;
-                        RemoveParticle(p2);
-                    });
+                    units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
+                    AddBuff("Shatter", buffOwnerDuration, 1, spell, units[i], owner);
+                    AddParticleTarget(units[i], "Shatter_tar.troy", units[i], 1, lifetime: 1f);
                 }
             }
+            AddBuff("Shatter", buffOwnerDuration, 1, spell, owner, owner);
         }
-
         public void OnSpellChannel(ISpell spell)
         {
         }
@@ -86,7 +78,26 @@ namespace Spells
 
         public void OnUpdate(float diff)
         {
+            
+            timeSinceLastTick += diff;
 
+            if (timeSinceLastTick >= 500f)
+            {
+                if (Spell.CurrentCooldown <= 0 && !Owner.HasBuff("Shatter") && Spell.CastInfo.SpellLevel >= 1)
+                {
+                    AddBuff("ShatterSelfBonus", 2f, 1, Spell, Owner, Owner, true);
+                }
+                if (Spell.CastInfo.SpellLevel >= 1 && !Owner.IsDead)
+                {
+                    AddBuff("ShatterAuraSelf", 2f, 1, Spell, Owner, Owner, false);
+                }
+                timeSinceLastTick = 0f;
+            }
+            if (Owner.HasBuff("Shatter"))
+            {
+                RemoveBuff(Owner, "ShatterSelfBonus");
+            }
         }
     }
 }
+

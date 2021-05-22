@@ -8,10 +8,11 @@ using GameServerCore.Scripting.CSharp;
 
 namespace Spells
 {
-    public class MasterYiHighlander : ISpellScript
+    public class Highlander : ISpellScript
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
+            TriggersSpellCasts = true
             // TODO
         };
 
@@ -25,11 +26,12 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            AddBuff("Highlander", 10.0f, 1, spell, target, owner);
         }
 
         public void OnSpellCast(ISpell spell)
         {
+            var owner = spell.CastInfo.Owner;
+            AddBuff("Highlander", 10.0f, 1, spell, owner, owner);
         }
 
         public void OnSpellPostCast(ISpell spell)

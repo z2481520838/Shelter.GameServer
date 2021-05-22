@@ -9,6 +9,7 @@ namespace Spells
 {
     public class LuluR : ISpellScript
     {
+        IAttackableUnit Target;
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
             // TODO
@@ -24,11 +25,16 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            AddBuff("LuluR", 7.0f, 1, spell, target, owner);
+            Target = target;
+            PlayAnimation(spell.CastInfo.Owner, "SPELL4");
+
+            AddBuff("LuluR", 7.0f, 1, spell, Target, spell.CastInfo.Owner);
+
         }
 
         public void OnSpellCast(ISpell spell)
         {
+
         }
 
         public void OnSpellPostCast(ISpell spell)

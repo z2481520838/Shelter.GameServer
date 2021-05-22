@@ -39,11 +39,7 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
             var owner = spell.CastInfo.Owner;
-            var current = new Vector2(owner.Position.X, owner.Position.Y);
-            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var to = Vector2.Normalize(spellPos - current);
-            var range = to * 425;
-            var trueCoords = current + range;
+            var trueCoords = GetPointFromUnit(owner, 425f);
 
             ForceMovement(owner, "Spell3", trueCoords, 1200, 0, 0, 0);
             AddBuff("Quickdraw", 4.0f, 1, spell, owner, owner);

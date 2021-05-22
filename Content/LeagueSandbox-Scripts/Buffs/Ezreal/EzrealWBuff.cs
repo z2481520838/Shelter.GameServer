@@ -4,12 +4,12 @@ using GameServerCore.Enums;
 using GameServerCore.Scripting.CSharp;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 
-namespace EzrealWBuff
+namespace EzrealEssenceFlux
 {
-    class EzrealWBuff : IBuffGameScript
+    class EzrealEssenceFlux : IBuffGameScript
     {
         public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
-        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
+        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
         public int MaxStacks => 1;
         public bool IsHidden => false;
 
@@ -18,7 +18,6 @@ namespace EzrealWBuff
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (0.15f + 0.05f * ownerSpell.CastInfo.SpellLevel);
-
             unit.AddStatModifier(StatsModifier);
         }
 

@@ -3,6 +3,7 @@ using GameServerCore.Packets.Handlers;
 using GameServerCore.Packets.PacketDefinitions.Requests;
 using LeagueSandbox.GameServer.Logging;
 using log4net;
+using static LeaguePackets.Game.Common.ConnectionInfo;
 
 namespace LeagueSandbox.GameServer.Packets.PacketHandlers
 {
@@ -47,8 +48,8 @@ namespace LeagueSandbox.GameServer.Packets.PacketHandlers
                 }
             }
 
-             _game.PacketNotifier.NotifySynchVersion(userId, _playerManager.GetPlayers(), Config.VERSION_STRING, "CLASSIC",
-                mapId);
+            _game.PacketNotifier.NotifySynchVersion(userId, _playerManager.GetPlayers(), Config.VERSION_STRING, "CLASSIC",
+               mapId);
 
             return true;
         }

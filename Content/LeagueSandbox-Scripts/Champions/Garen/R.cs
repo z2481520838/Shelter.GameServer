@@ -11,9 +11,11 @@ namespace Spells
 {
     public class GarenR : ISpellScript
     {
+        IAttackableUnit Target;
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
             // TODO
+            TriggersSpellCasts = true
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
@@ -26,6 +28,7 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
+            Target = target;
         }
 
         public void OnSpellCast(ISpell spell)
@@ -35,18 +38,21 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
             var owner = spell.CastInfo.Owner;
-            var target = spell.CastInfo.Targets[0].Unit;
-            AddParticleTarget(owner, "Garen_Base_R_Tar_Impact.troy", target, 1);
-            AddParticleTarget(owner, "Garen_Base_R_Sword_Tar.troy", target, 1);
-            var missinghealth = target.Stats.HealthPoints.Total - target.Stats.CurrentHealth;
-            var damageperc = missinghealth * new[] { 0.28f, 0.33f, 0.40f }[spell.CastInfo.SpellLevel - 1];
-            var damage = spell.CastInfo.SpellLevel * 175 + damageperc;
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            if (target.IsDead)
+            var PercentMissingHP = new[] { 0.2857f, 0.3333f, 0.4f }[spell.CastInfo.SpellLevel];
+            var damage = 175f * spell.CastInfo.SpellLevel + PercentMissingHP * (Target.Stats.HealthPoints.Total - Target.Stats.CurrentHealth);
+
+            
+            AddParticleTarget(Target, "Garen_Base_R_Sword_Tar.troy", Target, lifetime: 1);
+
+            Target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+
+            AddParticle(Target, "Garen_Base_R_Tar_Impact.troy", Target.Position, lifetime: 1);
+            if (Target.IsDead)
             {
-                AddParticleTarget(owner, "Garen_Base_R_Champ_Kill.troy", target, 1);
-                AddParticleTarget(owner, "Garen_Base_R_Champ_Death.troy", target, 1);
+                AddParticleTarget(Target, "Garen_Base_R_Champ_Kill.troy", Target, 1);
+                AddParticleTarget(Target, "Garen_Base_R_Champ_Death.troy", Target, 1);
             }
+
         }
 
         public void OnSpellChannel(ISpell spell)

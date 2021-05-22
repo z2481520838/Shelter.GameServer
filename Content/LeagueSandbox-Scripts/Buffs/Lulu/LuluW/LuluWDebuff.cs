@@ -2,11 +2,15 @@ using GameServerCore.Enums;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Domain.GameObjects.Spell;
 using LeagueSandbox.GameServer.GameObjects.Stats;
+using LeagueSandbox.GameServer.Scripting.CSharp;
+using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
-namespace LuluWDebuff
+
+
+namespace LuluWTwo
 {
-    internal class LuluWDebuff : IBuffGameScript
+    internal class LuluWTwo : IBuffGameScript
     {
         public BuffType BuffType => BuffType.COMBAT_DEHANCER;
         public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
@@ -15,15 +19,39 @@ namespace LuluWDebuff
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
+        string buffer;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            StatsModifier.MoveSpeed.BaseBonus = StatsModifier.MoveSpeed.BaseBonus - 60;
+            var owner = ownerSpell.CastInfo.Owner as IChampion;
+            buffer = unit.Model;
+
+            switch (owner.Skin)
+            {
+                case 0:
+                    unit.ChangeModel("LuluSquill");
+                    break;
+                case 1:
+                    unit.ChangeModel("LuluCupcake");
+                    break;
+                case 2:
+                    unit.ChangeModel("LuluKitty");
+                    break;
+                case 3:
+                    unit.ChangeModel("LuluDragon");
+                    break;
+                case 4:
+                    unit.ChangeModel("LuluSnowman");
+                    break;
+            }
+
+            StatsModifier.MoveSpeed.BaseBonus -= 60f;
             unit.AddStatModifier(StatsModifier);
-            var time = 1 + 0.25f * ownerSpell.CastInfo.SpellLevel;
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
+            unit.ChangeModel(buffer);
+            AddParticleTarget(unit, "Lulu_W_polymorph_01.troy", unit, 1, lifetime: 1f);
         }
 
         public void OnUpdate(float diff)

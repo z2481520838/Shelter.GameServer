@@ -3,12 +3,14 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Enums;
 using System.Collections.Generic;
 using LeagueSandbox.GameServer.GameObjects.Stats;
+using LeagueSandbox.GameServer.Scripting.CSharp;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
-namespace GangplankE
+
+namespace RaiseMoraleTeamBuff
 {
-    internal class GangplankE : IBuffGameScript
+    internal class RaiseMoraleTeamBuff : IBuffGameScript
     {
         public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
         public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
@@ -21,22 +23,29 @@ namespace GangplankE
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (10f + 20f * ownerSpell.CastInfo.SpellLevel) / 100f;
-            StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (10f + 5f * ownerSpell.CastInfo.SpellLevel) / 100f;
-            StatsModifier.AttackDamage.PercentBonus = StatsModifier.AttackDamage.PercentBonus + (10f + 10f * ownerSpell.CastInfo.SpellLevel) / 100f;
+            var owner = ownerSpell.CastInfo.Owner;
+            var ADbuff = 12f + 7f * (ownerSpell.CastInfo.SpellLevel - 1);
+            var MSbuff = 0.08f + 0.03f * (ownerSpell.CastInfo.SpellLevel -1);
+
+            if (unit == ownerSpell.CastInfo.Owner)
+            {
+                StatsModifier.MoveSpeed.PercentBonus = MSbuff;
+                StatsModifier.AttackDamage.FlatBonus = ADbuff;
+            }
+            else
+            {
+                StatsModifier.MoveSpeed.PercentBonus = MSbuff / 2;
+                StatsModifier.AttackDamage.FlatBonus = ADbuff / 2;
+            }
+
             unit.AddStatModifier(StatsModifier);
 
-            //_hudvisual = AddBuffHUDVisual("RaiseMorale", time, 1, unit);
 
-            Particles.Add(AddParticleTarget(ownerSpell.CastInfo.Owner, "pirate_raiseMorale_cas.troy", unit, 1));
-            Particles.Add(AddParticleTarget(ownerSpell.CastInfo.Owner, "pirate_raiseMorale_mis.troy", unit, 1));
-            Particles.Add(AddParticleTarget(ownerSpell.CastInfo.Owner, "pirate_raiseMorale_tar.troy", unit, 1));
+
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            //RemoveBuffHudVisual(_hudvisual);
-            Particles.ForEach(particle => RemoveParticle(particle));
         }
 
         public void OnUpdate(float diff)

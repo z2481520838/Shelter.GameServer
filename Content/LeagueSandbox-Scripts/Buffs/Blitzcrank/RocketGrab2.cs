@@ -30,11 +30,6 @@ namespace RocketGrab2
             unit.Stats.SetActionState(ActionState.CAN_ATTACK, true);
             unit.Stats.SetActionState(ActionState.CAN_CAST, true);
             unit.Stats.SetActionState(ActionState.CAN_MOVE, true);
-
-            if (unit is IChampion)
-            {
-                buff.SourceUnit.SetTargetUnit(unit, true);
-            }
         }
 
         public void OnUpdate(float diff)

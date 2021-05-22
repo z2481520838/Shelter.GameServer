@@ -5,7 +5,10 @@ using GameServerCore.Domain.GameObjects.Spell;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell.Missile;
+using LeagueSandbox.GameServer.API;
+using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
+
 
 namespace Spells
 {
@@ -13,12 +16,17 @@ namespace Spells
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Circle
+            },
             TriggersSpellCasts = true
             // TODO
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -35,16 +43,17 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            var current = new Vector2(spell.CastInfo.SpellCastLaunchPosition.X, spell.CastInfo.SpellCastLaunchPosition.Z);
-            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var to = Vector2.Normalize(spellPos - current);
-            var range = to * spell.SpellData.CastRangeDisplayOverride;
-            var trueCoords = current + range;
+            //var current = new Vector2(spell.CastInfo.SpellCastLaunchPosition.X, spell.CastInfo.SpellCastLaunchPosition.Z);
+            //var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
+            //var to = Vector2.Normalize(spellPos - current);
+            //var range = to * spell.SpellData.CastRangeDisplayOverride;
+            //var trueCoords = current + range;
             //spell.AddProjectile("BlindMonkQOne", new Vector2(spell.CastInfo.SpellCastLaunchPosition.X, spell.CastInfo.SpellCastLaunchPosition.Z), current, trueCoords, HitResult.HIT_Normal, true);
         }
 
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
+            var owner = spell.CastInfo.Owner;
             var ad = owner.Stats.AttackDamage.Total * 0.9f;
             var damage = 50 + (spell.CastInfo.SpellLevel * 30) + ad;
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
@@ -52,7 +61,7 @@ namespace Spells
             AddParticleTarget(owner, "blindMonk_Q_tar.troy", target, 1, "C_BuffBone_Glb_Center_Loc");
             if (target is IObjAiBase u)
             {
-                AddBuff("BlindMonkSonicWave", 3f, 1, spell, u, owner);
+                AddBuff("BlindMonkQOne", 3f, 1, spell, u, owner);
             }
 
             missile.SetToRemove();

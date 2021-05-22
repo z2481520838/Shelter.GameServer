@@ -3,6 +3,8 @@ using GameServerCore.Domain.GameObjects;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
+using static LeagueSandbox.GameServer.API.ApiFunctionManager;
+
 
 namespace Overdrive
 {
@@ -10,30 +12,27 @@ namespace Overdrive
     {
         public BuffType BuffType => BuffType.HASTE;
         public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
-        public int MaxStacks => 5;
+        public int MaxStacks => 1;
         public bool IsHidden => false;
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
-        //IParticle p;
-
+        IParticle p;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            //p = AddParticleTarget(unit, "Overdrive_buf.troy", unit, 1);
-            StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (12f + ownerSpell.CastInfo.SpellLevel * 4) / 100f;
-            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (22f + 8f * ownerSpell.CastInfo.SpellLevel) / 100f;
+            StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (0.12f + 0.4f * ownerSpell.CastInfo.SpellLevel);
+            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (0.22f + 0.8f * ownerSpell.CastInfo.SpellLevel);
             unit.AddStatModifier(StatsModifier);
-
+            p = AddParticleTarget(unit, "Overdrive_buf.troy", unit, 1, lifetime: buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            //RemoveParticle(p);
+            RemoveParticle(p);
         }
 
         public void OnUpdate(float diff)
         {
-
         }
     }
 }
