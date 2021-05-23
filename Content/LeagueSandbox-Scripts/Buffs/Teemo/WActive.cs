@@ -4,10 +4,12 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 using LeagueSandbox.GameServer.GameObjects.Stats;
+using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
-namespace Move_Quick
+
+namespace MoveQuick
 {
-    internal class Move_Quick : IBuffGameScript //There's "Move Quick" and "Move Quick2"
+    internal class MoveQuick : IBuffGameScript
     {
         public BuffType BuffType => BuffType.HASTE;
         public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
@@ -16,15 +18,19 @@ namespace Move_Quick
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
+        IParticle p;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            StatsModifier.MoveSpeed.PercentBonus += 0.1f + 0.04f * ownerSpell.CastInfo.SpellLevel;
+            p = AddParticleTarget(unit, "MoveQuick_buf2.troy", unit, 1, lifetime: buff.Duration); 
+            p = AddParticleTarget(unit, "MoveQuick_buf.troy", unit, 1, lifetime: buff.Duration); 
+
+            StatsModifier.MoveSpeed.PercentBonus += 0.06f + 0.04f * ownerSpell.CastInfo.SpellLevel;
             unit.AddStatModifier(StatsModifier);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            //unit.RemoveStatModifier(StatsModifier);
+            RemoveParticle(p);
         }
 
         public void OnUpdate(float diff)

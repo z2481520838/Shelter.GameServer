@@ -14,13 +14,14 @@ namespace Spells
     public class MoveQuick : ISpellScript
     {
         bool takeDamage = true;
-        float timer = 5000.0f;
+        float timer = 0f;
         IAttackableUnit Unit;
         ISpell Spell;
         IObjAiBase Owner;
+        bool OnFirstSpellLevelUp = false;
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
-            // TODO
+            TriggersSpellCasts = true
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
@@ -32,9 +33,9 @@ namespace Spells
         public void TakeDamage(IAttackableUnit unit, IAttackableUnit source)
         {
             Unit = unit;
-            if (Owner != null)
+            if (Owner != null && !Owner.HasBuff("MoveQuick") && (source is IChampion || source is IBaseTurret || source is ILaneTurret))
             {
-                RemoveBuff(Owner, "Move Quick");
+                RemoveBuff(Owner, "MoveQuickPassive");
                 takeDamage = true;
             }
         }
@@ -45,6 +46,7 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
+            AddBuff("MoveQuick", 3f, 1, spell, owner, owner);
         }
 
 
@@ -72,15 +74,23 @@ namespace Spells
 
         public void OnUpdate(float diff)
         {
+
             if (takeDamage == true && Unit != null && Spell.CastInfo.SpellLevel >= 1)
             {
                 timer += diff;
                 if (timer >= 5000.0)
                 {
-                    AddBuff("Move Quick", 1, 1, Spell, Unit, Unit, true);
+                    AddBuff("MoveQuickPassive", 1, 1, Spell, Unit, Unit, true);
                     takeDamage = false;
                     timer = 0;
                 }
+            }
+
+            //Checks if the skill already got Leveled up to 1, activating the buff instantly. (Ideally we probably would use listeners for this)
+            if (Spell.CastInfo.SpellLevel == 1 && OnFirstSpellLevelUp == false)
+            {
+                AddBuff("MoveQuickPassive", 1, 1, Spell, Owner, Owner, true);
+                OnFirstSpellLevelUp = true;
             }
         }
     }
