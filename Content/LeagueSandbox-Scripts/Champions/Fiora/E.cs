@@ -40,10 +40,7 @@ namespace Spells
             Spell = spell;
             spell.CastInfo.Owner.CancelAutoAttack(true);
 
-
             Buff = AddBuff("FioraFlurry", 3.0f, 1, spell, owner, owner);
-
-
         }
 
         public void OnSpellCast(ISpell spell)

@@ -40,16 +40,11 @@ namespace MordekaiserChildrenOfTheGrave
             limiter = true;
 
 
-            AddParticleTarget(unit, "mordekeiser_cotg_tar.troy", unit, lifetime: buff.Duration);
+            AddParticleTarget(owner, unit, "mordekeiser_cotg_tar.troy", unit, buff.Duration);
             unit.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_SPELL, false);
             owner.Stats.CurrentHealth += damage;
             unit.Stats.HealthRegeneration.PercentBonus = -1;
         }
-        public void target(IAttackableUnit target)
-        {
-            target = Unit;
-        }
-
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
 
@@ -70,7 +65,7 @@ namespace MordekaiserChildrenOfTheGrave
                 if (Unit.IsDead && limiter == true)
                 {
                     var ghost = AddMinion(Owner, Unit.Model, Unit.Model, Unit.Position);
-                    AddParticleTarget(ghost, "mordekeiser_cotg_skin.troy", ghost, lifetime: 30f);
+                    AddParticleTarget(Owner, ghost, "mordekeiser_cotg_skin.troy", ghost, lifetime: 30f);
                     AddBuff("MordekaiserChildrenOfTheGraveGhost", 40f, 1, spell, ghost, ghost);
                     limiter = false;
                 }

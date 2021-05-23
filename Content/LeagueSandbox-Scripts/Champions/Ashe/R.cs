@@ -56,7 +56,7 @@ namespace Spells
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             missile.SetToRemove();
 
-            AddParticle(owner, "Ashe_Base_R_tar.troy", target.Position, lifetime: 1f);
+            AddParticleTarget(owner, target, "Ashe_Base_R_tar.troy", target, lifetime: 1f);
         }
         
 

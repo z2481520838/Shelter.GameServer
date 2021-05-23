@@ -37,7 +37,7 @@ namespace Spells
 
             FaceDirection(trueCoords, spell.CastInfo.Owner, true);
             ForceMovement(spell.CastInfo.Owner, "Spell3", trueCoords, 1350, 0, 0, 0, movementOrdersFacing: GameServerCore.Enums.ForceMovementOrdersFacing.KEEP_CURRENT_FACING);
-            AddParticleTarget(spell.CastInfo.Owner, "Lucian_E_cas_trail.troy", spell.CastInfo.Owner, 1, lifetime: 1f);
+            AddParticleTarget(spell.CastInfo.Owner, spell.CastInfo.Owner, "Lucian_E_cas_trail.troy", spell.CastInfo.Owner, 1f);
 
         }
 

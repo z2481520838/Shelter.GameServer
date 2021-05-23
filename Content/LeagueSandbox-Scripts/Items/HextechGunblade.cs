@@ -78,13 +78,11 @@ namespace Spells
             ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
 
             buff = AddBuff("HextechGunbladePassive", 1f, 1, spell, owner, owner, true);
-            LogInfo("teste2");
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
         {
             RemoveBuff(buff);
-
         }
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
@@ -98,14 +96,14 @@ namespace Spells
             var damage = 150f + APratio;
             
 
-            AddParticleTarget(owner, "hextech_gunBlade_tar.troy", target, lifetime: 1f);
+            AddParticleTarget(owner, owner, "hextech_gunBlade_tar.troy", target, 1f);
             AddBuff("HextechGunblade", 2f, 1, spell, target, owner);
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
 
             if (target.IsDead)
             {
-                AddParticle(owner, "hextech_gunBlade_tar.troy", target.Position, lifetime: 1f);
+                AddParticle(owner, owner, "hextech_gunBlade_tar.troy", target.Position, lifetime: 1f);
             }
             missile.SetToRemove();
 

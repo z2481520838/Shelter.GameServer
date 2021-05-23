@@ -41,8 +41,8 @@ namespace Spells
             var ap = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.5f;
             var damage = 50 + spell.CastInfo.SpellLevel * 100 + ap;
 
-            AddParticleTarget(owner, "TaricHammerSmash_nova.troy", owner, 1.5f, lifetime: 2f);
-            AddParticleTarget(owner, "TaricHammerSmash_shatter.troy", owner, 1.5f, lifetime: 2f);
+            AddParticleTarget(owner, owner, "TaricHammerSmash_nova.troy", owner, 1f);
+            AddParticleTarget(owner, owner, "TaricHammerSmash_shatter.troy", owner, 1f);
             
             var units = GetUnitsInRange(owner.Position, 400f, true);
             for (int i = 0; i < units.Count; i++)
@@ -50,7 +50,7 @@ namespace Spells
                 if (!(units[i].Team == owner.Team || units[i] is IBaseTurret || units[i] is IObjBuilding || units[i] is IInhibitor))
                 {
                     units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
-                    AddParticleTarget(units[i], "Taric_GemStorm_Tar.troy", units[i], 1, lifetime: 2f);
+                    AddParticleTarget(owner, units[i], "Taric_GemStorm_Tar.troy", units[i], 1f);
                 }
             }
             AddBuff("Radiance", 10f, 1, spell, owner, owner);

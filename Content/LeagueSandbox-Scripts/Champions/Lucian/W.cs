@@ -94,7 +94,7 @@ namespace Spells
             var owner = spell.CastInfo.Owner;
             float damage = 20 + (spell.CastInfo.SpellLevel * 40) + owner.Stats.AbilityPower.Total * 0.9f;
             
-            AddParticle(owner, "Lucian_W_blowup.troy", missile.Position, 0.5f, lifetime: 1f);
+            AddParticle(owner, owner, "Lucian_W_blowup.troy", missile.Position, 1f, 0.5f); //Double Check the size
             
             var units = GetUnitsInRange(missile.Position, 200f, true); //TODO: Make it a cross hitbox, not a circle
             for (int i = 0; i < units.Count; i++)

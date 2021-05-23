@@ -23,8 +23,8 @@ namespace CaitlynAceintheHole
         IParticle p2;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            p = AddParticleTarget(ownerSpell.CastInfo.Owner, "caitlyn_laser_beam_01.troy", unit, bone: "weapon", lifetime: buff.Duration);
-            p2 = AddParticleTarget(unit, "caitlyn_ace_target_indicator.troy", unit, lifetime: buff.Duration);
+            p = AddParticleTarget(ownerSpell.CastInfo.Owner, ownerSpell.CastInfo.Owner, "caitlyn_laser_beam_01.troy", unit, buff.Duration);
+            p2 = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "caitlyn_ace_target_indicator.troy", unit, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

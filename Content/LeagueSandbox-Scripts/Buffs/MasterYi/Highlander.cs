@@ -17,10 +17,10 @@ namespace Highlander
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
         IParticle p;
-        IParticle p2;
         string particle;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
+            var owner = ownerSpell.CastInfo.Owner;
             switch (ownerSpell.CastInfo.SpellLevel)
             {
                 case 1:
@@ -33,8 +33,7 @@ namespace Highlander
                     particle = "MasterYi_Base_R_Buf_Lvl3.troy";
                         break;
             }
-            p = AddParticleTarget(unit, "Highlander_buf.troy", unit, 1, lifetime: buff.Duration);
-            p2 = AddParticleTarget(unit, particle, unit, 1, lifetime: buff.Duration);
+            p = AddParticleTarget(owner, unit, particle, unit, buff.Duration);
 
             StatsModifier.MoveSpeed.PercentBonus += 0.15f + (ownerSpell.CastInfo.SpellLevel * 0.10f);
             StatsModifier.AttackSpeed.PercentBonus += 0.05f + (ownerSpell.CastInfo.SpellLevel * 0.25f);
@@ -45,7 +44,6 @@ namespace Highlander
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             RemoveParticle(p);
-            RemoveParticle(p2);
         }
 
         private void OnAutoAttack(IAttackableUnit target, bool isCrit)

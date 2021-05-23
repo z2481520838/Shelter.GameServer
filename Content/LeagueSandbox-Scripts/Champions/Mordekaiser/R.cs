@@ -37,13 +37,12 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            Owner = owner;
             Target = target;
         }
 
         public void OnSpellCast(ISpell spell)
         {
-            AddBuff("MordekaiserChildrenOfTheGrave", 10.4f, 1, spell, Target, Owner);
+            AddBuff("MordekaiserChildrenOfTheGrave", 10.4f, 1, spell, Target, spell.CastInfo.Owner);
         }
 
         public void OnSpellPostCast(ISpell spell)

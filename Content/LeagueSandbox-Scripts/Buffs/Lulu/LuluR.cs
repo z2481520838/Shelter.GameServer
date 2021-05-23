@@ -24,7 +24,7 @@ namespace LuluR
             var APratio = owner.Stats.AbilityPower.Total * 0.5f;
             var HealthBuff = 150f + 150f * ownerSpell.CastInfo.SpellLevel + APratio;
 
-            p = AddParticleTarget(ownerSpell.CastInfo.Owner, "Lulu_R_cas.troy", unit, 1, lifetime: buff.Duration);
+            p = AddParticleTarget(owner, unit, "Lulu_R_cas.troy", unit, 1, buff.Duration);
 
             StatsModifier.Size.PercentBonus = StatsModifier.Size.PercentBonus + 1;
             StatsModifier.HealthPoints.BaseBonus += HealthBuff;
@@ -36,7 +36,7 @@ namespace LuluR
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             RemoveParticle(p);
-            AddParticleTarget(owner, "Lulu_R_expire.troy", unit, 1);
+            AddParticleTarget(owner, unit, "Lulu_R_expire.troy", unit, 1);
         }
 
         public void OnUpdate(float diff)

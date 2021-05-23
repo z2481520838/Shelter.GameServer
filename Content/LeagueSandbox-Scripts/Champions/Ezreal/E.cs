@@ -53,10 +53,10 @@ namespace Spells
             {
                 trueCoords = GetPointFromUnit(owner, 475f);
             }
-            AddParticle(owner, "Ezreal_arcaneshift_cas.troy", owner.Position);
+            AddParticle(owner, owner, "Ezreal_arcaneshift_cas.troy", owner.Position);
             PlayAnimation(owner, "Spell3");
             TeleportTo(owner, trueCoords.X, trueCoords.Y);
-            AddParticleTarget(owner, "Ezreal_arcaneshift_flash.troy", owner);
+            AddParticleTarget(owner, owner, "Ezreal_arcaneshift_flash.troy", owner);
 
             var units = GetUnitsInRange(owner.Position, 750f, true).OrderBy(unit => Vector2.DistanceSquared(unit.Position, owner.Position)).ToList();
             units.RemoveAt(0);

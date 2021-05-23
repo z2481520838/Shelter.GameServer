@@ -40,8 +40,8 @@ namespace Spells
                 var damage = baseDamage * (1 - reduc / 10);
 
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                AddParticleTarget(target, "caitlyn_peaceMaker_tar.troy", target, lifetime: 1f);
-                AddParticleTarget(target, "caitlyn_peaceMaker_tar_02.troy", target, lifetime: 1f);
+                AddParticleTarget(owner, target, "caitlyn_peaceMaker_tar.troy", target, lifetime: 1f);
+                AddParticleTarget(owner, target, "caitlyn_peaceMaker_tar_02.troy", target, lifetime: 1f);
             }
         }
 

@@ -11,7 +11,7 @@ namespace HextechGunblade
 {
     internal class HextechGunblade : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.HEAL;
+        public BuffType BuffType => BuffType.SLOW;
         public BuffAddType BuffAddType => BuffAddType.STACKS_AND_CONTINUE;
         public int MaxStacks => 1;
         public bool IsHidden => false;
@@ -24,7 +24,7 @@ namespace HextechGunblade
         {
             var owner = ownerSpell.CastInfo.Owner;
             StatsModifier.MoveSpeed.PercentBonus = -0.4f;
-            p = AddParticleTarget(unit, "Global_Slow.troy", unit, lifetime: buff.Duration);
+            p = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "Global_Slow.troy", unit, lifetime: buff.Duration);
           //StatsModifier.CooldownReduction.FlatBonus = 10f;
 
             unit.AddStatModifier(StatsModifier);

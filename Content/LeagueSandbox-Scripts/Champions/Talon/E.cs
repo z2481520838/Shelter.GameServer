@@ -40,13 +40,13 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
             var owner = spell.CastInfo.Owner;
-            AddParticle(owner, "talon_E_cast.troy", owner.Position, lifetime: 1f);
+            AddParticle(owner, owner, "talon_E_cast.troy", owner.Position, lifetime: 1f);
 
             TeleportTo(owner, Target.Position.X, Target.Position.Y);
             AddBuff("TalonESlow", 0.25f, 1, spell, Target, owner);
 
-            AddParticleTarget(Target, "talon_E_tar.troy", Target, 1, lifetime: 1f);
-            AddParticleTarget(Target, "talon_E_tar_dmg.troy", Target, 1, lifetime: 0.25f);
+            AddParticleTarget(owner, Target, "talon_E_tar.troy", Target, 1f);
+            AddParticleTarget(owner, Target, "talon_E_tar_dmg.troy", Target, 0.25f);
         }
 
         public void OnSpellChannel(ISpell spell)

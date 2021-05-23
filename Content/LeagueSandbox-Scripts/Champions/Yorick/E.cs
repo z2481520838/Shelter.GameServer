@@ -51,7 +51,7 @@ namespace Spells
             var owner = spell.CastInfo.Owner as IChampion;
             var ownerSkinID = owner.Skin;
 
-            AddParticleTarget(owner, "yorick_ravenousGhoul_cas_tar.troy", Target, lifetime: 1);
+            AddParticleTarget(owner, owner, "yorick_ravenousGhoul_cas_tar.troy", Target, lifetime: 1);
 
 
             var ADratio = owner.Stats.AttackDamage.FlatBonus;
@@ -72,7 +72,7 @@ namespace Spells
 
             minion = AddMinion(owner, "YorickRavenousGhoul", "YorickRavenousGhoul", Target.Position);
 
-            AddBuff("GhoulDebuff", 99999f, 1, spell, minion, minion);
+            AddBuff("GhoulDebuff", 99999f, 1, spell, minion, minion); //Had to set up a huge buff time cuz infinite time makes "OnUpdate" from Buff not get executed
 
             if (!minion.IsDead)
             {
@@ -113,7 +113,6 @@ namespace Spells
                 if (target != null && !target.IsDead && target.Team != Owner.Team)
                 {
                     minion.SetTargetUnit(target);
-
                 }
             }
         }

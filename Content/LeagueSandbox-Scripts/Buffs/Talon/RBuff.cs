@@ -25,8 +25,11 @@ namespace TalonDisappear
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
+            
             StatsModifier.MoveSpeed.PercentBonus += 0.4f;
             unit.AddStatModifier(StatsModifier);
+            AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "talon_invis_cas.troy", unit, 2.5f);
+
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

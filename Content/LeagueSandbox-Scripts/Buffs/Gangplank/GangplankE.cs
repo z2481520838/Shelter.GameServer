@@ -23,7 +23,6 @@ namespace RaiseMoraleTeamBuff
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            var owner = ownerSpell.CastInfo.Owner;
             var ADbuff = 12f + 7f * (ownerSpell.CastInfo.SpellLevel - 1);
             var MSbuff = 0.08f + 0.03f * (ownerSpell.CastInfo.SpellLevel -1);
 

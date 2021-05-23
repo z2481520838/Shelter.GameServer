@@ -73,7 +73,8 @@ namespace Spells
                 var damage = 80f + (30 * (Spell.CastInfo.SpellLevel - 1)) + ADratio + APratio;
                 isCrit = false;
 
-                AddParticleTarget(Owner, "mordakaiser_siphonOfDestruction_self.troy", Owner, lifetime: 1f);
+                AddParticleTarget(Owner, Owner, "mordakaiser_siphonOfDestruction_self.troy", Owner, 1f);
+                
                 var units = GetUnitsInRange(Owner.Position, 300f, true);
                 for (i = units.Count - 1; i >= 0; i--)
                 {
@@ -91,18 +92,13 @@ namespace Spells
                         particles = "mordakaiser_maceOfSpades_tar2.troy";
                     }
                     units[i].TakeDamage(Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_ATTACK, isCrit);
-                    AddParticleTarget(Owner, particles, units[i], lifetime: 1);
+                    AddParticleTarget(Owner, Owner, particles, units[i], 1f);
                 }
                 RemoveBuff(Buff);
             }
         }
-
-
         public void OnUpdate(float diff)
         {
-
         }
-
-
     }
 }

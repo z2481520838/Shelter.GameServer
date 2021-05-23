@@ -41,8 +41,8 @@ namespace AatroxR
                         pAuraName = "Aatrox_Base_R_Aura_Self.troy";
                         break;
                 }
-                pModel = AddParticle(owner, pModelName, owner.Position, lifetime: buff.Duration);
-                pAura = AddParticleTarget(owner, pAuraName, owner, lifetime: buff.Duration);
+                pModel = AddParticle(owner, unit, pModelName, unit.Position, lifetime: buff.Duration);
+                pAura = AddParticleTarget(owner, unit, pAuraName, unit, lifetime: buff.Duration);
 
                 StatsModifier.AttackSpeed.PercentBonus = (0.4f + (0.1f * (ownerSpell.CastInfo.SpellLevel - 1)));
                 StatsModifier.Range.FlatBonus = 175f;

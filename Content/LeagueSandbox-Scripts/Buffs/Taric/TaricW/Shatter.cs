@@ -28,7 +28,7 @@ namespace Shatter
 
             if (unit != owner)
             {
-              p = AddParticleTarget(unit, "Shatter_tar.troy", unit, 1, lifetime: buff.Duration);
+              p = AddParticleTarget(owner, unit, "Shatter_tar.troy", unit, buff.Duration);
             }
 
             StatsModifier.Armor.FlatBonus = -(Armor);

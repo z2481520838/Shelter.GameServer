@@ -42,15 +42,15 @@ namespace Spells
             var damage = 175f * spell.CastInfo.SpellLevel + PercentMissingHP * (Target.Stats.HealthPoints.Total - Target.Stats.CurrentHealth);
 
             
-            AddParticleTarget(Target, "Garen_Base_R_Sword_Tar.troy", Target, lifetime: 1);
+            AddParticleTarget(owner, Target, "Garen_Base_R_Sword_Tar.troy", Target, lifetime: 1f);
 
             Target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
 
-            AddParticle(Target, "Garen_Base_R_Tar_Impact.troy", Target.Position, lifetime: 1);
+            AddParticle(owner, Target, "Garen_Base_R_Tar_Impact.troy", Target.Position, 1f);
             if (Target.IsDead)
             {
-                AddParticleTarget(Target, "Garen_Base_R_Champ_Kill.troy", Target, 1);
-                AddParticleTarget(Target, "Garen_Base_R_Champ_Death.troy", Target, 1);
+                AddParticleTarget(owner, Target, "Garen_Base_R_Champ_Kill.troy", Target, 1f);
+                AddParticleTarget(owner, Target, "Garen_Base_R_Champ_Death.troy", Target, 1f);
             }
 
         }

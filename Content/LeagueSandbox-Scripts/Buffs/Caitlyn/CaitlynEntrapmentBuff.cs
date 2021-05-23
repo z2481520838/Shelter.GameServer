@@ -26,8 +26,8 @@ namespace CaitlynEntrapmentMissile
         {
             StatsModifier.MoveSpeed.PercentBonus = -0.5f;
             unit.AddStatModifier(StatsModifier);
-            p = AddParticleTarget(unit, "caitlyn_entrapment_tar.troy", unit, lifetime: buff.Duration);
-            p2 = AddParticleTarget(unit, "caitlyn_entrapment_slow.troy", unit, lifetime: buff.Duration);
+            p = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "caitlyn_entrapment_tar.troy", unit, buff.Duration);
+            p2 = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "caitlyn_entrapment_slow.troy", unit, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

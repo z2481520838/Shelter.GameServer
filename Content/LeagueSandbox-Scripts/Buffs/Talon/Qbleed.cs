@@ -32,8 +32,8 @@ namespace TalonBleedDebuff
             var ADratio = owner.Stats.AttackDamage.Bonus;
             damage = (10 * ownerSpell.CastInfo.SpellLevel + ADratio) / 6f;
 
-            p = AddParticleTarget(unit, "talon_Q_bleed_indicator.troy", unit, 1, lifetime: buff.Duration);
-            p2 = AddParticle(unit, "talon_Q_bleed.troy", unit.Position, 1, lifetime: buff.Duration);
+            p = AddParticleTarget(owner, unit, "talon_Q_bleed_indicator.troy", unit, 1, buff.Duration);
+            p2 = AddParticle(owner, unit, "talon_Q_bleed.troy", unit.Position, 1, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

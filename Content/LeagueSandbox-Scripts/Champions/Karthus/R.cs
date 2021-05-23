@@ -46,7 +46,7 @@ namespace Spells
             {
                 if (champions[i].Team != owner.Team)
                 {
-                    AddParticleTarget(champions[i], "Karthus_Base_R_Target.troy", champions[i], 1, lifetime: 3f);
+                    AddParticleTarget(owner, champions[i], "Karthus_Base_R_Target.troy", champions[i], 3f);
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace Spells
                     if (champions[i].Team != Owner.Team && !champions[i].IsDead)
                     {
                         champions[i].TakeDamage(Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
-                        AddParticleTarget(champions[i], "Karthus_Base_R_Explosion.troy", champions[i], 1, lifetime: 1f);
+                        AddParticleTarget(Owner, champions[i], "Karthus_Base_R_Explosion.troy", champions[i], 1f);
                     }
                 }
                 limiter = false;

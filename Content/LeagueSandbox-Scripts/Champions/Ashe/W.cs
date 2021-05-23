@@ -106,7 +106,7 @@ namespace Spells
                 UnitsHit.Add(target);
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
                 AddBuff("FrostShot", 2f, 1, owner.GetSpell("FrostShot"), target, owner);
-                AddParticleTarget(target, "Ashe_Base_W_tar.troy", target);
+                AddParticleTarget(owner, target, "Ashe_Base_W_tar.troy", target, 1f);
 
                 missile.SetToRemove();
             }

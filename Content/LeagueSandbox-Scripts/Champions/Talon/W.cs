@@ -105,7 +105,7 @@ namespace Spells
                 UnitsHit.Add(target);
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
                 AddBuff("TalonWSlow", 2f, 1, spell, target, owner); //TODO: Find Proper Name
-                AddParticleTarget(target, "talon_w_tar.troy", target);
+                AddParticleTarget(owner, target, "talon_w_tar.troy", target, 1f);
             }
         }
 

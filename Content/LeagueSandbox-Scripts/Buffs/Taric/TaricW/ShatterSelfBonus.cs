@@ -13,7 +13,7 @@ namespace ShatterSelfBonus
     internal class ShatterSelfBonus : IBuffGameScript
     {
         public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
-        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
+        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING; //Should be Renew Existing, but it crashes the server when applied fo the 255th time
         public int MaxStacks => 1;
         public bool IsHidden => false;
 
@@ -25,7 +25,7 @@ namespace ShatterSelfBonus
             var owner = ownerSpell.CastInfo.Owner;
             var Armor = 10f + 5f * (ownerSpell.CastInfo.Owner.GetSpell("Shatter").CastInfo.SpellLevel - 1);
 
-            p = AddParticleTarget(owner, "ShatterReady_buf.troy", owner, 1, lifetime: 0.1f);
+            p = AddParticleTarget(owner, unit, "ShatterReady_buf.troy", unit, 1f);
             
             StatsModifier.Armor.FlatBonus = Armor;
             unit.AddStatModifier(StatsModifier);

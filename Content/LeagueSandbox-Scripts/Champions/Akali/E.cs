@@ -47,7 +47,7 @@ namespace Spells
             var MarkAPratio = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.5f;
             var MarkDamage = 45 + 25 * (owner.GetSpell("AkaliMota").CastInfo.SpellLevel - 1) + MarkAPratio;
 
-            AddParticleTarget(owner, "akali_shadowSwipe_cas.troy", owner, lifetime: 1f);
+            AddParticleTarget(owner, owner, "akali_shadowSwipe_cas.troy", owner, 1f);
             var units = GetUnitsInRange(owner.Position, 300f, true);
             for (int i = 0; i < units.Count; i++)
             {
@@ -59,10 +59,10 @@ namespace Spells
                         RemoveBuff(units[i], "AkaliMota");
                     }
                         units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
-                        AddParticleTarget(units[i], "akali_shadowSwipe_tar.troy", units[i], lifetime: 1);
+                        AddParticleTarget(owner, units[i], "akali_shadowSwipe_tar.troy", units[i], 1f);
                 }
                 //AddParticleTarget(owner, "akali_shadowSwipe_heal.troy", owner, lifetime: 1f);
-                //"E" has a heal Particle but there's no healing in the abilitie's description, so i'm not sure if i should add it or not
+                //"E" has a heal Particles but there's no healing in the abilitie's description, so i'm not sure if i should add it or not
             }
         }
 

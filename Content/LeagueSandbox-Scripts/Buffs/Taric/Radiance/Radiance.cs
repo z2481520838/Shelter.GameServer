@@ -36,7 +36,7 @@ namespace Radiance
             }
             else
             {
-               p = AddParticleTarget(unit, "taricgemstorm.troy", unit, 1.4f, lifetime: buff.Duration);
+               p = AddParticleTarget(owner, unit, "taricgemstorm.troy", unit, buff.Duration, 1.5f);
             }
 
             StatsModifier.AttackDamage.FlatBonus += ADbuff;

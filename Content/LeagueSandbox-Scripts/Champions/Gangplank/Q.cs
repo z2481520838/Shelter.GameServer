@@ -61,7 +61,7 @@ namespace Spells
             }
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, IsCritBool);
-            AddParticleTarget(target, "pirate_parley_tar.troy", target, lifetime: 1f); //TODO: Fix particles that for some reason aren't spawning
+            AddParticleTarget(owner, target, "pirate_parley_tar.troy", target, lifetime: 1f); //TODO: Fix particles that for some reason aren't spawning ||||| Test if particles now work
 
             if (target.IsDead)
             {

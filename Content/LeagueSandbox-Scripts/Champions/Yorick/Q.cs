@@ -41,7 +41,6 @@ namespace Spells
             spell.CastInfo.Owner.CancelAutoAttack(true);
             ApiEventManager.OnHitUnit.AddListener(this, spell.CastInfo.Owner, TargetExecute, true);
             Buff = AddBuff("YorickSpectral", 10.0f, 1, spell, owner, owner);
-
         }
 
         public void OnSpellCast(ISpell spell)
@@ -81,7 +80,6 @@ namespace Spells
                 //Ghould debuff (Sets All the stats and decaying health)
                 AddBuff("GhoulDebuff", 99999f, 1, Spell, minion, minion);
 
-
                 //MovSpeed Buffs:
                 AddBuff("Something", 5f, 1, Spell, Owner, minion);
                 AddBuff("Something", 5f, 1, Spell, minion, minion);
@@ -96,8 +94,6 @@ namespace Spells
                             //TODO: Change TakeDamage to activate on Jack AutoAttackHit, not use CreateTimer, and make Pets use owner spell stats
 
                             minion.SetTargetUnit(value);
-
-
                         }
                     }
                 }
@@ -107,7 +103,6 @@ namespace Spells
         {
             if (minion != null && !minion.IsDead)
             {
-
                 var target = GetClosestUnitInRange(minion, 700f, true);
                 if (target != null && !target.IsDead && target.Team != Owner.Team)
                 {

@@ -14,13 +14,6 @@ namespace Spells
 {
     public class MordekaiserCreepingDeathCast : ISpellScript
     {
-        IObjAiBase Owner;
-        IBuff Buff;
-        ISpell Spell;
-        IAttackableUnit Target;
-        int ticks;
-        float damage;
-
         public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
         {
             TriggersSpellCasts = true,
@@ -42,22 +35,11 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            Owner = owner;
-            Spell = spell;
-            Target = target;
-            Buff = AddBuff("MordekaiserCreepingDeath", 6f, 1, spell, target, owner);
-
-
-            ticks = 0;
+            AddBuff("MordekaiserCreepingDeath", 6f, 1, spell, target, owner);
         }
 
         public void OnSpellCast(ISpell spell)
         {
-            //var owner = spell.CastInfo.Owner as IChampion;
-            //var ownerSkinID = owner.Skin;
-
-
-
         }
 
         public void OnSpellPostCast(ISpell spell)
@@ -78,8 +60,6 @@ namespace Spells
 
         public void OnUpdate(float diff)
         {
-
-
         }
     }
 }

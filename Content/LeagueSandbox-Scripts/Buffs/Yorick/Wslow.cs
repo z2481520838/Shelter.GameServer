@@ -21,10 +21,11 @@ namespace YorickDecayed
         IParticle pbuff;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
+            var owner = ownerSpell.CastInfo.Owner;
             StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus - (0.3f + (0.05f * (ownerSpell.CastInfo.SpellLevel-1)));
             unit.AddStatModifier(StatsModifier);
-            AddParticleTarget(unit, "yorick_necroExplosion_unit_tar.troy", unit, 1, lifetime: buff.Duration);
-            AddParticleTarget(unit, "Global_Slow.troy", unit, 1, lifetime: buff.Duration);
+            AddParticleTarget(owner, unit, "yorick_necroExplosion_unit_tar.troy", unit, 1, buff.Duration);
+            AddParticleTarget(owner, unit, "Global_Slow.troy", unit, 1, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

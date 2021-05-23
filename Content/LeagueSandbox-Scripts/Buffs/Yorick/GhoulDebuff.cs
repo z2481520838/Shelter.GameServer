@@ -10,9 +10,6 @@ namespace GhoulDebuff
 {
     internal class GhoulDebuff : IBuffGameScript
     {
-        IAttackableUnit Unit;
-        float ticks;
-        float ticks2;
 
         public BuffType BuffType => BuffType.SLOW;
         public BuffAddType BuffAddType => BuffAddType.STACKS_AND_RENEWS;
@@ -20,6 +17,10 @@ namespace GhoulDebuff
         public bool IsHidden => false;
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
+
+        float seconds = 0f;
+        float seconds2 = 0f;
+        IAttackableUnit Unit;
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
@@ -41,16 +42,15 @@ namespace GhoulDebuff
 
         public void OnUpdate(float diff)
         {
-            ticks++;
-            ticks2++;
-
-            if(ticks == 60f) 
+            seconds += diff;
+            if (seconds >= 1000.0f)
             {
                 //Unit.TakeDamage(Unit, Unit.Stats.HealthPoints.Total * 0.2f, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_PERIODIC, false);
                 Unit.Stats.CurrentHealth = Unit.Stats.CurrentHealth - (Unit.Stats.HealthPoints.Total * 0.2f);
-                ticks = 0;
+                seconds = 0;
             }
-            if(ticks2 == 300f)
+
+            if (seconds2 == 5000.0f)
             {
                 Unit.Die(Unit);
             }

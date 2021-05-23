@@ -22,7 +22,7 @@ namespace BlindMonkQOne
         {
             originSpell = ownerSpell;
             thisBuff = buff;
-            AddParticleTarget(ownerSpell.CastInfo.Owner, "blindMonk_Q_tar_indicator.troy", unit, 1f, lifetime: buff.Duration);
+            AddParticleTarget(ownerSpell.CastInfo.Owner, ownerSpell.CastInfo.Owner, "blindMonk_Q_tar_indicator.troy", unit, 1f, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

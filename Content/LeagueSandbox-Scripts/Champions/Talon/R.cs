@@ -43,9 +43,8 @@ namespace Spells
                  SpellCast(owner, 3, SpellSlotType.ExtraSlots, targetPos, targetPos, true, Vector2.Zero);
              }
             AddBuff("TalonDisappear", 2.5f, 1, spell, owner, owner, false);
-            AddParticleTarget(owner, "talon_invis_cas.troy", owner, 1, lifetime: 10f);
-            AddParticleTarget(owner, "talon_ult_cas.troy", owner, 1, lifetime: 10f);
-            AddParticleTarget(owner, "talon_ult_sound.troy", owner, 1, lifetime: 10f);
+            AddParticleTarget(owner, owner, "talon_ult_cas.troy", owner, 1f);
+            AddParticleTarget(owner, owner, "talon_ult_sound.troy", owner, 1f);
         }
 
         public void OnSpellPostCast(ISpell spell)
@@ -109,7 +108,7 @@ namespace Spells
             {
                 UnitsHit.Add(target);
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
-                AddParticleTarget(target, "talon_w_tar.troy", target);
+                AddParticleTarget(owner, target, "talon_w_tar.troy", target, 1f);
             }
         }
 

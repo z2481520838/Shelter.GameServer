@@ -82,7 +82,7 @@ namespace Spells
             
             if (!target.IsDead)
             {
-                AddParticleTarget(target, "Nidalee_Base_Q_Tar.troy", target, 1, "chest", lifetime: 1f);
+                AddParticleTarget(owner, target, "Nidalee_Base_Q_Tar.troy", target, 1f);
                 //TODO: Fix particles not working angainst minions for some reason
             }
 

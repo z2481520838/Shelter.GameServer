@@ -113,9 +113,9 @@ namespace Spells
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
             AddBuff("OlafAxeThrow", 2f, 1, spell, target, owner); //TODO: Find Proper Buff name
 
-            AddParticle(owner, "olaf_axeThrow_tar.troy", target.Position, 1, lifetime: 1f);
-            AddParticle(owner, "olaf_axeThrow_tar_02.troy", target.Position, lifetime: 1f);
-            AddParticle(owner, "olaf_axeThrow_tar_03.troy", target.Position, lifetime: 1f);
+            AddParticleTarget(owner, target, "olaf_axeThrow_tar.troy", target, 1f);
+            AddParticleTarget(owner, target, "olaf_axeThrow_tar_02.troy", target, 1f);
+            AddParticleTarget(owner, target, "olaf_axeThrow_tar_03.troy", target, 1f);
 
         }
         /*public void OnMissileEnd(ISpell spell, ISpellMissile missileSpell)

@@ -13,7 +13,7 @@ namespace AkaliMota
 {
     class AkaliMota : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
+        public BuffType BuffType => BuffType.COMBAT_DEHANCER;
         public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
         public int MaxStacks => 1;
         public bool IsHidden => false;
@@ -24,7 +24,7 @@ namespace AkaliMota
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            pbuff = AddParticleTarget(unit, "akali_markOftheAssasin_marker_tar_02.troy", unit, 1f, lifetime: buff.Duration);
+            pbuff = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "akali_markOftheAssasin_marker_tar_02.troy", unit, buff.Duration);
             //TODO: Find the overhead particle effects
         }
 

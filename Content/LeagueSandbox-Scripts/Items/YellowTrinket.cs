@@ -44,7 +44,6 @@ namespace Spells
 
             ward = AddMinion(owner, "YellowTrinket", "YellowTrinket", truecoords);
             AddBuff("YellowTriket", 65f, 1, spell, ward, ward);
-
         }
 
         public void OnSpellCast(ISpell spell)

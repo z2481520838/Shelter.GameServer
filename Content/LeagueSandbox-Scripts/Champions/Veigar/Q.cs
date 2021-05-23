@@ -55,13 +55,13 @@ namespace Spells
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             if (ownerSkinID == 8)
             {
-                AddParticleTarget(target, "Veigar_Skin08_Q_tar.troy", target, lifetime: 1f);
+                AddParticleTarget(owner, target, "Veigar_Skin08_Q_tar.troy", target, lifetime: 1f);
                 
 
             }
             else
             {
-                AddParticleTarget(target, "Veigar_Base_Q_tar.troy", target, lifetime: 1f);
+                AddParticleTarget(owner, target, "Veigar_Base_Q_tar.troy", target, lifetime: 1f);
             }
 
             if (target.IsDead)
@@ -86,12 +86,11 @@ namespace Spells
                 }
                 if (ownerSkinID == 8)
                 {
-                    AddParticleTarget(owner, "Veigar_Skin08_Q_powerup.troy", owner, lifetime: 1f);
+                    AddParticleTarget(owner, owner, "Veigar_Skin08_Q_powerup.troy", owner, lifetime: 1f);
                 }
                 else
                 {
-                    AddParticleTarget(owner, "Veigar_Base_Q_powerup.troy", owner, lifetime: 1f);
-
+                    AddParticleTarget(owner, owner, "Veigar_Base_Q_powerup.troy", owner, lifetime: 1f);
                 }
             }
         }

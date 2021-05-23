@@ -34,7 +34,7 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
-            AddParticleTarget(spell.CastInfo.Owner, "ezreal_bow_yellow.troy", spell.CastInfo.Owner, 1, "L_HAND", lifetime: 1f);
+            AddParticleTarget(spell.CastInfo.Owner, spell.CastInfo.Owner, "ezreal_bow_yellow.troy", spell.CastInfo.Owner, 1f, bone: "L_HAND");
         }
 
         public void OnSpellPostCast(ISpell spell)
@@ -100,7 +100,7 @@ namespace Spells
             {
                 return;
             }
-            
+
             if (champion.Team == owner.Team && champion != owner)
             {
                 AddBuff("EzrealEssenceFlux", 5f, 1, spell, champion, owner);
@@ -118,7 +118,7 @@ namespace Spells
                 champion.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
                 AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
             }
-            AddParticleTarget(champion, "Ezreal_essenceflux_tar.troy", champion, lifetime: 1f);
+            AddParticleTarget(owner, champion, "Ezreal_essenceflux_tar.troy", champion, lifetime: 1f);
 
 
 

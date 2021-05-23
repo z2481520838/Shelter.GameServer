@@ -21,8 +21,9 @@ namespace MoveQuick
         IParticle p;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            p = AddParticleTarget(unit, "MoveQuick_buf2.troy", unit, 1, lifetime: buff.Duration); 
-            p = AddParticleTarget(unit, "MoveQuick_buf.troy", unit, 1, lifetime: buff.Duration); 
+            var owner = ownerSpell.CastInfo.Owner;
+            //p = AddParticleTarget(owner, unit, "MoveQuick_buf2.troy", unit, 1, buff.Duration); 
+            p = AddParticleTarget(owner, unit, "MoveQuick_buf.troy", unit, 1, buff.Duration); //Take a look at whi the particles disapear later
 
             StatsModifier.MoveSpeed.PercentBonus += 0.06f + 0.04f * ownerSpell.CastInfo.SpellLevel;
             unit.AddStatModifier(StatsModifier);

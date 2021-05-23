@@ -23,7 +23,7 @@ namespace Overdrive
             StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (0.12f + 0.4f * ownerSpell.CastInfo.SpellLevel);
             StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (0.22f + 0.8f * ownerSpell.CastInfo.SpellLevel);
             unit.AddStatModifier(StatsModifier);
-            p = AddParticleTarget(unit, "Overdrive_buf.troy", unit, 1, lifetime: buff.Duration);
+            p = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "Overdrive_buf.troy", unit, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

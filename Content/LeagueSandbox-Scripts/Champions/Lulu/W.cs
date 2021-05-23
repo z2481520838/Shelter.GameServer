@@ -107,7 +107,7 @@ namespace Spells
             }
             var time = 1 + 0.25f * spell.CastInfo.SpellLevel;
 
-            AddParticleTarget(target, "Lulu_W_polymorph_01.troy", target, 1, lifetime: 1f);
+            AddParticleTarget(owner, target, "Lulu_W_polymorph_01.troy", target, 1f);
             AddBuff("LuluWTwo", time, 1, spell, champion, owner);
 
         }

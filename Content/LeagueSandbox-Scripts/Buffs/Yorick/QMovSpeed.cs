@@ -23,7 +23,7 @@ namespace Something
             var owner = ownerSpell.CastInfo.Owner;
             StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (0.15f + (0.05f * (ownerSpell.CastInfo.SpellLevel-1)));
             unit.AddStatModifier(StatsModifier);
-            p = AddParticleTarget(owner, "yorick_spectralGhoul_speed_buf.troy", unit, lifetime: buff.Duration);
+            p = AddParticleTarget(owner, unit, "yorick_spectralGhoul_speed_buf.troy", unit, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

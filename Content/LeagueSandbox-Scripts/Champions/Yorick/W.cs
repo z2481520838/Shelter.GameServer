@@ -53,7 +53,7 @@ namespace Spells
             {
                 truecoords = GetPointFromUnit(spell.CastInfo.Owner, 600f);
             }
-            AddParticle(owner, "yorick_necroExplosion.troy", truecoords, lifetime: 1);
+            AddParticle(owner, owner, "yorick_necroExplosion.troy", truecoords, lifetime: 1);
 
 
             var APratio = owner.Stats.AbilityPower.Total;
@@ -63,10 +63,8 @@ namespace Spells
             {
                 if (units[i].Team != spell.CastInfo.Owner.Team && !(units[i] is IObjBuilding || units[i] is IBaseTurret) && units[i] is IObjAiBase ai)
                 {
-
                     units[i].TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
                     AddBuff("YorickDecayed", 1.5f, 1, spell, units[i], owner);
-
                 }
             }
 
@@ -124,15 +122,6 @@ namespace Spells
                     }
 
                 }
-                
-
-                /*var target = GetClosestUnitInRange(minion, 700f, true); 
-
-                if (target != null && target.Team != Owner.Team)
-                {
-                    minion.SetTargetUnit(target);
-                }*/
-
             }
         }
     }

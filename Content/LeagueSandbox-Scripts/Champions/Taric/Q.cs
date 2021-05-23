@@ -51,11 +51,10 @@ namespace Spells
                 owner.Stats.CurrentHealth += Heal;
                 Target.Stats.CurrentHealth += Heal;
 
-                AddParticleTarget(Target, "Global_Heal.troy", Target, 1, lifetime: 1f);
+                AddParticleTarget(owner, Target, "Global_Heal.troy", Target, 1f);
             }
-
-            AddParticleTarget(owner, "Global_Heal.troy", owner, 1, lifetime: 1f);
-            AddParticleTarget(owner, "Imbue_glow.troy", owner, 0.2f, lifetime: 1f);
+            AddParticleTarget(owner, owner, "Global_Heal.troy", owner, 1f);
+            AddParticleTarget(owner, owner, "Imbue_glow.troy", owner, 1f, 0.2f);
         }
         public void OnSpellChannel(ISpell spell)
         {

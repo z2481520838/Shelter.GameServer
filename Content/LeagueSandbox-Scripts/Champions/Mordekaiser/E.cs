@@ -59,9 +59,9 @@ namespace Spells
 
             var APratio = owner.Stats.AbilityPower.Total * 0.6f;
             var damage = 70 + (spell.CastInfo.SpellLevel - 1) * 45 + APratio;
-            AddParticle(target, "mordakaiser_siphonOfDestruction_tar_02.troy", target.Position, 1, lifetime: 1f); //For some reason, on both particles, AddParticleTarget wasn't working
-            AddParticle(target, "mordakaiser_siphonOfDestruction_tar.troy", target.Position, 1, lifetime: 1f);
-            AddParticleTarget(owner, "mordakaiser_siphonOfDestruction_self.troy", owner, 1, lifetime: 1f);
+            AddParticleTarget(owner, target, "mordakaiser_siphonOfDestruction_tar_02.troy", target, 1f);
+            AddParticleTarget(owner, target, "mordakaiser_siphonOfDestruction_tar.troy", target, 1f);
+            AddParticleTarget(owner, owner, "mordakaiser_siphonOfDestruction_self.troy", owner, 1f);
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
         }

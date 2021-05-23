@@ -62,7 +62,7 @@ namespace Spells
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             AddBuff("Dazzle", time, 1, spell, target, owner); //TODO: Find Proper Buff name
-            AddParticleTarget(target, "Dazzle_tar.troy", target, lifetime: 1f);
+            AddParticleTarget(owner, target, "Dazzle_tar.troy", target, 1f);
             missile.SetToRemove();
         }
 

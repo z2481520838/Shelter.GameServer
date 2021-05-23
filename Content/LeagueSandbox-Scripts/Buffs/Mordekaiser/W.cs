@@ -21,10 +21,9 @@ namespace MordekaiserCreepingDeath
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
         IObjAiBase Owner;
-        IBuff Buff;
         ISpell Spell;
         IAttackableUnit Target;
-        int ticks;
+        float ticks = 0;
         float damage;
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
@@ -34,7 +33,7 @@ namespace MordekaiserCreepingDeath
             Spell = ownerSpell;
             var APratio = Owner.Stats.AbilityPower.Total * 0.2f;
             damage = 24f + (14f * (ownerSpell.CastInfo.SpellLevel - 1)) + APratio;
-            AddParticleTarget(Owner, "mordekaiser_creepingDeath_aura.troy", unit, 2, lifetime: buff.Duration);
+
             StatsModifier.Armor.FlatBonus += 10 + (5 * (ownerSpell.CastInfo.SpellLevel - 1));
             StatsModifier.MagicResist.FlatBonus += 10 + (5 * (ownerSpell.CastInfo.SpellLevel - 1));
             unit.AddStatModifier(StatsModifier);
@@ -48,6 +47,7 @@ namespace MordekaiserCreepingDeath
                     units.RemoveAt(i);
                 }
             }
+            AddParticleTarget(Owner, unit, "mordekaiser_creepingDeath_aura.troy", unit, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
@@ -63,8 +63,8 @@ namespace MordekaiserCreepingDeath
 
         public void OnUpdate(float diff)
         {
-            ticks++;
-            if (ticks == 60)
+            ticks += diff;
+            if (ticks == 1000.0f)
             {
                 var units = GetUnitsInRange(Target.Position, 350f, true);
                 for (int i = units.Count - 1; i >= 0; i--)
@@ -73,11 +73,9 @@ namespace MordekaiserCreepingDeath
                     {
                         units[i].TakeDamage(Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
                         units.RemoveAt(i);
-
                     }
                 }
-
-                ticks = 0;
+                ticks = 0f;
             }
         }
     }

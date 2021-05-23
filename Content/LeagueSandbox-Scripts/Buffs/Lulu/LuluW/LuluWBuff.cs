@@ -20,10 +20,11 @@ namespace LuluWBuff
         IParticle p2;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            var APratio = ownerSpell.CastInfo.Owner.Stats.AbilityPower.Total * 0.001f;
+            var owner = ownerSpell.CastInfo.Owner;
+            var APratio = owner.Stats.AbilityPower.Total * 0.001f;
 
-            p = AddParticleTarget(ownerSpell.CastInfo.Owner, "Lulu_W_buf_01.troy", unit, 1, lifetime: buff.Duration);
-            p2 = AddParticleTarget(ownerSpell.CastInfo.Owner, "Lulu_W_buf_02.troy", unit, 1, lifetime: buff.Duration);
+            p = AddParticleTarget(owner, unit, "Lulu_W_buf_01.troy", unit, 1, buff.Duration);
+            p2 = AddParticleTarget(owner, unit, "Lulu_W_buf_02.troy", unit, 1, buff.Duration);
 
             StatsModifier.MoveSpeed.PercentBonus += 0.3f + APratio;
             unit.AddStatModifier(StatsModifier);

@@ -47,10 +47,9 @@ namespace Spells
             var owner = spell.CastInfo.Owner as IChampion;
             var armor = spell.CastInfo.Owner.Stats.Armor.Total;
             var damage = spell.CastInfo.SpellLevel * 40 + armor * 0.2f;
-            var reduce = spell.CastInfo.SpellLevel * 5 + armor * 0.05f;
             var buffOwnerDuration = 10f * (1 - owner.Stats.CooldownReduction.Total); //Setting buff duration to spell.CastInfo.Cooldown wasn't working
 
-            AddParticleTarget(owner, "Shatter_nova.troy", owner, 1, lifetime: 2f);
+            AddParticleTarget(owner, owner, "Shatter_nova.troy", owner, 1f);
 
             var units = GetUnitsInRange(spell.CastInfo.Owner.Position, 375, true);
             for (int i = 0; i < units.Count; i++)
@@ -59,7 +58,7 @@ namespace Spells
                 {
                     units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
                     AddBuff("Shatter", buffOwnerDuration, 1, spell, units[i], owner);
-                    AddParticleTarget(units[i], "Shatter_tar.troy", units[i], 1, lifetime: 1f);
+                    AddParticleTarget(owner, units[i], "globalhit_bloodslash.troy", units[i], 1, 1f); //Not sure about this PFX
                 }
             }
             AddBuff("Shatter", buffOwnerDuration, 1, spell, owner, owner);

@@ -50,7 +50,7 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
-            AddParticle(spell.CastInfo.Owner, pCastName, spell.CastInfo.Owner.Position, lifetime: 1f);
+            AddParticleTarget(spell.CastInfo.Owner, spell.CastInfo.Owner, pCastName, spell.CastInfo.Owner, 1f);
         }
 
         public void OnSpellPostCast(ISpell spell)
@@ -65,7 +65,7 @@ namespace Spells
                     if (units[i].Team != owner.Team && !(units[i] is IObjBuilding || units[i] is IBaseTurret))
                     {
                         units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                        AddParticleTarget(units[i], pHitName, units[i], lifetime: 1f);
+                        AddParticleTarget(owner, units[i], pHitName, units[i], lifetime: 1f);
                     }
                 }
                 AddBuff("AatroxR", 12f, 1, spell, spell.CastInfo.Owner, spell.CastInfo.Owner);

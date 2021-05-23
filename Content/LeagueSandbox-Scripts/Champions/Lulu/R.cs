@@ -29,7 +29,6 @@ namespace Spells
             PlayAnimation(spell.CastInfo.Owner, "SPELL4");
 
             AddBuff("LuluR", 7.0f, 1, spell, Target, spell.CastInfo.Owner);
-
         }
 
         public void OnSpellCast(ISpell spell)

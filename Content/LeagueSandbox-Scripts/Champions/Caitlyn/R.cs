@@ -104,7 +104,7 @@ namespace Spells
                 var damage = 25f + (225f * spell.CastInfo.SpellLevel) + ADratio;
 
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                AddParticleTarget(target, "caitlyn_ace_tar.troy", target, lifetime: 1f);
+                AddParticleTarget(owner, target, "caitlyn_ace_tar.troy", target, lifetime: 1f);
             }
             missile.SetToRemove();
         }

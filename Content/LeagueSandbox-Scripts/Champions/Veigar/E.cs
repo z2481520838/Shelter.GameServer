@@ -57,20 +57,20 @@ namespace Spells
             switch (ownerSkinID)
             {
                 case 8:
-                    AddParticleTarget(spell.CastInfo.Owner, "Veigar_Skin08_E_cas.troy", owner, lifetime: 1f);
-                    AddParticle(spell.CastInfo.Owner, "Veigar_Skin08_E_cage_green.troy", truecoords, lifetime: 3f);
+                    AddParticleTarget(owner, owner, "Veigar_Skin08_E_cas.troy", owner, lifetime: 1f);
+                    AddParticle(owner, owner, "Veigar_Skin08_E_cage_green.troy", truecoords, lifetime: 3f);
                     break;
                 case 6:
-                    AddParticle(spell.CastInfo.Owner, "Veigar_Base_E_cas.troy", truecoords);
-                    AddParticle(spell.CastInfo.Owner, "Veigar_Skin06_E_cage_green.troy", truecoords, lifetime: 3f);
+                    AddParticle(owner, owner, "Veigar_Base_E_cas.troy", truecoords);
+                    AddParticle(owner, owner, "Veigar_Skin06_E_cage_green.troy", truecoords, lifetime: 3f);
                     break;
                 case 4:
-                    AddParticle(spell.CastInfo.Owner, "Veigar_Base_E_cas.troy", truecoords) ;
-                    AddParticle(spell.CastInfo.Owner, "Veigar_Skin04_E_cage_green.troy", truecoords, lifetime: 3f);
+                    AddParticle(owner, owner, "Veigar_Base_E_cas.troy", truecoords) ;
+                    AddParticle(owner, owner, "Veigar_Skin04_E_cage_green.troy", truecoords, lifetime: 3f);
                     break;
                 default:
                     // AddParticleTarget(spell.CastInfo.Owner, "Veigar_Base_E_cas.troy", owner, lifetime: 1f);  No idea what particle FX this was supposed to be, but it just spamms a bunch of blue squares around the target
-                    AddParticle(spell.CastInfo.Owner, "Veigar_Base_E_cage_green.troy", truecoords, lifetime: 3f);
+                    AddParticle(owner, owner, "Veigar_Base_E_cage_green.troy", truecoords, lifetime: 3f);
                     break;
 
             }

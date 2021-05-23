@@ -45,13 +45,13 @@ namespace Spells
 
             if (ownerSkinID == 8) 
             {
-                AddParticleTarget(owner, "Veigar_Skin08_R_cas.troy", owner, 1, lifetime: 1f);
-                AddParticleTarget(target, "Veigar_Skin08_R_tar.troy", target, 1, lifetime: 1f);
+                AddParticleTarget(owner, owner, "Veigar_Skin08_R_cas.troy", owner, 1f);
+                AddParticleTarget(owner, target, "Veigar_Skin08_R_tar.troy", target, 1f);
             }
             else
             {
-                AddParticleTarget(owner, "Veigar_Base_R_cas.troy", owner, 1, lifetime: 1f);
-                AddParticleTarget(target, "Veigar_Base_R_tar.troy", target, 1, lifetime: 1f);
+                AddParticleTarget(owner, owner, "Veigar_Base_R_cas.troy", owner, 1f);
+                AddParticleTarget(owner, target, "Veigar_Base_R_tar.troy", target, 1f);
             }
 
             if (target.IsDead && (target is IChampion))
@@ -63,12 +63,12 @@ namespace Spells
 
                 if (ownerSkinID == 8)
                 {
-                    AddParticle(target, "Veigar_Skin08_R_tar.troy", target.Position, 1, lifetime: 1f);
+                    AddParticle(owner, target, "Veigar_Skin08_R_tar.troy", target.Position, 1f);
 
                 }
                 else
                 {
-                    AddParticle(target, "Veigar_Base_R_tar.troy", target.Position, 1, lifetime: 1f);
+                    AddParticle(owner, target, "Veigar_Base_R_tar.troy", target.Position, 1f);
                 }
             }
 
