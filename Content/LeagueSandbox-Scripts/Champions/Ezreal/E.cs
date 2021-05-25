@@ -53,10 +53,10 @@ namespace Spells
             {
                 trueCoords = GetPointFromUnit(owner, 475f);
             }
-            AddParticle(owner, owner, "Ezreal_arcaneshift_cas.troy", owner.Position);
+            AddParticle(owner, owner, "Ezreal_arcaneshift_cas.troy", owner.Position, 1f);
             PlayAnimation(owner, "Spell3");
             TeleportTo(owner, trueCoords.X, trueCoords.Y);
-            AddParticleTarget(owner, owner, "Ezreal_arcaneshift_flash.troy", owner);
+            AddParticleTarget(owner, owner, "Ezreal_arcaneshift_flash.troy", owner, 1f);
 
             var units = GetUnitsInRange(owner.Position, 750f, true).OrderBy(unit => Vector2.DistanceSquared(unit.Position, owner.Position)).ToList();
             units.RemoveAt(0);
@@ -119,7 +119,7 @@ namespace Spells
             var damage = 25f + spell.CastInfo.SpellLevel * 50f + APratio;
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            AddParticleTarget(owner, "Ezreal_arcaneshift_tar.troy", target, 2);
+            AddParticleTarget(owner, target, "Ezreal_arcaneshift_tar.troy", target, 1f);
             AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
         }
 

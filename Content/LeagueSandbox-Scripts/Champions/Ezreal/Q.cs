@@ -102,7 +102,7 @@ namespace Spells
             var damage = 15 + spell.CastInfo.SpellLevel * 20 + ad + ap;
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
-            AddParticleTarget(target, "Ezreal_mysticshot_tar.troy", target);
+            AddParticleTarget(owner, target, "Ezreal_mysticshot_tar.troy", target, 1f);
             AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
 
             for (byte i = 0; i < 4; i++)
