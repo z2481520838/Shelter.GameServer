@@ -9,6 +9,7 @@
         float PercentBonus { get; set; }
         float PercentBaseBonus { get; }
         float Total { get; }
+        float TotalBonus { get; }
         bool ApplyStatModifier(IStatModifier statModifier);
         bool RemoveStatModifier(IStatModifier statModifier);
     }

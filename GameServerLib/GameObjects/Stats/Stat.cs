@@ -68,6 +68,8 @@ namespace LeagueSandbox.GameServer.GameObjects.Stats
 
         public float Total => ((BaseValue + BaseBonus) * (1 + PercentBaseBonus) + FlatBonus) * (1 + PercentBonus);
 
+        public float TotalBonus => (Total - BaseValue);
+
         public Stat(float baseValue, float baseBonus, float percentBaseBonus, float flatBonus, float percentBonus)
         {
             _baseValue = baseValue;

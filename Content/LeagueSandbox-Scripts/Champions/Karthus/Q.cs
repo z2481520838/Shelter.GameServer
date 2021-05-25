@@ -13,12 +13,18 @@ namespace Spells
 {
     public class KarthusLayWasteA1 : ISpellScript
     {
+        float TimeSinceLastTick;
+        Vector2 coords;
+        IObjAiBase Owner;
+        float damage;
+        bool isCrit = false;
+        bool limiter = false;
+        string enemiesHit = "Karthus_Base_Q_Hit_Many.troy";
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
             TriggersSpellCasts = true
             // TODO
         };
-
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
         }
@@ -29,50 +35,26 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
+            Owner = owner;
         }
 
         public void OnSpellCast(ISpell spell)
         {
-            var owner = spell.CastInfo.Owner;
-             var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            AddParticleTarget(owner, owner, "Karthus_Base_Q_Hand_Glow.troy", owner, bone: "R_Hand");
-            AddParticle(owner, null, "Karthus_Base_Q_Point.troy", spellPos);
-            AddParticle(owner, null, "Karthus_Base_Q_Ring.troy", spellPos);
-            AddParticle(owner, null, "Karthus_Base_Q_Skull_Child.troy", spellPos);
+
+
         }
 
         public void OnSpellPostCast(ISpell spell)
         {
-            var owner = spell.CastInfo.Owner;
-            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            IGameObject m = AddParticle(owner, null, "Karthus_Base_Q_Explosion.troy", spellPos);
-            var affectedUnits = GetUnitsInRange(m.Position, 150, true);
-            var ap = spell.CastInfo.Owner.Stats.AbilityPower.Total;
-            var damage = 20f + spell.CastInfo.SpellLevel * 20f + ap * 0.3f;
-            if (affectedUnits.Count == 0)
-            {
-                AddParticle(owner, null, "Karthus_Base_Q_Hit_Miss.troy", spellPos);
-            }
-            foreach (var unit in affectedUnits
-            .Where(x => x.Team == CustomConvert.GetEnemyTeam(spell.CastInfo.Owner.Team)))
-            {
-                if (unit is IChampion || unit is IMinion)
-                {                        
-                    if (affectedUnits.Count == 1)
-                    {
-                        damage *= 2;
-                        AddParticle(owner, null, "Karthus_Base_Q_Hit_Single.troy", spellPos);
-                        unit.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, true);
-                    }
-                    if (affectedUnits.Count > 1)
-                    {
-                        AddParticle(owner, null, "Karthus_Base_Q_Hit_Many.troy", spellPos);
-                        unit.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                    }
-                }
-            }
-            m.SetToRemove();
-            AddParticle(owner, null, "Karthus_Base_Q_Explosion_Sound.troy", spellPos);
+            coords = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
+            var APratio = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.3f;
+            damage = 20f + (spell.CastInfo.SpellLevel * 20f) + APratio;
+            TimeSinceLastTick = 0;
+            isCrit = false;
+            limiter = true;
+
+            AddParticle(Owner, Owner, "Karthus_Base_Q_Point.troy", coords, 1f);
+            AddParticle(Owner, Owner, "Karthus_Base_Q_Ring.troy", coords, 1f);
         }
 
         public void OnSpellChannel(ISpell spell)
@@ -89,6 +71,31 @@ namespace Spells
 
         public void OnUpdate(float diff)
         {
+            TimeSinceLastTick += diff;
+            if (TimeSinceLastTick > 500f &&  limiter == true && coords != null && Owner != null)
+            {
+                var units = GetUnitsInRange(coords, 200f, true);
+                for (int i = 0; i < units.Count; i++)
+                {
+                    if (!(units[i].Team == Owner.Team || units[i] is IBaseTurret || units[i] is IObjBuilding || units[i] is IInhibitor))
+                    {
+                        if (units.Count == 1)
+                        {
+                            damage *= 2;
+                            isCrit = true;
+                            enemiesHit = "Karthus_Base_Q_Hit_Single.troy";
+                        }
+                        AddParticleTarget(Owner, units[i], enemiesHit, units[i], 1f);
+
+                        units[i].TakeDamage(Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, isCrit);
+                    }
+
+                }
+                AddParticle(Owner, Owner, "Karthus_Base_Q_Explosion.troy", coords, 1f, 0.75f); //Double Check the size
+                AddParticle(Owner, Owner, "Karthus_Base_Q_Explosion_Sound.troy", coords, 1f);
+                limiter = false;       
+                //TODO: Fix Towers, inhibs, buildings, etc. causing Q to not Crit 
+            }
         }
     }
 }

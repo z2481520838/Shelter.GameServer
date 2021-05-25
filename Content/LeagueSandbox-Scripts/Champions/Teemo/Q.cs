@@ -5,6 +5,8 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Domain.GameObjects.Spell.Missile;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
+using LeagueSandbox.GameServer.API;
+using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
 
 namespace Spells
@@ -13,12 +15,17 @@ namespace Spells
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Target
+            },
             TriggersSpellCasts = true
             // TODO
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -35,16 +42,19 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            //spell.AddProjectileTarget("ToxicShot", spell.CastInfo.SpellCastLaunchPosition, spell.CastInfo.Targets[0].Unit);
+
         }
 
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
-            var ap = owner.Stats.AbilityPower.Total * 0.8f;
-            var damage = 35 + spell.CastInfo.SpellLevel * 45 + ap;
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            var owner = spell.CastInfo.Owner;
+            var APratio = owner.Stats.AbilityPower.Total * 0.8f;
+            var damage = 35 + spell.CastInfo.SpellLevel * 45 + APratio;
             var time = 1.25f + 0.25f * spell.CastInfo.SpellLevel;
-            AddBuff("Blind", time, 1, spell, target, owner);
+
+            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            AddBuff("BlindingDart", time, 1, spell, target, owner); //Todo: Find Proper Debuff Name
+
             missile.SetToRemove();
         }
 

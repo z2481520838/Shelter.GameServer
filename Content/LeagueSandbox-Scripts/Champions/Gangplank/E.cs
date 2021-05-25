@@ -34,21 +34,15 @@ namespace Spells
         }
 
         public void OnSpellPostCast(ISpell spell)
-        {		
-            var hasbuff = spell.CastInfo.Owner.HasBuff("GangplankE");
-            
-            if (hasbuff == false)
-            {
-                AddBuff("GangplankE", 7.0f, 1, spell, spell.CastInfo.Owner, spell.CastInfo.Owner);
-            }
+        {
+            var owner = spell.CastInfo.Owner as IChampion;
+            var units = GetUnitsInRange(owner.Position, 1300f, true);
 
-            var units = GetUnitsInRange(spell.CastInfo.Owner.Position, 1000, true).Where(x => x.Team != CustomConvert.GetEnemyTeam(spell.CastInfo.Owner.Team));
-
-            foreach (var allyTarget in units)
+            for (int i = 0; i < units.Count; i++)
             {
-                if (allyTarget is IAttackableUnit && spell.CastInfo.Owner != allyTarget && hasbuff == false)
+                if (units[i] is IChampion && units[i].Team == owner.Team)
                 {
-                    AddBuff("GangplankE", 7.0f, 1, spell, allyTarget, spell.CastInfo.Owner);
+                    AddBuff("RaiseMoraleTeamBuff", 7f, 1, spell, units[i], owner);
                 }
             }
         }

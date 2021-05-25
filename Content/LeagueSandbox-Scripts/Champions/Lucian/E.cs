@@ -33,14 +33,12 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            var current = new Vector2(spell.CastInfo.Owner.Position.X, spell.CastInfo.Owner.Position.Y);
-            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var to = Vector2.Normalize(spellPos - current);
-            var range = to * spell.SpellData.CastRangeDisplayOverride;
-            var trueCoords = current + range;
+            var trueCoords = GetPointFromUnit(spell.CastInfo.Owner, spell.SpellData.CastRangeDisplayOverride);
 
             FaceDirection(trueCoords, spell.CastInfo.Owner, true);
             ForceMovement(spell.CastInfo.Owner, "Spell3", trueCoords, 1350, 0, 0, 0, movementOrdersFacing: GameServerCore.Enums.ForceMovementOrdersFacing.KEEP_CURRENT_FACING);
+            AddParticleTarget(spell.CastInfo.Owner, spell.CastInfo.Owner, "Lucian_E_cas_trail.troy", spell.CastInfo.Owner, 1f);
+
         }
 
         public void OnSpellChannel(ISpell spell)

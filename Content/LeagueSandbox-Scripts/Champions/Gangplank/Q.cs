@@ -5,6 +5,9 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using System.Numerics;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Domain.GameObjects.Spell.Missile;
+using LeagueSandbox.GameServer.API;
+using System.Collections.Generic;
+using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
 namespace Spells
@@ -13,12 +16,18 @@ namespace Spells
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Target
+            },
+            IsDamagingSpell = true,
             TriggersSpellCasts = true
             // TODO
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -31,41 +40,36 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
+            //PlayAnimation(spell.CastInfo.Owner, "Spell2"); //not even this fixes the cast animation.... TODO:Fix broken SpellCast animation
         }
 
         public void OnSpellPostCast(ISpell spell)
         {
-            //spell.AddProjectileTarget("pirate_parley_mis", spell.CastInfo.SpellCastLaunchPosition, target);
         }
-
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
-            var isCrit = new Random().Next(0, 100) < owner.Stats.CriticalChance.Total;
-            var baseDamage = new[] { 20, 45, 70, 95, 120 }[spell.CastInfo.SpellLevel - 1] + owner.Stats.AttackDamage.Total;
-            var damage = isCrit ? baseDamage * owner.Stats.CriticalDamage.Total / 100 : baseDamage;
+            var owner = spell.CastInfo.Owner;
+            var damage = -5f + (25f * spell.CastInfo.SpellLevel) + owner.Stats.AttackDamage.Total;
+            var isCrit = new Random().Next(0, 100) <= (owner.Stats.CriticalChance.Total * 100f);
             var goldIncome = new[] { 4, 5, 6, 7, 8 }[spell.CastInfo.SpellLevel - 1];
-            if (target != null && !target.IsDead)
-            {
-                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK,
-                    false);
-                if (target.IsDead)
-                {
-                    owner.Stats.Gold += goldIncome;
-                    var manaCost = new float[] { 50, 55, 60, 65, 70 }[spell.CastInfo.SpellLevel - 1];
-                    var newMana = owner.Stats.CurrentMana + manaCost / 2;
-                    var maxMana = owner.Stats.ManaPoints.Total;
-                    if (newMana >= maxMana)
-                    {
-                        owner.Stats.CurrentMana = maxMana;
-                    }
-                    else
-                    {
-                        owner.Stats.CurrentMana = newMana;
-                    }
-                }
+            bool IsCritBool = false;
 
-                missile.SetToRemove();
+            if (isCrit == true)
+            {
+                damage *= owner.Stats.CriticalDamage.Total;
+                IsCritBool = true;
             }
+
+            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, IsCritBool);
+            AddParticleTarget(owner, target, "pirate_parley_tar.troy", target, lifetime: 1f); //TODO: Fix particles that for some reason aren't spawning ||||| Test if particles now work
+
+            if (target.IsDead)
+            {
+                owner.Stats.Gold += goldIncome;
+                owner.Stats.CurrentMana += spell.CastInfo.ManaCost;
+            }
+
+            missile.SetToRemove();
         }
 
         public void OnSpellChannel(ISpell spell)
@@ -78,6 +82,7 @@ namespace Spells
 
         public void OnSpellPostChannel(ISpell spell)
         {
+
         }
 
         public void OnUpdate(float diff)

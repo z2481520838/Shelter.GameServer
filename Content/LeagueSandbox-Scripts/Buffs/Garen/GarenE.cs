@@ -1,7 +1,13 @@
 ﻿using GameServerCore.Domain.GameObjects;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Enums;
+using LeagueSandbox.GameServer.Scripting.CSharp;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
+
 
 namespace GarenE
 {
@@ -9,27 +15,69 @@ namespace GarenE
     {
         public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
 
-        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
+        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_OVERLAPS;
 
-        public bool IsHidden => true;
+        public bool IsHidden => false;
 
-        public int MaxStacks => 1;
+        public int MaxStacks => byte.MaxValue;
 
         public IStatsModifier StatsModifier { get; private set; }
 
+        IChampion Owner;
+        float damage;
+        float TimeSinceLastTick = 500f;
+        IParticle p;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            // TODO: allow garen move through units
+            var owner = ownerSpell.CastInfo.Owner as IChampion;
+            var ADratio = owner.Stats.AttackDamage.Total * (0.35f + 0.05f * (ownerSpell.CastInfo.SpellLevel - 1));
+            damage = 10f + 12.5f * (ownerSpell.CastInfo.SpellLevel - 1) + ADratio;
+            Owner = owner;
+
+            SetAnimStates(owner, new Dictionary<string, string> { { "RUN", "Spell3" } });
+            p = AddParticleTarget(owner, unit, "Garen_Base_E_Spin.troy", unit, 1, buff.Duration);
+           
+            SetStatus(unit, StatusFlags.CanAttack, false);
+            SetStatus(unit, StatusFlags.Ghosted, true);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            // TODO: disallow garen move through units
+            var champion = unit as IChampion;
+            var spell = champion.SetSpell("GarenE", 2, true);
+
+            StopAnimation(champion, "Spell3");
+            SetAnimStates(champion, new Dictionary<string, string> { { "RUN", "" } });
+            spell.SetCooldown(spell.GetCooldown() - (buff.Duration - buff.TimeElapsed));
+            RemoveParticle(p);
+
+            SetStatus(unit, StatusFlags.CanAttack, true);
+            SetStatus(unit, StatusFlags.Ghosted, false);
+
         }
 
         public void OnUpdate(float diff)
         {
-            
+            TimeSinceLastTick += diff;
+            if (TimeSinceLastTick >= 500.0f)
+            {
+                PlayAnimation(Owner, "Spell3", 0.0f, 0, 1.0f, AnimationFlags.UniqueOverride);
+
+                var units = GetUnitsInRange(Owner.Position, 330f, true).OrderBy(unit => Vector2.DistanceSquared(unit.Position, unit.Position)).ToList();
+                units.RemoveAt(0);
+                for (int i = units.Count - 1; i >= 0; i--)
+                {
+                    if (units[i].Team != Owner.Team && !(units[i] is IObjBuilding || units[i] is IBaseTurret) && units[i] is IObjAiBase)
+                    {
+                        if (units[i] is IMinion)
+                        {
+                            damage *= 0.75f;
+                        }
+                        units[i].TakeDamage(Owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+                    }
+                }
+                TimeSinceLastTick = 0;
+            }
         }
     }
 }

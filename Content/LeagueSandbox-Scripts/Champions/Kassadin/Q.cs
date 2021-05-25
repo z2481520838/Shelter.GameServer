@@ -1,11 +1,14 @@
-using GameServerCore.Enums;
+using System.Collections.Generic;
+using System.Numerics;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Domain.GameObjects.Spell.Missile;
+using GameServerCore.Enums;
+using LeagueSandbox.GameServer.API;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
-using System.Numerics;
 using GameServerCore.Scripting.CSharp;
+
 
 namespace Spells
 {
@@ -13,12 +16,17 @@ namespace Spells
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
-            TriggersSpellCasts = true
-            // TODO
+            TriggersSpellCasts = true,
+            IsDamagingSpell = true,
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Target
+            }
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new System.Collections.Generic.KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -27,7 +35,6 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            AddParticleTarget(owner, owner, "Kassadin_Base_cas.troy", owner, bone: "L_HAND");
         }
 
         public void OnSpellCast(ISpell spell)
@@ -36,24 +43,21 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            //spell.AddProjectileTarget("NullLance", spell.CastInfo.SpellCastLaunchPosition, spell.CastInfo.Targets[0].Unit, HitResult.HIT_Normal, true);
         }
 
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
-            var ap = owner.Stats.AbilityPower.Total * 0.7f;
-            var damage = 30 + spell.CastInfo.SpellLevel * 50 + ap;
+            var owner = spell.CastInfo.Owner;
+            var APratio = owner.Stats.AbilityPower.Total * 0.7f;
+            var damage = 30 + spell.CastInfo.SpellLevel * 50 + APratio;
 
             if (target != null && !target.IsDead)
             {
-                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL,
-                    false);
-                if (target.IsDead)
-                {
-                }
+                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             }
 
             missile.SetToRemove();
+            //Add shield buff to Kassadin
         }
 
         public void OnSpellChannel(ISpell spell)
@@ -72,4 +76,5 @@ namespace Spells
         {
         }
     }
+
 }

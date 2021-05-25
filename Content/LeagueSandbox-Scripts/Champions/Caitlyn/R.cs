@@ -4,12 +4,17 @@ using GameServerCore.Domain.GameObjects.Spell;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using System.Numerics;
 using GameServerCore.Domain.GameObjects.Spell.Missile;
+using LeagueSandbox.GameServer.API;
+using static LeagueSandbox.GameServer.API.ApiFunctionManager;
+using LeagueSandbox.GameServer.GameObjects.Stats;
 using GameServerCore.Scripting.CSharp;
 
 namespace Spells
 {
     public class CaitlynAceintheHole : ISpellScript
     {
+        IObjAiBase Owner;
+        IAttackableUnit Target;
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
             ChannelDuration = 1.25f,
@@ -27,6 +32,59 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
+            Owner = owner;
+            Target = target as IChampion;
+        }
+
+        public void OnSpellCast(ISpell spell)
+        {
+            AddBuff("CaitlynAceintheHole", 1.5f, 1, spell, Target, Owner);
+        }
+
+        public void OnSpellPostCast(ISpell spell)
+        {
+        }
+
+        public void OnSpellChannel(ISpell spell)
+        {
+        }
+
+        public void OnSpellChannelCancel(ISpell spell)
+        {
+        }
+
+        public void OnSpellPostChannel(ISpell spell)
+        {
+            SpellCast(Owner, 0, SpellSlotType.ExtraSlots, true, Target, Vector2.Zero);
+        }
+
+        public void OnUpdate(float diff)
+        {
+        }
+    }
+    public class CaitlynAceintheHoleMissile : ISpellScript
+    {
+        public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
+        {
+            TriggersSpellCasts = true,
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Target
+            }
+            // TODO
+        };
+
+        public void OnActivate(IObjAiBase owner, ISpell spell)
+        {
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new System.Collections.Generic.KeyValuePair<ISpell, IObjAiBase>(spell, spell.CastInfo.Owner), TargetExecute, false);
+        }
+
+        public void OnDeactivate(IObjAiBase owner, ISpell spell)
+        {
+        }
+
+        public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
+        {
         }
 
         public void OnSpellCast(ISpell spell)
@@ -35,19 +93,19 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            //spell.AddProjectileTarget("CaitlynAceintheHoleMissile", spell.CastInfo.SpellCastLaunchPosition, spell.CastInfo.Targets[0].Unit);
         }
 
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
+            var owner = spell.CastInfo.Owner;
             if (target != null && !target.IsDead)
             {
-                // 250/475/700
-                var damage = 250 + owner.Stats.AttackDamage.Total * 2;
-                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL,
-                    false);
-            }
+                var ADratio = owner.Stats.AttackDamage.FlatBonus * 2f;
+                var damage = 25f + (225f * spell.CastInfo.SpellLevel) + ADratio;
 
+                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+                AddParticleTarget(owner, target, "caitlyn_ace_tar.troy", target, lifetime: 1f);
+            }
             missile.SetToRemove();
         }
 
