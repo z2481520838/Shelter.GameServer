@@ -8,24 +8,23 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using LeagueSandbox.GameServer.API;
 using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
     public class BantamTrap : ISpellScript
     {
+        ISpellSector ActivationRange;
+        public List<ISpellSector> mushroomRanges = new List<ISpellSector>();
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
-            MissileParameters = new MissileParameters
-            {
-                Type = MissileType.Target
-            },
             TriggersSpellCasts = true
             // TODO
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            //ApiEventManager.OnSpellMissileHit.AddListener(owner, IAttackableUnit unit, Action < owner, spell.CastInfo.Targets[0] > TargetExecute, true;
+            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -42,20 +41,37 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
+            var owner = spell.CastInfo.Owner;
+            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
+            var mushroom = AddMinion(owner, "TeemoMushroom", "TeemoMushroom", spellPos);
+            AddBuff("BantamTrap", 600f, 1, spell, mushroom, mushroom);
 
+            mushroomRanges.Add(spell.CreateSpellSector(new SectorParameters
+            {
+                BindObject = mushroom,
+                HalfLength = 60f,
+                Tickrate = 60,
+                OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes,
+                Type = SectorType.Area,
+                Lifetime = 600f
+            }));
         }
 
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
         {
-            var owner = spell.CastInfo.Owner;
-            var APratio = owner.Stats.AbilityPower.Total * 0.8f;
-            var damage = 35 + spell.CastInfo.SpellLevel * 45 + APratio;
-            var time = 1.25f + 0.25f * spell.CastInfo.SpellLevel;
+            if (mushroomRanges.Contains(sector))
+            {
+                var owner = spell.CastInfo.Owner;
+                var mushroomObj = sector.Parameters.BindObject;
 
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            AddBuff("BlindingDart", time, 1, spell, target, owner); //Todo: Find Proper Debuff Name
-
-            missile.SetToRemove();
+                AddBuff("MushroomPoison", 4f, 1, spell, target, spell.CastInfo.Owner);
+                if (mushroomObj is IAttackableUnit mushroom)
+                {
+                    AddParticle(owner, mushroom, "ShroomMine.troy", mushroom.Position, 1.0f);
+                    mushroom.Die(mushroom);
+                }
+                sector.SetToRemove();
+            }
         }
 
         public void OnSpellChannel(ISpell spell)
