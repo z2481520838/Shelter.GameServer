@@ -21,7 +21,6 @@ namespace Spells
         {
             TriggersSpellCasts = true,
             IsDamagingSpell = true,
-
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
