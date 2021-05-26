@@ -53,7 +53,8 @@ namespace Spells
             var time = 1.25f + 0.25f * spell.CastInfo.SpellLevel;
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            AddBuff("BlindingDart", time, 1, spell, target, owner); //Todo: Find Proper Debuff Name
+            AddBuff("BlindingDart", time, 1, spell, target, owner);
+            AddParticleTarget(owner, target, "BlindShot_tar.troy", target, 1f);
 
             missile.SetToRemove();
         }

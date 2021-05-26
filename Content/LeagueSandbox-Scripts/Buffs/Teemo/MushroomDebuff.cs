@@ -7,12 +7,12 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace MushroomPoison
+namespace NoxiousTrap //TODO: Find proper Buff Name
 
 {
-    internal class MushroomPoison : IBuffGameScript
+    internal class NoxiousTrap : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.COMBAT_DEHANCER;
+        public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
         public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
         public int MaxStacks => 1;
         public bool IsHidden => false;
@@ -23,7 +23,7 @@ namespace MushroomPoison
         IAttackableUnit Unit;
         IParticle p;
         float damage;
-        float timeSinceLastTick = 500f;
+        float timeSinceLastTick = 1000f;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             owner = ownerSpell.CastInfo.Owner;

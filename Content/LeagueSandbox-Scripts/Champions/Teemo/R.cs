@@ -49,7 +49,7 @@ namespace Spells
             mushroomRanges.Add(spell.CreateSpellSector(new SectorParameters
             {
                 BindObject = mushroom,
-                HalfLength = 60f,
+                HalfLength = 80f,
                 Tickrate = 60,
                 OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes,
                 Type = SectorType.Area,
@@ -64,10 +64,10 @@ namespace Spells
                 var owner = spell.CastInfo.Owner;
                 var mushroomObj = sector.Parameters.BindObject;
 
-                AddBuff("MushroomPoison", 4f, 1, spell, target, spell.CastInfo.Owner);
+                AddBuff("NoxiousTrap", 4f, 1, spell, target, spell.CastInfo.Owner);
                 if (mushroomObj is IAttackableUnit mushroom)
                 {
-                    AddParticle(owner, mushroom, "ShroomMine.troy", mushroom.Position, 1.0f);
+                    AddParticle(owner, null, "ShroomMine.troy", mushroom.Position, 1.0f);
                     mushroom.Die(mushroom);
                 }
                 sector.SetToRemove();

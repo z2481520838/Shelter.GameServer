@@ -7,9 +7,9 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace MoveQuickPassive
+namespace MoveQuickPassive //TODO: Find Proper Buff Name
 {
-    internal class MoveQuickPassive : IBuffGameScript //TODO: Find Proper Buff Name
+    internal class MoveQuickPassive : IBuffGameScript
     {
         public BuffType BuffType => BuffType.HASTE;
         public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
@@ -26,12 +26,10 @@ namespace MoveQuickPassive
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            //unit.RemoveStatModifier(StatsModifier);
         }
 
         public void OnUpdate(float diff)
         {
-
         }
     }
 }
