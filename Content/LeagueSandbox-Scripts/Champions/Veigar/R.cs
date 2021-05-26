@@ -42,23 +42,25 @@ namespace Spells
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
 
-
+            string particles;
             if (ownerSkinID == 8) 
             {
-                AddParticleTarget(owner, owner, "Veigar_Skin08_R_cas.troy", owner, 1f);
-                AddParticleTarget(owner, target, "Veigar_Skin08_R_tar.troy", target, 1f);
+                particles = "Veigar_Skin08_R_tar.troy";
             }
             else
             {
-                AddParticleTarget(owner, owner, "Veigar_Base_R_cas.troy", owner, 1f);
-                AddParticleTarget(owner, target, "Veigar_Base_R_tar.troy", target, 1f);
+                particles = "Veigar_Base_R_tar.troy";
             }
 
-            if (target.IsDead && (target is IChampion))
+            if (!target.IsDead)
+            {
+                AddParticleTarget(owner, target, particles, target, 1f);
+            }
+            else
             {
                 var buffer = owner.Stats.AbilityPower.FlatBonus;
 
-                statsModifier.AbilityPower.FlatBonus = owner.Stats.AbilityPower.FlatBonus + (StacksPerLevel + 2) - buffer;
+                statsModifier.AbilityPower.FlatBonus += (StacksPerLevel + 2) - buffer;
                 owner.AddStatModifier(statsModifier);
 
                 if (ownerSkinID == 8)
@@ -71,7 +73,6 @@ namespace Spells
                     AddParticle(owner, target, "Veigar_Base_R_tar.troy", target.Position, 1f);
                 }
             }
-
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)

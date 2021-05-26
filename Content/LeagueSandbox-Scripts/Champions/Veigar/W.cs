@@ -51,15 +51,19 @@ namespace Spells
             {
                 truecoords = GetPointFromUnit(spell.CastInfo.Owner, 900f);
             }
-
+            string particles;
             if (ownerSkinID == 8)
             {
-                AddParticle(owner, owner, "Veigar_Skin08_W_cas.troy", truecoords, lifetime: 1.25f);
+                particles = "Veigar_Skin08_W_cas.troy";
+
             }
             else
             {
-                AddParticle(owner, owner, "Veigar_Base_W_cas.troy", truecoords, lifetime: 1.25f);
+                particles = "Veigar_Base_W_cas.troy";
             }
+            AddParticle(owner, null, particles, truecoords, lifetime: 1.25f);
+
+            //TODO: Remove this timer and further optmize this section
             CreateTimer(1.25f, () =>
             {
                 var owner = spell.CastInfo.Owner;
@@ -84,21 +88,22 @@ namespace Spells
                         }
                     }
                 }
-
+                string particles2;
                 switch (ownerSkinID)
                 {
                     case 8:
-                        AddParticle(owner, owner, "Veigar_Skin08_W_aoe_explosion.troy", truecoords, 1f);
+                        particles2 = "Veigar_Skin08_W_aoe_explosion.troy";
                         break;
 
                     case 4:
-                        AddParticle(owner, owner, "Veigar_Skin04_W_aoe_explosion.troy", truecoords, 1f);
+                        particles2 = "Veigar_Skin04_W_aoe_explosion.troy";
                         break;
 
                     default:
-                        AddParticle(owner, owner, "Veigar_Base_W_aoe_explosion.troy", truecoords, 1f);
+                        particles2 = "Veigar_Base_W_aoe_explosion.troy";
                         break;
                 }
+                AddParticle(owner, null, particles2, truecoords, 1f);
             });
         }
 

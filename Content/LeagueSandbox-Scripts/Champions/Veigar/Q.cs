@@ -44,20 +44,10 @@ namespace Spells
             var damage = 80f + ((spell.CastInfo.SpellLevel - 1) * 45) + APratio;
             var StacksPerLevel = spell.CastInfo.SpellLevel;
 
-            //TODO: Make this particle properly work
-           /* if (ownerSkinID == 8)
-            {
-
-                //AddParticleTarget(owner, "Veigar_Skin08_Q_cas.troy", owner, 1, bone: "r_middle", lifetime: 5f);
-
-            } */
-
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             if (ownerSkinID == 8)
             {
                 AddParticleTarget(owner, target, "Veigar_Skin08_Q_tar.troy", target, lifetime: 1f);
-                
-
             }
             else
             {
@@ -72,8 +62,6 @@ namespace Spells
 
                     statsModifier.AbilityPower.FlatBonus = owner.Stats.AbilityPower.FlatBonus + (StacksPerLevel + 2) - buffer;
                     owner.AddStatModifier(statsModifier);
-
-  
                 }
                 else
                 {
@@ -81,8 +69,6 @@ namespace Spells
 
                     statsModifier.AbilityPower.FlatBonus = owner.Stats.AbilityPower.FlatBonus + 1f - buffer;
                     owner.AddStatModifier(statsModifier);
-
-
                 }
                 if (ownerSkinID == 8)
                 {

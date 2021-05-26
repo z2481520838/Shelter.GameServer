@@ -14,11 +14,6 @@ namespace Spells
     public class VeigarEventHorizon : ISpellScript
     {
         Vector2 truecoords;
-        int ticks;
-        IObjAiBase Owner;
-        ISpell SPELL;
-        float duration;
-
         public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
         {
             TriggersSpellCasts = true,
@@ -54,35 +49,25 @@ namespace Spells
                 truecoords = GetPointFromUnit(spell.CastInfo.Owner, 650f);
             }
 
+            string cage = "";
             switch (ownerSkinID)
             {
                 case 8:
-                    AddParticleTarget(owner, owner, "Veigar_Skin08_E_cas.troy", owner, lifetime: 1f);
-                    AddParticle(owner, owner, "Veigar_Skin08_E_cage_green.troy", truecoords, lifetime: 3f);
+                    cage = "Veigar_Skin08_E_cage_green.troy";
                     break;
                 case 6:
-                    AddParticle(owner, owner, "Veigar_Base_E_cas.troy", truecoords);
-                    AddParticle(owner, owner, "Veigar_Skin06_E_cage_green.troy", truecoords, lifetime: 3f);
+                    cage = "Veigar_Skin06_E_cage_green.troy";
                     break;
                 case 4:
-                    AddParticle(owner, owner, "Veigar_Base_E_cas.troy", truecoords) ;
-                    AddParticle(owner, owner, "Veigar_Skin04_E_cage_green.troy", truecoords, lifetime: 3f);
+                    cage = "Veigar_Skin04_E_cage_green.troy";
                     break;
                 default:
-                    // AddParticleTarget(spell.CastInfo.Owner, "Veigar_Base_E_cas.troy", owner, lifetime: 1f);  No idea what particle FX this was supposed to be, but it just spamms a bunch of blue squares around the target
-                    AddParticle(owner, owner, "Veigar_Base_E_cage_green.troy", truecoords, lifetime: 3f);
+                    cage = "Veigar_Base_E_cage_green.troy";
                     break;
-
             }
+            AddParticle(owner, null, cage, truecoords, lifetime: 3f);
 
-
-
-
-            //duration = 1.25f + (0.25f * spell.CastInfo.SpellLevel);
-            //stun = new UnitCrowdControl(CrowdControlType.STUN, duration);
-
-
-            //TODO: Make stun work Properly
+            //TODO: Stun Hitbox & Buff
         }
 
         public void OnSpellPostCast(ISpell spell)
