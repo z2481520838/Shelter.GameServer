@@ -80,7 +80,7 @@ namespace Spells
                 timer += diff;
                 if (timer >= 5000.0)
                 {
-                    AddBuff("MoveQuickPassive", 1, 1, Spell, Unit, Unit, true);
+                    AddBuff("MoveQuickPassive", 1, 1, Spell, Unit, Owner, true);
                     takeDamage = false;
                     timer = 0;
                 }
