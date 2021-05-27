@@ -26,6 +26,7 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -34,7 +35,6 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnSpellCast(ISpell spell)
@@ -48,11 +48,11 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
-            var ap = owner.Stats.AbilityPower.Total * 0.4f;
-            var damage = 15 + spell.CastInfo.SpellLevel * 20 + ap;
+            var AP = owner.Stats.AbilityPower.Total * 0.4f;
+            var damage = 15f + spell.CastInfo.SpellLevel * 20f + AP;
             
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
-            AddBuff("AkaliMota", 6, 1, spell, target, owner);
+            AddBuff("AkaliMota", 6f, 1, spell, target, owner);
             missile.SetToRemove();
         }
 
