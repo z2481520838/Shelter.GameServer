@@ -30,6 +30,11 @@ namespace RocketGrab2
             unit.Stats.SetActionState(ActionState.CAN_ATTACK, true);
             unit.Stats.SetActionState(ActionState.CAN_CAST, true);
             unit.Stats.SetActionState(ActionState.CAN_MOVE, true);
+
+            if (buff.SourceUnit is IObjAiBase ai && unit is IChampion ch)
+            {
+                ai.SetTargetUnit(ch, true);
+            }
         }
 
         public void OnUpdate(float diff)

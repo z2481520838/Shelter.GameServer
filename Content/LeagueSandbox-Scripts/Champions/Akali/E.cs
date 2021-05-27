@@ -10,6 +10,7 @@ using System.Numerics;
 using LeagueSandbox.GameServer.API;
 using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
@@ -23,6 +24,7 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -40,31 +42,32 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
+            var sector = spell.CreateSpellSector(new SectorParameters
+            {
+                HalfLength = 300f,
+                SingleTick = true,
+                Type = SectorType.Area
+            });
+        }
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
+        {
             var owner = spell.CastInfo.Owner;
-            var APratio = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.3f;
-            var ADratio = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
-            var damage = 40 + spell.CastInfo.SpellLevel * 30 + APratio + ADratio;
+            var AP = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.3f;
+            var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
+            var damage = 40 + spell.CastInfo.SpellLevel * 30 + AP + AD;
             var MarkAPratio = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.5f;
             var MarkDamage = 45 + 25 * (owner.GetSpell("AkaliMota").CastInfo.SpellLevel - 1) + MarkAPratio;
 
-            AddParticleTarget(owner, owner, "akali_shadowSwipe_cas.troy", owner, 1f);
-            var units = GetUnitsInRange(owner.Position, 300f, true);
-            for (int i = 0; i < units.Count; i++)
+            if (target.HasBuff("AkaliMota"))
             {
-                if (units[i] != owner && !(units[i] is IObjBuilding) && !(units[i] is ILaneTurret) && !(units[i] is IBaseTurret))
-                {
-                    if (units[i].HasBuff("AkaliMota"))
-                    {
-                        units[i].TakeDamage(owner, MarkDamage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_PROC, false);
-                        RemoveBuff(units[i], "AkaliMota");
-                    }
-                        units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
-                        AddParticleTarget(owner, units[i], "akali_shadowSwipe_tar.troy", units[i], 1f);
-                }
-                //AddParticleTarget(owner, "akali_shadowSwipe_heal.troy", owner, lifetime: 1f);
-                //"E" has a heal Particles but there's no healing in the abilitie's description, so i'm not sure if i should add it or not
+                target.TakeDamage(owner, MarkDamage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_PROC, false);
+                AddParticleTarget(owner, target, "akali_mark_impact_tar.troy", target, 1f);
+                RemoveBuff(target, "AkaliMota");
             }
+            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
+            AddParticleTarget(owner, target, "akali_shadowSwipe_tar.troy", target, 1f);
         }
+
 
         public void OnSpellChannel(ISpell spell)
         {

@@ -22,9 +22,10 @@ namespace AkaliMota
 
         IParticle p;
         IParticle p2;
+
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            p = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "akali_markoftheassasin_marker_tar", unit, buff.Duration);
+            p = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "akali_markOftheAssasin_marker_tar.troy", unit, buff.Duration);
             p2 = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "akali_markOftheAssasin_marker_tar_02.troy", unit, buff.Duration);
             //TODO: Find the overhead particle effects
         }

@@ -48,11 +48,11 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
-            var ap = owner.Stats.AbilityPower.Total * 0.4f;
-            var damage = 15f + spell.CastInfo.SpellLevel * 20f + ap;
+            var AP = owner.Stats.AbilityPower.Total * 0.4f;
+            var damage = 15f + spell.CastInfo.SpellLevel * 20f + AP;
             
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
-            AddBuff("AkaliMota", 6, 1, spell, target, owner);
+            AddBuff("AkaliMota", 6f, 1, spell, target, owner);
             missile.SetToRemove();
         }
 
