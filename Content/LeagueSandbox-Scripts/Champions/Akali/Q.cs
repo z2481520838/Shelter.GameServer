@@ -51,7 +51,7 @@ namespace Spells
             var AP = owner.Stats.AbilityPower.Total * 0.4f;
             var damage = 15f + spell.CastInfo.SpellLevel * 20f + AP;
             
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
+            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             AddBuff("AkaliMota", 6f, 1, spell, target, owner);
             missile.SetToRemove();
         }
