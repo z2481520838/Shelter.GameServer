@@ -54,6 +54,7 @@ namespace Spells
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             AddBuff("BlindingDart", time, 1, spell, target, owner); //Todo: Find Proper Debuff Name
+            AddParticleTarget(owner, target, "BlindShot_tar.troy", target, 1f);
 
             missile.SetToRemove();
         }

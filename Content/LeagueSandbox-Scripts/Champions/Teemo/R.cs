@@ -67,7 +67,7 @@ namespace Spells
                 AddBuff("MushroomPoison", 4f, 1, spell, target, spell.CastInfo.Owner);
                 if (mushroomObj is IAttackableUnit mushroom)
                 {
-                    AddParticle(owner, mushroom, "ShroomMine.troy", mushroom.Position, 1.0f);
+                    AddParticle(owner, null, "ShroomMine.troy", mushroom.Position, 1.0f);
                     mushroom.Die(mushroom);
                 }
                 sector.SetToRemove();
