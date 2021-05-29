@@ -24,22 +24,15 @@ namespace MordekaiserChildrenOfTheGraveGhost
 
         float timeSinceLastTick;
         IAttackableUnit Unit;
-        float TickingDamage;
-        IObjAiBase Owner;
-        int limiter;
-
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             var owner = ownerSpell.CastInfo.Owner;
             Unit = unit;
-            Owner = owner;
-            limiter = 0;
             //TODO: Set the Ghost stats here
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-
         }
 
         public void OnUpdate(float diff)
