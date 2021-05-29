@@ -54,6 +54,7 @@ namespace Spells
             if (target != null && !target.IsDead)
             {
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+                AddParticleTarget(owner, null, "Kassadin_Base_Q_tar.troy", target, 2f);
             }
 
             missile.SetToRemove();
