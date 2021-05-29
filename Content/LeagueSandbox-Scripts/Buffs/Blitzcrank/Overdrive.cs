@@ -20,8 +20,8 @@ namespace Overdrive
         IParticle p;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (0.12f + 0.4f * ownerSpell.CastInfo.SpellLevel);
-            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (0.22f + 0.8f * ownerSpell.CastInfo.SpellLevel);
+            StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (0.12f + 0.04f * ownerSpell.CastInfo.SpellLevel);
+            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (0.22f + 0.08f * ownerSpell.CastInfo.SpellLevel);
             unit.AddStatModifier(StatsModifier);
             p = AddParticleTarget(ownerSpell.CastInfo.Owner, unit, "Overdrive_buf.troy", unit, buff.Duration);
         }
