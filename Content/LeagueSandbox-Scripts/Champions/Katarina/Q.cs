@@ -100,14 +100,20 @@ namespace Spells
         {
             var owner = spell.CastInfo.Owner;
             var chainedMissile = missile as ISpellChainMissile;
-
             var reduc = Math.Min((chainedMissile.HitCount - 1f), 4);
             var baseDamage = 35f + 25f * spell.CastInfo.SpellLevel;
             var AP = owner.Stats.AbilityPower.Total * 0.45f;
             float damage = baseDamage * (1f - reduc / 10f) + AP;
+            var MarkAP = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.15f;
+            float MarkDamage = 15f * (owner.GetSpell("KatarinaQ").CastInfo.SpellLevel) + MarkAP;
 
+            if (target.HasBuff("KatarinaQMark"))
+            {
+                target.TakeDamage(owner, MarkDamage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_PROC, false);
+            }
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             AddParticleTarget(owner, target, "katarina_bouncingBlades_tar.troy", target);
+
             AddBuff("KatarinaQMark", 4f, 1, spell, target, owner, false);
         }
 

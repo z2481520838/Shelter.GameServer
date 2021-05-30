@@ -50,6 +50,7 @@ namespace Spells
         {
             var owner = spell.CastInfo.Owner;
             AddParticleTarget(owner, owner, "katarina_w_cas.troy", owner, bone: "C_BUFFBONE_GLB_CHEST_LOC");
+            PlayAnimation(owner, "KatarinaW", 0.3f);
         }
 
         public void OnSpellPostCast(ISpell spell)
@@ -71,7 +72,7 @@ namespace Spells
             }
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
             AddParticleTarget(owner, target, "katarina_w_tar.troy", target, 1f);
-            //AddBuff("KatarinaWHaste", 1f, 1, spell, owner, owner);
+            AddBuff("KatarinaWHaste", 1f, 1, spell, owner, owner);
         }
 
 
