@@ -79,9 +79,10 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("TalonNoxianDiplomacy").CastInfo.SpellLevel;
 
             var ADratio = owner.Stats.AttackDamage.TotalBonus * 0.3f;
-            var damage = 40f + (30f * (spell.CastInfo.SpellLevel - 1)) + ADratio;
+            var damage = 40f + (30f * (spellLevel - 1)) + ADratio;
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             AddBuff("TalonBleedDebuff", 6f, 1, spell, target, owner);

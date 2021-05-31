@@ -115,8 +115,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
-            var APratio = owner.Stats.AbilityPower.Total * 0.75f;
-            var damage = 25f + spell.CastInfo.SpellLevel * 50f + APratio;
+            var spellLevel = owner.GetSpell("EzrealArcaneShift").CastInfo.SpellLevel;
+            var AP = owner.Stats.AbilityPower.Total * 0.75f;
+            var damage = 25f + spellLevel * 50f + AP;
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             AddParticleTarget(owner, target, "Ezreal_arcaneshift_tar.troy", target, 1f);

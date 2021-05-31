@@ -96,6 +96,7 @@ namespace Spells
         {
             var champion = target as IChampion;
             var owner = spell.CastInfo.Owner as IChampion;
+            var spellLevel = owner.GetSpell("EzrealEssenceFlux").CastInfo.SpellLevel;
             if (champion == null)
             {
                 return;
@@ -113,15 +114,12 @@ namespace Spells
             else
             {
                 var APratio = owner.Stats.AbilityPower.Total * 0.8f;
-                var damage = 25 + (45 * spell.CastInfo.SpellLevel) + APratio;
+                var damage = 25 + (45 * spellLevel) + APratio;
 
                 champion.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
                 AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
             }
             AddParticleTarget(owner, champion, "Ezreal_essenceflux_tar.troy", champion, lifetime: 1f);
-
-
-
         }
 
         public void OnSpellCast(ISpell spell)

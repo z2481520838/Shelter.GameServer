@@ -53,7 +53,6 @@ namespace Spells
             });
 
             AddParticle(owner, null, "Kassadin_Base_E_cas.troy", owner.Position, direction: owner.Direction);
-            //AddParticleTarget(owner, owner, "Incinerate_cas.troy", owner);
         }
 
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
@@ -64,6 +63,7 @@ namespace Spells
             var damage = 70 + spell.CastInfo.SpellLevel * 45 + ap;
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            AddBuff("ForcePulse", 1, 1, spell, target, owner);
         }
 
         public void OnSpellChannel(ISpell spell)

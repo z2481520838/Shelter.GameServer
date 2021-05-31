@@ -51,7 +51,7 @@ namespace Spells
             var owner = spell.CastInfo.Owner;
             var damage = -5f + (25f * spell.CastInfo.SpellLevel) + owner.Stats.AttackDamage.Total;
             var isCrit = new Random().Next(0, 100) <= (owner.Stats.CriticalChance.Total * 100f);
-            var goldIncome = new[] { 4, 5, 6, 7, 8 }[spell.CastInfo.SpellLevel - 1];
+            var goldIncome = new[] { 4, 5, 6, 7, 8 }[spell.CastInfo.SpellLevel];
             bool IsCritBool = false;
 
             if (isCrit == true)

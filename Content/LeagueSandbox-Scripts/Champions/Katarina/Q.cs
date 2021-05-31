@@ -99,13 +99,16 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("KatarinaQ").CastInfo.SpellLevel;
             var chainedMissile = missile as ISpellChainMissile;
+
             var reduc = Math.Min((chainedMissile.HitCount - 1f), 4);
-            var baseDamage = 35f + 25f * spell.CastInfo.SpellLevel;
+            var baseDamage = 35f + 25f * spellLevel;
             var AP = owner.Stats.AbilityPower.Total * 0.45f;
-            float damage = baseDamage * (1f - reduc / 10f) + AP;
             var MarkAP = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.15f;
-            float MarkDamage = 15f * (owner.GetSpell("KatarinaQ").CastInfo.SpellLevel) + MarkAP;
+
+            float damage = baseDamage * (1f - reduc / 10f) + AP;
+            float MarkDamage = 15f * spellLevel + MarkAP;
 
             if (target.HasBuff("KatarinaQMark"))
             {

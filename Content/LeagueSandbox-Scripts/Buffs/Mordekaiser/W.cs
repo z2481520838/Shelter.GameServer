@@ -64,7 +64,7 @@ namespace MordekaiserCreepingDeath
         public void OnUpdate(float diff)
         {
             ticks += diff;
-            if (ticks == 1000.0f)
+            if (ticks >= 1000.0f)
             {
                 var units = GetUnitsInRange(Target.Position, 350f, true);
                 for (int i = units.Count - 1; i >= 0; i--)

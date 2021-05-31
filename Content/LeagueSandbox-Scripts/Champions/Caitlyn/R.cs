@@ -98,10 +98,11 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("CaitlynAceintheHole").CastInfo.SpellLevel;
             if (target != null && !target.IsDead)
             {
                 var ADratio = owner.Stats.AttackDamage.FlatBonus * 2f;
-                var damage = 25f + (225f * spell.CastInfo.SpellLevel) + ADratio;
+                var damage = 25f + (225f * spellLevel) + ADratio;
 
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
                 AddParticleTarget(owner, target, "caitlyn_ace_tar.troy", target, lifetime: 1f);

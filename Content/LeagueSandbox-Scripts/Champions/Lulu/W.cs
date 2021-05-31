@@ -100,12 +100,14 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner as IChampion;
+            var spellLevel = owner.GetSpell("LuluW").CastInfo.SpellLevel;
+
             var champion = target as IChampion;
             if (champion == null)
             {
                 return;
             }
-            var time = 1 + 0.25f * spell.CastInfo.SpellLevel;
+            var time = 1 + 0.25f * spellLevel;
 
             AddParticleTarget(owner, target, "Lulu_W_polymorph_01.troy", target, 1f);
             AddBuff("LuluWTwo", time, 1, spell, champion, owner);

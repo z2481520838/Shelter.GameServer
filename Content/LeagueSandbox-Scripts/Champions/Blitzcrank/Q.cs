@@ -99,8 +99,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
-            var ap = owner.Stats.AbilityPower.Total;
-            var damage = 80 + ((spell.CastInfo.SpellLevel - 1) * 55) + ap;
+            var spellLevel = owner.GetSpell("RocketGrab").CastInfo.SpellLevel;
+            var AP = owner.Stats.AbilityPower.Total;
+            var damage = 80 + ((spellLevel - 1) * 55) + AP;
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
 
             missile.SetToRemove();

@@ -111,8 +111,7 @@ namespace Spells
 
         public void OnUpdate(float diff)
         {
-
-            
+            Owner.Stats.ManaRegeneration.FlatBonus = Owner.Stats.ManaRegeneration.BaseValue * ((100 / Owner.Stats.ManaPoints.Total) * ((Owner.Stats.ManaPoints.Total - Owner.Stats.CurrentMana) / 100));
         }
     }
 }

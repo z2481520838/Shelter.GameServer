@@ -46,7 +46,6 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-
         }
 
         public void OnSpellChannel(ISpell spell)
@@ -98,8 +97,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
-            var ADratio = owner.Stats.AttackDamage.Total;
-            var damage = 40f + 10f*(spell.CastInfo.SpellLevel - 1) + ADratio;
+            var spellLevel = owner.GetSpell("Volley").CastInfo.SpellLevel;
+            var AD = owner.Stats.AttackDamage.Total;
+            var damage = 40f + 10f*(spellLevel - 1) + AD;
 
             if (!UnitsHit.Contains(target))
             {

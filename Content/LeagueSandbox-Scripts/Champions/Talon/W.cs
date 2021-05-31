@@ -97,8 +97,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("TalonRake").CastInfo.SpellLevel;
             var ADratio = owner.Stats.AttackDamage.TotalBonus * 0.6f;
-            var damage = 30 + 25f*(spell.CastInfo.SpellLevel - 1) + ADratio;
+            var damage = 30 + 25f*(spellLevel - 1) + ADratio;
 
             if (!UnitsHit.Contains(target))
             {

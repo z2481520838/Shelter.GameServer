@@ -102,8 +102,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("CaitlynEntrapment").CastInfo.SpellLevel;
             var ap = owner.Stats.AbilityPower.Total * 0.8f;
-            var damage = 80 + (spell.CastInfo.SpellLevel - 1) * 50 + ap;
+            var damage = 80 + (spellLevel - 1) * 50 + ap;
             var slowDuration = 0.75f + 0.25f * spell.CastInfo.SpellLevel;
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);

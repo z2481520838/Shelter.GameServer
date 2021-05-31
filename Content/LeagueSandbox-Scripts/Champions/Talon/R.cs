@@ -101,8 +101,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("TalonShadowAssault").CastInfo.SpellLevel;
             var ADratio = owner.Stats.AttackDamage.TotalBonus * 0.75f;
-            var damage = 120 + 50f*(spell.CastInfo.SpellLevel - 1) + ADratio;
+            var damage = 120 + 50f*(spellLevel - 1) + ADratio;
 
             if (!UnitsHit.Contains(target))
             {
