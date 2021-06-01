@@ -58,7 +58,7 @@ namespace Spells
 
             AddParticleTarget(owner, target, "Ashe_Base_R_tar.troy", target, lifetime: 1f);
         }
-        
+
 
         public void OnSpellChannel(ISpell spell)
         {
@@ -76,3 +76,4 @@ namespace Spells
         {
         }
     }
+}

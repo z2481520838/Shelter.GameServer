@@ -22,8 +22,6 @@ namespace BurningAgony
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
         IObjAiBase Owner;
-        IParticle p;
-        IParticle p2;
         public ISpellSector DRMundoWAOE;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
@@ -36,15 +34,12 @@ namespace BurningAgony
             DRMundoWAOE = ownerSpell.CreateSpellSector(new SectorParameters
             {
                 BindObject = ownerSpell.CastInfo.Owner,
-                HalfLength = 160f,
+                HalfLength = 165f,
                 Tickrate = 1,
                 CanHitSameTargetConsecutively = true,
                 OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes,
                 Type = SectorType.Area
             });
-
-            p = AddParticleTarget(Owner, unit, "dr_mundo_burning_agony_cas_01.troy", unit, buff.Duration);
-            p2 = AddParticleTarget(Owner, unit, "dr_mundo_burning_agony_cas_02.troy", unit, buff.Duration);
         }
         public void TargetExecute(ISpell ownerSpell, IAttackableUnit target, ISpellSector sector)
         {
@@ -57,9 +52,6 @@ namespace BurningAgony
         {
             ApiEventManager.OnSpellSectorHit.RemoveListener(this);
             DRMundoWAOE.SetToRemove();
-
-            RemoveParticle(p);
-            RemoveParticle(p2);
         }
         public void OnUpdate(float diff)
         {
