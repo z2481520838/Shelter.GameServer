@@ -37,18 +37,20 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
+        }
+
+        public void OnSpellPostCast(ISpell spell)
+        {
             if (!Owner.HasBuff("BurningAgony"))
             {
                 AddBuff("BurningAgony", 1, 1, spell, Owner, Owner, true);
+                timeSinceLastTick = 1000f;
+                spell.SetCooldown(0.5f, true);
             }
             else
             {
                 RemoveBuff(Owner, "BurningAgony");
             }
-        }
-
-        public void OnSpellPostCast(ISpell spell)
-        {
         }
 
         public void OnSpellChannel(ISpell spell)
