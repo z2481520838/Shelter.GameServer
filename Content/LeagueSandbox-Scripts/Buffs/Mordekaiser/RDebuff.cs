@@ -39,7 +39,6 @@ namespace MordekaiserChildrenOfTheGrave
             spell = ownerSpell;
             limiter = true;
 
-
             AddParticleTarget(owner, unit, "mordekeiser_cotg_tar.troy", unit, buff.Duration);
             unit.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_SPELL, false);
             owner.Stats.CurrentHealth += damage;

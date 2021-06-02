@@ -37,6 +37,7 @@ namespace Spells
             {
                 RemoveBuff(Owner, "MoveQuickPassive");
                 takeDamage = true;
+                timer = 0f;
             }
         }
 

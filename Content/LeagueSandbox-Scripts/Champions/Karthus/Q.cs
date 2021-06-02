@@ -89,7 +89,6 @@ namespace Spells
 
                         units[i].TakeDamage(Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, isCrit);
                     }
-
                 }
                 AddParticle(Owner, Owner, "Karthus_Base_Q_Explosion.troy", coords, 1f, 0.75f); //Double Check the size
                 AddParticle(Owner, Owner, "Karthus_Base_Q_Explosion_Sound.troy", coords, 1f);
