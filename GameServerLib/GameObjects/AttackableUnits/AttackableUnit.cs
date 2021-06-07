@@ -428,7 +428,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                 //Damage dealing. (based on leagueoflegends' wikia)
                 damage = defense >= 0 ? 100 / (100 + defense) * damage : (2 - 100 / (100 - defense)) * damage;
             }
-            
+
             ApiEventManager.OnTakeDamage.Publish(this, attacker);
 
             Stats.CurrentHealth = Math.Max(0.0f, Stats.CurrentHealth - damage);
@@ -723,7 +723,12 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
 
                     // Refresh the time of the parent buff and add a stack.
                     ParentBuffs[b.Name].ResetTimeElapsed();
-                    ParentBuffs[b.Name].IncrementStackCount();
+
+                    if (ParentBuffs[b.Name].StackCount < ParentBuffs[b.Name].MaxStacks)
+                    {
+                        ParentBuffs[b.Name].ActivateBuff();
+                        ParentBuffs[b.Name].IncrementStackCount();
+                    }
 
                     if (!b.IsHidden)
                     {
@@ -736,10 +741,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                             _game.PacketNotifier.NotifyNPC_BuffUpdateCount(ParentBuffs[b.Name], ParentBuffs[b.Name].Duration, ParentBuffs[b.Name].TimeElapsed);
                         }
                     }
-
                     // TODO: Unload and reload all data of buff script here.
-
-                    ParentBuffs[b.Name].ActivateBuff();
                 }
             }
         }
