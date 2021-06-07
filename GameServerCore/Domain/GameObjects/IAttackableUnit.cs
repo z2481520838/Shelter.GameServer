@@ -63,12 +63,23 @@ namespace GameServerCore.Domain.GameObjects
         /// Currently these are only initialized manually by ObjAIBase and ObjBuilding.
         /// </summary>
         IStats Stats { get; }
+        /// <summary>
+        /// Variable which stores the number of times a unit has teleported. Used purely for networking.
+        /// Resets when reaching byte.MaxValue (255).
+        /// </summary>
+        byte TeleportID { get; }
 
         /// <summary>
         /// Gets the HashString for this unit's model. Used for packets so clients know what data to load.
         /// </summary>
         /// <returns>Hashed string of this unit's model.</returns>
         uint GetObjHash();
+        /// <summary>
+        /// Sets the server-sided position of this object. Optionally takes into account the AI's current waypoints.
+        /// </summary>
+        /// <param name="vec">Position to set.</param>
+        /// <param name="repath">Whether or not to repath the AI from the given position (assuming it has a path).</param>
+        void SetPosition(Vector2 vec, bool repath = true);
         /// <summary>
         /// Returns whether or not this unit is targetable to the specified team.
         /// </summary>
@@ -212,6 +223,13 @@ namespace GameServerCore.Domain.GameObjects
         /// </summary>
         /// <returns></returns>
         bool CanMove();
+        /// <summary>
+        /// Teleports this unit to the given position, and optionally repaths from the new position.
+        /// </summary>
+        /// <param name="x">X coordinate to teleport to.</param>
+        /// <param name="y">Y coordinate to teleport to.</param>
+        /// <param name="repath">Whether or not to repath from the new position.</param>
+        void TeleportTo(float x, float y, bool repath = false);
         /// <summary>
         /// Returns the next waypoint. If all waypoints have been reached then this returns a -inf Vector2
         /// </summary>
