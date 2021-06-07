@@ -198,22 +198,6 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
             }
         }
 
-        public override void SetPosition(Vector2 vec)
-        {
-            Position = vec;
-
-            // Reevaluate our current path to account for the starting position being changed.
-            if (!IsPathEnded())
-            {
-                List<Vector2> safePath = _game.Map.NavigationGrid.GetPath(Position, _game.Map.NavigationGrid.GetClosestTerrainExit(Waypoints.Last(), CollisionRadius));
-
-                if (safePath != null)
-                {
-                    SetWaypoints(safePath);
-                }
-            }
-        }
-
         /// <summary>
         /// Function called by this AI's auto attack projectile when it hits its target.
         /// </summary>
@@ -363,30 +347,6 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
             }
 
             return ClassifyUnit.DEFAULT;
-        }
-
-        /// <summary>
-        /// Called when this AI collides with the terrain or with another GameObject. Refer to CollisionHandler for exact cases.
-        /// </summary>
-        /// <param name="collider">GameObject that collided with this AI. Null if terrain.</param>
-        /// <param name="isTerrain">Whether or not this AI collided with terrain.</param>
-        public override void OnCollision(IGameObject collider, bool isTerrain = false)
-        {
-            // If we were trying to path somewhere before colliding, then repath from our new position.
-            if (!IsPathEnded())
-            {
-                List<Vector2> safePath = _game.Map.NavigationGrid.GetPath(Position, _game.Map.NavigationGrid.GetClosestTerrainExit(Waypoints.Last()));
-
-                // TODO: When using this safePath, sometimes we collide with the terrain again, so we use an unsafe path the next collision, however,
-                // sometimes we collide again before we can finish the unsafe path, so we end up looping collisions between safe and unsafe paths, never actually escaping (ex: sharp corners).
-                // Edit the current method to fix the above problem.
-                if (safePath != null)
-                {
-                    SetWaypoints(safePath);
-                }
-            }
-
-            base.OnCollision(collider, isTerrain);
         }
 
         public override bool Move(float diff)
