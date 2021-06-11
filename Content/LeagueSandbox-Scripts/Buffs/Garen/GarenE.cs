@@ -35,7 +35,7 @@ namespace GarenE
             Owner = owner;
 
             SetAnimStates(owner, new Dictionary<string, string> { { "RUN", "Spell3" } });
-            p = AddParticleTarget(owner, unit, "Garen_Base_E_Spin.troy", unit, 1, buff.Duration);
+            p = AddParticleTarget(owner, unit, "Garen_Base_E_Spin.troy", unit, buff.Duration);
            
             SetStatus(unit, StatusFlags.CanAttack, false);
             SetStatus(unit, StatusFlags.Ghosted, true);
