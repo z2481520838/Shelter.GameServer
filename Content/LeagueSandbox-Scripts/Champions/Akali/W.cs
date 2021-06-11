@@ -35,8 +35,8 @@ namespace Spells
         {
             var owner = spell.CastInfo.Owner;
             var initialCastPos = owner.Position;
-            AddParticle(owner, owner, "akali_smoke_bomb_tar.troy", initialCastPos, 8f);
-            AddParticle(owner, owner, "akali_smoke_bomb_tar_team_green.troy", initialCastPos, 8f);
+            AddParticle(owner, null, "akali_smoke_bomb_tar.troy", initialCastPos, 8f);
+            AddParticle(owner, null, "akali_smoke_bomb_tar_team_green.troy", initialCastPos, 8f);
 
             /*
               TODO: Display green border (akali_smoke_bomb_tar_team_green.troy) for the own team,
