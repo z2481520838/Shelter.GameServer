@@ -21,16 +21,16 @@ namespace EzrealRisingSpellForce
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            if (buff.StackCount < 5) //TODO Fix Stacks_And_Renews Stacking infinitelly
-
-            {
                 StatsModifier.AttackSpeed.PercentBonus = 0.1f;
                 unit.AddStatModifier(StatsModifier);
-            }
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
+            for(int i = 1; i < buff.StackCount; i++)
+            {
+                unit.RemoveStatModifier(StatsModifier);
+            }
         }
 
         public void OnUpdate(float diff)
