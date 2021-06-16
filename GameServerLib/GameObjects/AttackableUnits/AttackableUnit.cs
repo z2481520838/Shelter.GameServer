@@ -721,13 +721,11 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                     // Don't need the newly added buff instance as we already have a parent who we can add stacks to.
                     RemoveBuffSlot(b);
 
-                    // Refresh the time of the parent buff and add a stack.
+                    // Refresh the time of the parent buff and adds a stack if Max Stacks wasn't reached.
                     ParentBuffs[b.Name].ResetTimeElapsed();
-
-                    if (ParentBuffs[b.Name].StackCount < ParentBuffs[b.Name].MaxStacks)
+                    if (ParentBuffs[b.Name].IncrementStackCount())
                     {
                         ParentBuffs[b.Name].ActivateBuff();
-                        ParentBuffs[b.Name].IncrementStackCount();
                     }
 
                     if (!b.IsHidden)
@@ -1206,8 +1204,8 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         public void SetWaypoints(List<Vector2> newWaypoints, bool networked = true)
         {
             // Waypoints should always have an origin at the current position.
-            // Can't set waypoints if we can't move. However, dashes override this.
-            if (newWaypoints.Count <= 1 || newWaypoints[0] != Position || (!CanMove() && MovementParameters == null))
+            // Can't set waypoints if we can't move. Dashes are also excluded as their paths should be set before being applied.
+            if (newWaypoints.Count <= 1 || newWaypoints[0] != Position || !CanMove() || MovementParameters != null)
             {
                 return;
             }
@@ -1286,6 +1284,10 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         public void DashToLocation(Vector2 endPos, float dashSpeed, string animation = "", float leapGravity = 0.0f, bool keepFacingLastDirection = true)
         {
             var newCoords = _game.Map.NavigationGrid.GetClosestTerrainExit(endPos, CollisionRadius + 1.0f);
+
+            // False because we don't want this to be networked as a normal movement.
+            SetWaypoints(new List<Vector2> { Position, newCoords }, false);
+
             // TODO: Take into account the rest of the arguments
             MovementParameters = new ForceMovementParameters
             {
@@ -1300,14 +1302,13 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
             };
             DashElapsedTime = 0;
 
+            SetDashingState(true);
+
             if (animation != null && animation != "")
             {
                 var animPairs = new Dictionary<string, string> { { "RUN", animation } };
                 SetAnimStates(animPairs);
             }
-
-            // False because we don't want this to be networked as a normal movement.
-            SetWaypoints(new List<Vector2> { Position, newCoords }, false);
 
             _game.PacketNotifier.NotifyWaypointGroupWithSpeed(this);
 
@@ -1328,8 +1329,23 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                 MovementParameters = null;
                 DashElapsedTime = 0;
 
+                // TODO: Implement this as a parameter.
+                Stats.SetActionState(ActionState.CAN_ATTACK, true);
+                Stats.SetActionState(ActionState.CAN_NOT_ATTACK, false);
+                Stats.SetActionState(ActionState.CAN_MOVE, true);
+                Stats.SetActionState(ActionState.CAN_NOT_MOVE, false);
+
                 var animPairs = new Dictionary<string, string> { { "RUN", "" } };
                 SetAnimStates(animPairs);
+            }
+
+            if (state)
+            {
+                // TODO: Implement this as a parameter.
+                Stats.SetActionState(ActionState.CAN_ATTACK, false);
+                Stats.SetActionState(ActionState.CAN_NOT_ATTACK, true);
+                Stats.SetActionState(ActionState.CAN_MOVE, false);
+                Stats.SetActionState(ActionState.CAN_NOT_MOVE, true);
             }
         }
 
