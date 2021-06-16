@@ -91,6 +91,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Stats
             {
                 return false;
             }
+            BaseValue += statModifier.BaseValue;
             BaseBonus += statModifier.BaseBonus;
             PercentBaseBonus += statModifier.PercentBaseBonus;
             FlatBonus += statModifier.FlatBonus;
@@ -105,6 +106,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Stats
             {
                 return false;
             }
+            BaseValue -= statModifier.BaseValue;
             BaseBonus -= statModifier.BaseBonus;
             PercentBaseBonus -= statModifier.PercentBaseBonus;
             FlatBonus -= statModifier.FlatBonus;
