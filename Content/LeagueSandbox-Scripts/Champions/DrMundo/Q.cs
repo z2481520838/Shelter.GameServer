@@ -23,6 +23,7 @@ namespace Spells
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
             Owner = owner;
+            AddBuff("DrMundoPassive", 1, 1, spell, owner, Owner, true);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -70,11 +71,6 @@ namespace Spells
 
         public void OnUpdate(float diff)
         {
-            if (Owner != null)
-            {
-                Owner.Stats.HealthRegeneration.FlatBonus = (Owner.Stats.HealthPoints.Total / 100f) * 0.3f;
-                //Double Check if that's right
-            }
         }
     }
 
