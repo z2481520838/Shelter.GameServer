@@ -38,9 +38,6 @@ namespace RaiseMoraleTeamBuff
             }
 
             unit.AddStatModifier(StatsModifier);
-
-
-
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

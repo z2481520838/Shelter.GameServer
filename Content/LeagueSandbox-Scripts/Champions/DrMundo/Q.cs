@@ -23,7 +23,7 @@ namespace Spells
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
             Owner = owner;
-            AddBuff("DrMundoPassive", 1, 1, spell, owner, Owner, true);
+            //AddBuff("DrMundoPassive", 1, 1, spell, owner, owner, true);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
