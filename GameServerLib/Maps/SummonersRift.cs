@@ -823,10 +823,10 @@ namespace LeagueSandbox.GameServer.Maps
                 }
 
                 List<Vector2> waypoint = new List<Vector2>();
-                TeamId team = barrack.Value.GetTeamID();
+                TeamId team = barrack.Value.GetOpposingTeamID();
                 LaneID lane = barrack.Value.GetBarrackLaneID();
 
-                if (team == TeamId.TEAM_BLUE)
+                if (team == TeamId.TEAM_PURPLE)
                 {
                     if (lane == LaneID.TOP)
                     {
@@ -841,7 +841,7 @@ namespace LeagueSandbox.GameServer.Maps
                         waypoint = BlueBotWaypoints;
                     }
                 }
-                else if (team == TeamId.TEAM_PURPLE)
+                else if (team == TeamId.TEAM_BLUE)
                 {
                     if (lane == LaneID.TOP)
                     {
