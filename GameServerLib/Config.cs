@@ -255,7 +255,25 @@ namespace LeagueSandbox.GameServer
 
                 return laneId;
             }
+            public LaneID GetBarrackLaneID()
+            {
+                var laneId = LaneID.NONE;
 
+                if (Name.Contains("__L"))
+                {
+                    laneId = LaneID.TOP;
+                }
+                else if (Name.Contains("__C"))
+                {
+                    laneId = LaneID.MIDDLE;
+                }
+                else if (Name.Contains("__R"))
+                {
+                    laneId = LaneID.BOTTOM;
+                }
+
+                return laneId;
+            }
             public int ParseIndex()
             {
                 int index = -1;
