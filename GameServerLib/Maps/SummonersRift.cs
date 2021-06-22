@@ -8,6 +8,7 @@ using GameServerCore.Domain;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Enums;
 using GameServerCore.Maps;
+using GameServerCore.NetInfo;
 using LeagueSandbox.GameServer.GameObjects;
 using LeagueSandbox.GameServer.GameObjects.AttackableUnits;
 using LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI;
@@ -557,8 +558,27 @@ namespace LeagueSandbox.GameServer.Maps
             _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(13374.17f, 14245.673f), 194.9741f, new Vector3(224.0f, 33.33f, 0.0f), 0.0f, -44.44f, "LevelProp_ShopMale", "ShopMale"));
             _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(-99.5613f, 855.6632f), 191.4039f, new Vector3(158.0f, 0.0f, 0.0f), 0.0f, 0.0f, "LevelProp_ShopMale1", "ShopMale"));
         }
+        List<Tuple<uint, ClientInfo>> _disconnectedPlayers = new List<Tuple<uint, ClientInfo>>();
+
         public void Update(float diff)
         {
+            foreach (var player in _game.PlayerManager.GetPlayers())
+            {
+                if (player.Item2.IsDisconnected && !_disconnectedPlayers.Contains(player))
+                {
+                    _disconnectedPlayers.Add(player);
+                }
+                else if (!player.Item2.IsDisconnected && _disconnectedPlayers.Contains(player))
+                {
+                    _disconnectedPlayers.Remove(player);
+                }
+            }
+            if (_disconnectedPlayers.Count == _game.PlayerManager.GetPlayers().Count)
+            {
+                _game.SetToExit = true;
+            }
+
+
             if (_game.GameTime >= 120 * 1000)
             {
                 IsKillGoldRewardReductionActive = false;
