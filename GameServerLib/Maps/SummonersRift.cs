@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Timers;
 using Force.Crc32;
 using GameServerCore.Domain;
 using GameServerCore.Domain.GameObjects;
@@ -559,6 +560,7 @@ namespace LeagueSandbox.GameServer.Maps
             _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(-99.5613f, 855.6632f), 191.4039f, new Vector3(158.0f, 0.0f, 0.0f), 0.0f, 0.0f, "LevelProp_ShopMale1", "ShopMale"));
         }
         List<Tuple<uint, ClientInfo>> _disconnectedPlayers = new List<Tuple<uint, ClientInfo>>();
+        Timer timer = new Timer(300000) { AutoReset = false };
 
         public void Update(float diff)
         {
@@ -575,7 +577,15 @@ namespace LeagueSandbox.GameServer.Maps
             }
             if (_disconnectedPlayers.Count == _game.PlayerManager.GetPlayers().Count)
             {
-                _game.SetToExit = true;
+                timer.Elapsed += (a, b) =>
+                {
+                    _game.SetToExit = true;
+                };
+                timer.Start();
+            }
+            else
+            {
+                timer.Interval = (10000);
             }
 
 
