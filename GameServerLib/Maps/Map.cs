@@ -108,7 +108,7 @@ namespace LeagueSandbox.GameServer.Maps
                 // [8] = typeof(CrystalScar),
                 // [10] = typeof(NewTwistedTreeline),
                 // [11] = typeof(NewSummonersRift),
-                //[12] = typeof(HowlingAbyss)
+                [12] = typeof(HowlingAbyss)
                 // [14] = typeof(ButchersBridge)
             };
 
