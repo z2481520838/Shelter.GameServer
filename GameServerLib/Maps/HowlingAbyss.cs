@@ -23,6 +23,7 @@ namespace LeagueSandbox.GameServer.Maps
     {
         private static readonly List<Vector2> BlueMidWaypoints = new List<Vector2>
         {
+            new Vector2(2248.0f, 2330.0f),
             new Vector2(2895.0f, 3352.0f),
             new Vector2(4772.0f, 5048.0f),
             new Vector2(6562.0f, 6332.0f),
