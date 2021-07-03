@@ -41,16 +41,9 @@ namespace Spells
         {
             var owner = spell.CastInfo.Owner as IChampion;
             var ownerSkinID = owner.Skin;
-            var targetPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var ownerPos = owner.Position;
-            var distance = Vector2.Distance(ownerPos, targetPos);
+            var targetPos = GetPointFromUnit(owner, 1150.0f);
             FaceDirection(targetPos, owner);
-
-            if (distance > 1200.0)
-            {
-                targetPos = GetPointFromUnit(owner, 1150.0f);
-            }
-
+            
             if (ownerSkinID == 5)
             {
                 SpellCast(owner, 3, SpellSlotType.ExtraSlots, targetPos, targetPos, false, Vector2.Zero);

@@ -12,16 +12,16 @@ using GameServerCore.Scripting.CSharp;
 
 namespace Spells
 {
-    public class Parley : ISpellScript
+    public class Frostbite : ISpellScript
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
+            TriggersSpellCasts = true,
             MissileParameters = new MissileParameters
             {
                 Type = MissileType.Target
             },
             IsDamagingSpell = true,
-            TriggersSpellCasts = true
             // TODO
         };
 
@@ -40,7 +40,6 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
-         //TODO:Fix broken SpellCast animation
         }
 
         public void OnSpellPostCast(ISpell spell)
@@ -49,27 +48,20 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
-            var damage = -5f + (25f * spell.CastInfo.SpellLevel) + owner.Stats.AttackDamage.Total;
-            var isCrit = new Random().Next(0, 100) <= (owner.Stats.CriticalChance.Total * 100f);
-            var goldIncome = new[] { 4, 5, 6, 7, 8 }[spell.CastInfo.SpellLevel];
-            bool IsCritBool = false;
+            float ap = owner.Stats.AbilityPower.Total * 0.5f;
+            float damage = 55 + (spell.CastInfo.SpellLevel - 1)* 30 + ap;
+            string particleFX = "cryo_FrostBite_tar.troy";
+            bool isCrit = false;
 
-            if (isCrit == true)
+            if (target.HasBuff("Chilled"))
             {
-                damage *= owner.Stats.CriticalDamage.Total;
-                IsCritBool = true;
+                damage *= 2;
+                isCrit = true;
+                particleFX = "cryo_FrostBite_chilled_tar.troy";
             }
 
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, IsCritBool);
-            AddParticleTarget(owner, target, "pirate_parley_tar.troy", target, lifetime: 1f); //TODO: Fix particles that for some reason aren't spawning ||||| Test if particles now work
-
-            if (target.IsDead)
-            {
-                owner.Stats.Gold += goldIncome;
-                owner.Stats.CurrentMana += spell.CastInfo.ManaCost;
-            }
-
-            missile.SetToRemove();
+            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, isCrit);
+            AddParticleTarget(owner, target, particleFX, target);
         }
 
         public void OnSpellChannel(ISpell spell)

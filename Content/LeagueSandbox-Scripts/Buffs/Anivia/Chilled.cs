@@ -9,8 +9,8 @@ namespace Chilled
     internal class Chilled : IBuffGameScript
     {
         public BuffType BuffType => BuffType.SLOW;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_OVERLAPS;
-        public int MaxStacks => 100;
+        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
+        public int MaxStacks => 1;
         public bool IsHidden => false;
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
