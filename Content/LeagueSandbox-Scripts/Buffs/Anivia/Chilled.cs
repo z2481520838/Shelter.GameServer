@@ -9,7 +9,7 @@ namespace Chilled
     internal class Chilled : IBuffGameScript
     {
         public BuffType BuffType => BuffType.SLOW;
-        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
+        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
         public int MaxStacks => 1;
         public bool IsHidden => false;
 
@@ -18,8 +18,11 @@ namespace Chilled
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             // TODO: Implement global variables which can be assigned values outside of the buff script.
-            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus - 0.2f;
             StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus - 0.2f;
+            if (ownerSpell.SpellName == "GlacialStorm")
+            {
+                StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus - 0.2f;
+            }
             unit.AddStatModifier(StatsModifier);
 
             // ApplyAssistMarker
