@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Timers;
 using Force.Crc32;
 using GameServerCore.Domain;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Enums;
 using GameServerCore.Maps;
-using GameServerCore.NetInfo;
 using LeagueSandbox.GameServer.GameObjects;
 using LeagueSandbox.GameServer.GameObjects.AttackableUnits;
 using LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI;
@@ -147,7 +145,7 @@ namespace LeagueSandbox.GameServer.Maps
         private readonly long _firstSpawnTime = 90 * 1000;
         private long _nextSpawnTime = 90 * 1000;
         private readonly long _spawnInterval = 30 * 1000;
-        private readonly Dictionary<TeamId, Fountain> _fountains;
+        private Dictionary<TeamId, Fountain> _fountains = new Dictionary<TeamId, Fountain>();
         private readonly List<Nexus> _nexus;
         private readonly Dictionary<TeamId, Dictionary<LaneID, List<Inhibitor>>> _inhibitors;
         private readonly Dictionary<TeamId, Dictionary<LaneID, List<LaneTurret>>> _turrets;
@@ -166,11 +164,6 @@ namespace LeagueSandbox.GameServer.Maps
         {
             _game = game;
             _mapData = game.Config.MapData;
-            _fountains = new Dictionary<TeamId, Fountain>
-            {
-                { TeamId.TEAM_BLUE, new Fountain(game, TeamId.TEAM_BLUE, new Vector2(11, 250), 1000) },
-                { TeamId.TEAM_PURPLE, new Fountain(game, TeamId.TEAM_PURPLE, new Vector2(13950, 14200), 1000) }
-            };
             _nexus = new List<Nexus>();
             _inhibitors = new Dictionary<TeamId, Dictionary<LaneID, List<Inhibitor>>>
             {
@@ -389,6 +382,10 @@ namespace LeagueSandbox.GameServer.Maps
                     // index - 1 as we need it to start at 0.
                     AddTurret(mapObject, position, teamId, teamName, turretType, lane);
                 }
+                else if (objectType == GameObjectTypes.ObjBuilding_SpawnPoint)
+                {
+                    _fountains.Add(teamId, new Fountain(_game, teamId, position, 1000));
+                }
             }
 
             // Fix missed turrets (this is basically user-error handling).
@@ -559,36 +556,8 @@ namespace LeagueSandbox.GameServer.Maps
             _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(13374.17f, 14245.673f), 194.9741f, new Vector3(224.0f, 33.33f, 0.0f), 0.0f, -44.44f, "LevelProp_ShopMale", "ShopMale"));
             _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(-99.5613f, 855.6632f), 191.4039f, new Vector3(158.0f, 0.0f, 0.0f), 0.0f, 0.0f, "LevelProp_ShopMale1", "ShopMale"));
         }
-        List<Tuple<uint, ClientInfo>> _disconnectedPlayers = new List<Tuple<uint, ClientInfo>>();
-        Timer timer = new Timer(300000) { AutoReset = false };
-
         public void Update(float diff)
         {
-            foreach (var player in _game.PlayerManager.GetPlayers())
-            {
-                if (player.Item2.IsDisconnected && !_disconnectedPlayers.Contains(player))
-                {
-                    _disconnectedPlayers.Add(player);
-                }
-                else if (!player.Item2.IsDisconnected && _disconnectedPlayers.Contains(player))
-                {
-                    _disconnectedPlayers.Remove(player);
-                }
-            }
-            if (_disconnectedPlayers.Count == _game.PlayerManager.GetPlayers().Count)
-            {
-                timer.Elapsed += (a, b) =>
-                {
-                    _game.SetToExit = true;
-                };
-                timer.Start();
-            }
-            else
-            {
-                timer.Interval = (10000);
-            }
-
-
             if (_game.GameTime >= 120 * 1000)
             {
                 IsKillGoldRewardReductionActive = false;
@@ -833,10 +802,10 @@ namespace LeagueSandbox.GameServer.Maps
                 }
 
                 List<Vector2> waypoint = new List<Vector2>();
-                TeamId team = barrack.Value.GetOpposingTeamID();
-                LaneID lane = barrack.Value.GetBarrackLaneID();
+                TeamId opposed_team = barrack.Value.GetOpposingTeamID();
+                LaneID lane = barrack.Value.GetSpawnBarrackLaneID();
 
-                if (team == TeamId.TEAM_PURPLE)
+                if (opposed_team == TeamId.TEAM_PURPLE)
                 {
                     if (lane == LaneID.TOP)
                     {
@@ -851,7 +820,7 @@ namespace LeagueSandbox.GameServer.Maps
                         waypoint = BlueBotWaypoints;
                     }
                 }
-                else if (team == TeamId.TEAM_BLUE)
+                else if (opposed_team == TeamId.TEAM_BLUE) 
                 {
                     if (lane == LaneID.TOP)
                     {
@@ -866,7 +835,7 @@ namespace LeagueSandbox.GameServer.Maps
                         waypoint = RedBotWaypoints;
                     }
                 }
-                spawnToWaypoints.Add(barrack.Value.Name, Tuple.Create(waypoint, _inhibitors[team][lane][0].NetId));
+                spawnToWaypoints.Add(barrack.Value.Name, Tuple.Create(waypoint, _inhibitors[opposed_team][lane][0].NetId));
             }
             var cannonMinionCap = 2;
 

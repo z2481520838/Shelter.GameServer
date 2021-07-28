@@ -4,12 +4,12 @@ using GameServerCore.Domain.GameObjects.Spell;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
-namespace BlindMonkQOne
+namespace Buffs
 {
-    internal class BlindMonkQOne : IBuffGameScript
+    internal class BlindMonkSonicWave : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.HASTE;
-        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
+        public BuffType BuffType => BuffType.INTERNAL;
+        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
         public bool IsHidden => false;
         public int MaxStacks => 1;
 
@@ -22,7 +22,6 @@ namespace BlindMonkQOne
         {
             originSpell = ownerSpell;
             thisBuff = buff;
-            AddParticleTarget(ownerSpell.CastInfo.Owner, ownerSpell.CastInfo.Owner, "blindMonk_Q_tar_indicator.troy", unit, 1f, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)

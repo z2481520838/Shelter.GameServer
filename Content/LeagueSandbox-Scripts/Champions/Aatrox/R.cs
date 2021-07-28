@@ -16,26 +16,26 @@ namespace Spells
             // TODO
         };
 
-        string pCastName;
-        string pHitName;
+        string pcastname;
+        string phitname;
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
             if (owner is IChampion c)
             {
-                switch (c.Skin)
+                if (c.SkinID == 0)
                 {
-                    case 1:
-                        pCastName = "Aatrox_Skin01_R_Activate.troy";
-                        pHitName = "Aatrox_Skin01_R_active_hit_tar.troy";
-                        break;
-                    case 2:
-                        pCastName = "Aatrox_Skin02_R_Activate.troy";
-                        pHitName = "Aatrox_Skin02_R_active_hit_tar.troy";
-                        break;
-                    default:
-                        pCastName = "Aatrox_Base_R_Activate.troy";
-                        pHitName = "Aatrox_Base_R_active_hit_tar.troy";
-                        break;
+                    pcastname = "Aatrox_Base_R_Activate.troy";
+                    phitname = "Aatrox_Base_R_active_hit_tar.troy";
+                }
+                else if (c.SkinID == 1)
+                {
+                    pcastname = "Aatrox_Skin01_R_Activate.troy";
+                    phitname = "Aatrox_Skin01_R_active_hit_tar.troy";
+                }
+                else if (c.SkinID == 2)
+                {
+                    pcastname = "Aatrox_Skin02_R_Activate.troy";
+                    phitname = "Aatrox_Skin02_R_active_hit_tar.troy";
                 }
             }
         }
@@ -50,24 +50,26 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
-            AddParticleTarget(spell.CastInfo.Owner, spell.CastInfo.Owner, pCastName, spell.CastInfo.Owner, 1f);
+            var owner = spell.CastInfo.Owner;
+            AddParticleTarget(owner, owner, pcastname, owner);
         }
 
         public void OnSpellPostCast(ISpell spell)
         {
-            if (spell.CastInfo.Owner is IChampion owner)
+            if (spell.CastInfo.Owner is IChampion c)
             {
-                var damage = 200 + (100 * (spell.CastInfo.SpellLevel - 1)) + (owner.Stats.AbilityPower.Total*0.9f);
-                var units = GetUnitsInRange(owner.Position, 550f, true);
+                var damage = 200 + (100 * (spell.CastInfo.SpellLevel - 1)) + (c.Stats.AbilityPower.Total);
 
+                var units = GetUnitsInRange(c.Position, 550f, true);
                 for (int i = 0; i < units.Count; i++)
                 {
-                    if (units[i].Team != owner.Team && !(units[i] is IObjBuilding || units[i] is IBaseTurret))
+                    if (units[i].Team != c.Team && !(units[i] is IObjBuilding || units[i] is IBaseTurret))
                     {
-                        units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                        AddParticleTarget(owner, units[i], pHitName, units[i], lifetime: 1f);
+                        units[i].TakeDamage(c, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+                        AddParticleTarget(c, units[i], phitname, units[i]);
                     }
                 }
+
                 AddBuff("AatroxR", 12f, 1, spell, spell.CastInfo.Owner, spell.CastInfo.Owner);
             }
         }

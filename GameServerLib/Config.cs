@@ -191,7 +191,7 @@ namespace LeagueSandbox.GameServer
                 {
                     type = GameObjectTypes.ObjAnimated_HQ;
                 }
-                else if (Name.Contains("Barracks") && !Name.Contains("Spawn"))
+                else if (Name.Contains("Barracks"))
                 {
                     // Inhibitors are dampeners for the enemy Nexus.
                     type = GameObjectTypes.ObjAnimated_BarracksDampener;
@@ -199,6 +199,10 @@ namespace LeagueSandbox.GameServer
                 else if (Name.Contains("Turret"))
                 {
                     type = GameObjectTypes.ObjAIBase_Turret;
+                }
+                else if (Name.Contains("__Spawn"))
+                {
+                    type = GameObjectTypes.ObjBuilding_SpawnPoint;
                 }
 
                 return type;
@@ -271,7 +275,8 @@ namespace LeagueSandbox.GameServer
 
                 return laneId;
             }
-            public LaneID GetBarrackLaneID()
+
+            public LaneID GetSpawnBarrackLaneID()
             {
                 var laneId = LaneID.NONE;
 
@@ -290,6 +295,7 @@ namespace LeagueSandbox.GameServer
 
                 return laneId;
             }
+
             public int ParseIndex()
             {
                 int index = -1;

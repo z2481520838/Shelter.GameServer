@@ -40,10 +40,17 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
             var owner = spell.CastInfo.Owner as IChampion;
-            var ownerSkinID = owner.Skin;
-            var targetPos = GetPointFromUnit(owner, 1150.0f);
+            var ownerSkinID = owner.SkinID;
+            var targetPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
+            var ownerPos = owner.Position;
+            var distance = Vector2.Distance(ownerPos, targetPos);
             FaceDirection(targetPos, owner);
-            
+
+            if (distance > 1200.0)
+            {
+                targetPos = GetPointFromUnit(owner, 1150.0f);
+            }
+
             if (ownerSkinID == 5)
             {
                 SpellCast(owner, 3, SpellSlotType.ExtraSlots, targetPos, targetPos, false, Vector2.Zero);
@@ -101,11 +108,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
             var owner = spell.CastInfo.Owner;
-            var spellLevel = owner.GetSpell("EzrealMysticShot").CastInfo.SpellLevel;
             var ad = owner.Stats.AttackDamage.Total * spell.SpellData.AttackDamageCoefficient;
             var ap = owner.Stats.AbilityPower.Total * spell.SpellData.MagicDamageCoefficient;
-            var damage = 15 + spellLevel * 20 + ad + ap;
-
+            var damage = 15 + spell.CastInfo.SpellLevel * 20 + ad + ap;
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
 
             for (byte i = 0; i < 4; i++)
@@ -114,8 +119,9 @@ namespace Spells
             }
 
             AddParticleTarget(owner, target, "Ezreal_mysticshot_tar.troy", target);
-            AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
             missile.SetToRemove();
+
+            // SpellBuffAdd EzrealRisingSpellForce
         }
 
         public void OnSpellCast(ISpell spell)

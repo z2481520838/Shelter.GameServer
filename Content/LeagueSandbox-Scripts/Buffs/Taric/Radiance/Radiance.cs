@@ -6,7 +6,7 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
-namespace Radiance
+namespace Buffs
 {
     internal class Radiance : IBuffGameScript
     {

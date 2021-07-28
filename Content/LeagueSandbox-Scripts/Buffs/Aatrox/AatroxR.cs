@@ -5,55 +5,50 @@ using GameServerCore.Scripting.CSharp;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
-namespace AatroxR
+namespace Buffs
 {
     class AatroxR : IBuffGameScript
     {
         public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
-        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
+        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
         public int MaxStacks => 1;
         public bool IsHidden => false;
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
-        string pAuraName;
-        string pModelName;
-        IParticle pModel;
-        IParticle pAura;
+        string pmodelname;
+        IParticle pmodel;
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            if (unit is IChampion owner)
+            if (unit is IChampion c)
             {
                 // TODO: Implement Animation Overrides for spells like these
-                switch (owner.Skin)
+                if (c.SkinID == 0)
                 {
-                    case 1:
-                        pModelName = "Aatrox_Skin01_RModel.troy";
-                        pAuraName = "Aatrox_Skin01_R_Aura_Self.troy";
-                        break;
-                    case 2:
-                        pModelName = "Aatrox_Skin02_RModel.troy";
-                        pAuraName = "Aatrox_Skin02_R_Aura_Self.troy";
-                        break;
-                    default:
-                        pModelName = "Aatrox_Base_RModel.troy";
-                        pAuraName = "Aatrox_Base_R_Aura_Self.troy";
-                        break;
+                    pmodelname = "Aatrox_Base_RModel.troy";
                 }
-                pModel = AddParticle(owner, unit, pModelName, unit.Position, lifetime: buff.Duration);
-                pAura = AddParticleTarget(owner, unit, pAuraName, unit, lifetime: buff.Duration);
+                else if (c.SkinID == 1)
+                {
+                    pmodelname = "Aatrox_Skin01_RModel.troy";
+                }
+                else if (c.SkinID == 2)
+                {
+                    pmodelname = "Aatrox_Skin02_RModel.troy";
+                }
+                pmodel = AddParticleTarget(c, c, pmodelname, c);
+                pmodel.SetToRemove();
 
-                StatsModifier.AttackSpeed.PercentBonus = (0.4f + (0.1f * (ownerSpell.CastInfo.SpellLevel - 1)));
-                StatsModifier.Range.FlatBonus = 175f;
+                StatsModifier.AttackSpeed.PercentBonus = (0.4f + (0.1f * (ownerSpell.CastInfo.SpellLevel - 1))) * buff.StackCount; // StackCount included here as an example
+                StatsModifier.Range.FlatBonus = 175f * buff.StackCount;
+
                 unit.AddStatModifier(StatsModifier);
             }
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            RemoveParticle(pModel);
-            RemoveParticle(pAura);
+            RemoveParticle(pmodel);
         }
 
         public void OnUpdate(float diff)
