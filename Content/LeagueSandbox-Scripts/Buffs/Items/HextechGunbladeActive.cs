@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace HextechGunblade
+namespace Buffs
 {
     internal class HextechGunblade : IBuffGameScript
     {

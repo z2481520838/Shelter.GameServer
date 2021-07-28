@@ -9,7 +9,7 @@ using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace MordekaiserMaceOfSpades
+namespace Buffs
 {
     class MordekaiserMaceOfSpades : IBuffGameScript
     {

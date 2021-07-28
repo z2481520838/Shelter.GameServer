@@ -6,7 +6,7 @@ using GameServerCore.Scripting.CSharp;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
-namespace ToxicShot
+namespace Buffs
 
 {
     internal class ToxicShot : IBuffGameScript

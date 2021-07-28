@@ -7,8 +7,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace NoxiousTrap //TODO: Find proper Buff Name
-
+namespace Buffs //TODO: Find proper Buff Name
 {
     internal class NoxiousTrap : IBuffGameScript
     {

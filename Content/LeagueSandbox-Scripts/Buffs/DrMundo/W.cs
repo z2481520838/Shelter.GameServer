@@ -10,7 +10,7 @@ using GameServerCore.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell.Sector;
 using System.Collections.Generic;
 
-namespace BurningAgony
+namespace Buffs
 {
     class BurningAgony : IBuffGameScript
     {

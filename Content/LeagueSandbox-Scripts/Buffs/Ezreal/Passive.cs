@@ -7,7 +7,7 @@ using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace EzrealRisingSpellForce
+namespace Buffs
 {
     class EzrealRisingSpellForce : IBuffGameScript
     {

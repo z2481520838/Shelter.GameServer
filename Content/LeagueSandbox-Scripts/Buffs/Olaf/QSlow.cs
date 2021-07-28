@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace OlafAxeThrow
+namespace Buffs
 {
     internal class OlafAxeThrow : IBuffGameScript
     {

@@ -7,7 +7,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace MoveQuick
+namespace Buffs
 {
     internal class MoveQuick : IBuffGameScript
     {

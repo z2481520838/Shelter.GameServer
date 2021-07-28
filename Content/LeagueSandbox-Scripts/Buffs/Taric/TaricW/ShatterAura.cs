@@ -6,9 +6,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
-
-
-namespace ShatterAura
+namespace Buffs
 {
     internal class ShatterAura : IBuffGameScript
     {

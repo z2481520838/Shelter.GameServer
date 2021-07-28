@@ -6,7 +6,7 @@ using GameServerCore.Scripting.CSharp;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace IceBlast
+namespace Buffs
 {
     internal class IceBlast : IBuffGameScript
     {

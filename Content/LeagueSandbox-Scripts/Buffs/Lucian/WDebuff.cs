@@ -6,7 +6,7 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
-namespace LucianWDebuff
+namespace Buffs
 {
     internal class LucianWDebuff : IBuffGameScript
     {

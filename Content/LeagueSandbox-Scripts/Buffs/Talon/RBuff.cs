@@ -8,7 +8,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
-namespace TalonDisappear
+namespace Buffs
 {
     class TalonDisappear : IBuffGameScript
     {

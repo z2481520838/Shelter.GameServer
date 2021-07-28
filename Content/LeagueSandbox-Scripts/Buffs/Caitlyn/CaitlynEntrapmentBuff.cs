@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace CaitlynEntrapmentMissile
+namespace Buffs
 {
     //Still Gotta find Proper Buff Name (Using the missile name as a buff cuz the "CaitlynEntrapment" causes Morgana's dark bind particles to appear for some reason)
     internal class CaitlynEntrapmentMissile : IBuffGameScript

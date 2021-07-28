@@ -6,9 +6,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 
-
-
-namespace ShatterSelfBonus
+namespace Buffs
 {
     internal class ShatterSelfBonus : IBuffGameScript
     {

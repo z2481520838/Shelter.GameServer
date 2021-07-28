@@ -8,7 +8,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
-namespace TalonBleedDebuff
+namespace Buffs
 {
     class TalonBleedDebuff : IBuffGameScript
     {

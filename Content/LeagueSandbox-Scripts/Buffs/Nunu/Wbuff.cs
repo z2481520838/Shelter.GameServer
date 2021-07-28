@@ -6,7 +6,7 @@ using GameServerCore.Scripting.CSharp;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace BloodBoil
+namespace Buffs
 {
     internal class BloodBoil : IBuffGameScript
     {

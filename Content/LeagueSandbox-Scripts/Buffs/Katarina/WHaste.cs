@@ -6,7 +6,7 @@ using GameServerCore.Scripting.CSharp;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace KatarinaWHaste
+namespace Buffs
 {
     internal class KatarinaWHaste : IBuffGameScript
     {

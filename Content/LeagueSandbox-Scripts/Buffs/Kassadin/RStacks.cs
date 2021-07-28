@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace RiftWalk
+namespace Buffs
 {
     internal class RiftWalk : IBuffGameScript
     {

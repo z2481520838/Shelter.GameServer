@@ -6,7 +6,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace Masochism
+namespace Buffs
 {
     internal class Masochism : IBuffGameScript
     {

@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace YellowTriket
+namespace Buffs
 {
     internal class YellowTriket : IBuffGameScript
     {
@@ -39,7 +39,7 @@ namespace YellowTriket
 
             if(timeSinceLastTick >= 60000.0f)
             {
-                Unit.Die(Unit);
+                Unit.Die(null);
             }
 
             //This would be used if the ward's ManaPoints were being properly read

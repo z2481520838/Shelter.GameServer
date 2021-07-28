@@ -7,7 +7,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace MoveQuickPassive //TODO: Find Proper Buff Name
+namespace Buffs //TODO: Find Proper Buff Name
 {
     internal class MoveQuickPassive : IBuffGameScript
     {

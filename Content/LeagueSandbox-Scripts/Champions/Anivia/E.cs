@@ -71,7 +71,6 @@ namespace Spells
         public void OnSpellChannelCancel(ISpell spell)
         {
         }
-
         public void OnSpellPostChannel(ISpell spell)
         {
 

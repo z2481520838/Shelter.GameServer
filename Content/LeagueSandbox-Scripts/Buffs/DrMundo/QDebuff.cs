@@ -6,7 +6,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 
 
-namespace InfectedCleaverMissile
+namespace Buffs
 {
     internal class InfectedCleaverMissile : IBuffGameScript
     {

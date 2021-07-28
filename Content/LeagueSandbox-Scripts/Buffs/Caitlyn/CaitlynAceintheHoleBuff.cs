@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace CaitlynAceintheHole
+namespace Buffs
 {
     internal class CaitlynAceintheHole : IBuffGameScript
     {

@@ -9,7 +9,7 @@ using GameServerCore.Scripting.CSharp;
 
 
 
-namespace MordekaiserChildrenOfTheGrave
+namespace Buffs
 {
     internal class MordekaiserChildrenOfTheGrave : IBuffGameScript
     {

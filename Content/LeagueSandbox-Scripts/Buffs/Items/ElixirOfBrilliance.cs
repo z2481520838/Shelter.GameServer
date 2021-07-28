@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace PotionOfBrilliance
+namespace Buffs
 {
     internal class PotionOfBrilliance : IBuffGameScript
     {

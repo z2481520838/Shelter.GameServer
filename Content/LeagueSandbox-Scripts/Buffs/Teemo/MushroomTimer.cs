@@ -9,8 +9,7 @@ using GameServerCore.Domain.GameObjects.Spell.Sector;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 
-namespace BantamTrap
-
+namespace Buffs
 {
     internal class BantamTrap : IBuffGameScript
     {

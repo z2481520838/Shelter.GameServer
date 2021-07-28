@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace FlaskOfCrystalWater
+namespace Buffs
 {
     internal class FlaskOfCrystalWater : IBuffGameScript
     {

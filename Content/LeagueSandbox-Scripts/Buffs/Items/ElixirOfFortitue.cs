@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace PotionOfGiantStrength
+namespace Buffs
 {
     internal class PotionOfGiantStrength : IBuffGameScript
     {
