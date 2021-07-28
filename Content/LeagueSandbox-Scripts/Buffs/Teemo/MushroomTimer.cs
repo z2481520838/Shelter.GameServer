@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using GameServerCore.Domain.GameObjects.Spell.Sector;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.GameObjects.Stats;
+using LeaguePackets.Game.Common;
 
 namespace Buffs
 {
@@ -32,12 +33,12 @@ namespace Buffs
         {
             //AddBuff("BantamTrap", 4f, 1, spell, target, spell.CastInfo.Owner);
             //AddParticleTarget(spell.CastInfo.Owner, Unit, "ShroomMine.troy", Unit, 2f);
-            Unit.Die(Unit);
+            //Unit.Die(null);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            unit.Die(unit);
+            //unit.Die();
         }
 
         public void OnUpdate(float diff)

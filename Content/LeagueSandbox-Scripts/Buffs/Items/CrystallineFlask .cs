@@ -7,7 +7,7 @@ using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace ItemCrystalFlask
+namespace Buffs
 {
     internal class ItemCrystalFlask : IBuffGameScript
     {

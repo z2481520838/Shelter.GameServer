@@ -48,7 +48,7 @@ namespace Buffs
 
             if (timeSinceLastTick >= 30000.0)
             {
-                Unit.Die(Unit);
+                //Unit.Die(null); FIX THIS
             }
         }
     }
