@@ -4,7 +4,7 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Scripting.CSharp;
 
-namespace BlindingDart
+namespace Buffs
 
 {
     internal class BlindingDart : IBuffGameScript
