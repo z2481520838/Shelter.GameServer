@@ -8,14 +8,21 @@ using LeagueSandbox.GameServer.API;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 using GameServerCore.Scripting.CSharp;
-
+using System.Collections.Generic;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
     public class VeigarDarkMatter : ISpellScript
     {
         IObjAiBase Owner;
+        ISpell Spell;
         IStatsModifier statsModifier = new StatsModifier();
+        ISpellSector DamageSector;
+        bool limiter = false;
+        bool limiter2 = false;
+        float counter = 0f;
+        string particles2;
 
         public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
         {
@@ -25,6 +32,9 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            Owner = owner;
+            Spell = spell;
         }
 
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
@@ -37,13 +47,12 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            Owner = owner;
         }
 
         public void OnSpellCast(ISpell spell)
         {
-            var owner = spell.CastInfo.Owner as IChampion;
-            var ownerSkinID = owner.Skin;
+            var owner = spell.CastInfo.Owner;
+            var ownerSkinID = owner.SkinID;
             var truecoords = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
             var distance = Vector2.Distance(spell.CastInfo.Owner.Position, truecoords);
             if (distance > 900f)
@@ -62,52 +71,30 @@ namespace Spells
             }
             AddParticle(owner, null, particles, truecoords, lifetime: 1.25f);
 
-            //TODO: Remove this timer and further optmize this section
-            CreateTimer(1.25f, () =>
-            {
-                var owner = spell.CastInfo.Owner;
-                var APratio = owner.Stats.AbilityPower.Total;
-                var damage = 120f + ((spell.CastInfo.SpellLevel - 1) * 50) + APratio;
-                var StacksPerLevel = spell.CastInfo.SpellLevel;
 
-                var units = GetUnitsInRange(truecoords, 225f, true);
-                for (int i = 0; i < units.Count; i++)
-                {
-                    if (units[i].Team != spell.CastInfo.Owner.Team && !(units[i] is IObjBuilding || units[i] is IBaseTurret) && units[i] is IObjAiBase ai)
-                    {
-
-                        units[i].TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-
-                        if (units[i].IsDead && (units[i] is IChampion))
-                        {
-                            var buffer = owner.Stats.AbilityPower.FlatBonus;
-
-                            statsModifier.AbilityPower.FlatBonus = owner.Stats.AbilityPower.FlatBonus + StacksPerLevel - buffer;
-                            owner.AddStatModifier(statsModifier);
-                        }
-                    }
-                }
-                string particles2;
-                switch (ownerSkinID)
-                {
-                    case 8:
-                        particles2 = "Veigar_Skin08_W_aoe_explosion.troy";
-                        break;
-
-                    case 4:
-                        particles2 = "Veigar_Skin04_W_aoe_explosion.troy";
-                        break;
-
-                    default:
-                        particles2 = "Veigar_Base_W_aoe_explosion.troy";
-                        break;
-                }
-                AddParticle(owner, null, particles2, truecoords, 1f);
-            });
+            AddBuff("VeigarW", 1.25f, 1, spell, owner, owner);
         }
 
         public void OnSpellPostCast(ISpell spell)
         {
+        }
+
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
+        {
+            var owner = spell.CastInfo.Owner;
+            var ownerSkinID = owner.SkinID;
+            var APratio = owner.Stats.AbilityPower.Total;
+            var damage = 120f + ((spell.CastInfo.SpellLevel - 1) * 50) + APratio;
+            var StacksPerLevel = spell.CastInfo.SpellLevel;
+
+            target.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            if(target is IChampion && target.IsDead)
+            {
+                var buffer = owner.Stats.AbilityPower.FlatBonus;
+
+                statsModifier.AbilityPower.FlatBonus = owner.Stats.AbilityPower.FlatBonus + StacksPerLevel - buffer;
+                owner.AddStatModifier(statsModifier);
+            }
         }
 
         public void OnSpellChannel(ISpell spell)
