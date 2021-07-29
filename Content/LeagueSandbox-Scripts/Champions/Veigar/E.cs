@@ -40,8 +40,8 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
-            var owner = spell.CastInfo.Owner as IChampion;
-            var ownerSkinID = owner.Skin;
+            var owner = spell.CastInfo.Owner;
+            var ownerSkinID = owner.SkinID;
             truecoords = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
             var distance = Vector2.Distance(spell.CastInfo.Owner.Position, truecoords);
             if (distance > 650f)

@@ -15,15 +15,6 @@ namespace Spells
 {
     public class VeigarDarkMatter : ISpellScript
     {
-        IObjAiBase Owner;
-        ISpell Spell;
-        IStatsModifier statsModifier = new StatsModifier();
-        ISpellSector DamageSector;
-        bool limiter = false;
-        bool limiter2 = false;
-        float counter = 0f;
-        string particles2;
-
         public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
         {
             TriggersSpellCasts = true,
@@ -32,9 +23,6 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
-            Owner = owner;
-            Spell = spell;
         }
 
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
@@ -77,24 +65,6 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-        }
-
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
-        {
-            var owner = spell.CastInfo.Owner;
-            var ownerSkinID = owner.SkinID;
-            var APratio = owner.Stats.AbilityPower.Total;
-            var damage = 120f + ((spell.CastInfo.SpellLevel - 1) * 50) + APratio;
-            var StacksPerLevel = spell.CastInfo.SpellLevel;
-
-            target.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            if(target is IChampion && target.IsDead)
-            {
-                var buffer = owner.Stats.AbilityPower.FlatBonus;
-
-                statsModifier.AbilityPower.FlatBonus = owner.Stats.AbilityPower.FlatBonus + StacksPerLevel - buffer;
-                owner.AddStatModifier(statsModifier);
-            }
         }
 
         public void OnSpellChannel(ISpell spell)
