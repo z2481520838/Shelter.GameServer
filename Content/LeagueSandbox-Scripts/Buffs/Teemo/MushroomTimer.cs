@@ -38,7 +38,7 @@ namespace Buffs
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            //unit.Die();
+            unit.TakeDamage(ownerSpell.CastInfo.Owner, 10000f, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_INTERNALRAW, DamageResultType.RESULT_NORMAL);
         }
 
         public void OnUpdate(float diff)

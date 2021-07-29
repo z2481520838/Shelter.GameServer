@@ -26,6 +26,7 @@ namespace Buffs
         IAttackableUnit Unit;
         float TickingDamage;
         IObjAiBase Owner;
+        ISpell spell;
         int limiter;
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
@@ -33,6 +34,7 @@ namespace Buffs
             var owner = ownerSpell.CastInfo.Owner;
             Unit = unit;
             Owner = owner;
+            spell = ownerSpell;
             limiter = 0;
             //TODO: Set the Ghost stats here
         }
@@ -48,7 +50,7 @@ namespace Buffs
 
             if (timeSinceLastTick >= 30000.0)
             {
-                //Unit.Die(null); FIX THIS
+                Unit.TakeDamage(spell.CastInfo.Owner, 10000f, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_INTERNALRAW, DamageResultType.RESULT_NORMAL);
             }
         }
     }
