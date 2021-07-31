@@ -68,7 +68,7 @@ namespace Spells
                 if (mushroomObj is IAttackableUnit mushroom)
                 {
                     AddParticle(owner, null, "ShroomMine.troy", mushroom.Position, 1.0f);
-                    mushroom.Die(mushroom);
+                    mushroom.TakeDamage(mushroom, 10000, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_INTERNALRAW, false);
                 }
                 sector.SetToRemove();
             }

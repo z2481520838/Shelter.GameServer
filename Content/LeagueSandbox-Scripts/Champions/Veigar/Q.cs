@@ -38,8 +38,8 @@ namespace Spells
 
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
-            var owner = spell.CastInfo.Owner as IChampion;
-            var ownerSkinID = owner.Skin;
+            var owner = spell.CastInfo.Owner;
+            var ownerSkinID = owner.SkinID;
             var APratio = owner.Stats.AbilityPower.Total * 0.6f;
             var damage = 80f + ((spell.CastInfo.SpellLevel - 1) * 45) + APratio;
             var StacksPerLevel = spell.CastInfo.SpellLevel;

@@ -33,8 +33,8 @@ namespace Spells
 
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
         {
-            var owner = spell.CastInfo.Owner as IChampion;
-            var ownerSkinID = owner.Skin;
+            var owner = spell.CastInfo.Owner;
+            var ownerSkinID = owner.SkinID;
             var APratio = owner.Stats.AbilityPower.Total * 1.2f;
             var targetAP = target.Stats.AbilityPower.Total * 0.8f;
             var damage = 250 + ((spell.CastInfo.SpellLevel -1) * 125) + APratio + targetAP;
