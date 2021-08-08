@@ -47,11 +47,11 @@ namespace Spells
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
             if (ownerSkinID == 8)
             {
-                AddParticleTarget(owner, target, "Veigar_Skin08_Q_tar.troy", target, lifetime: 1f);
+                AddParticleTarget(owner, null, "Veigar_Skin08_Q_tar.troy", target);
             }
             else
             {
-                AddParticleTarget(owner, target, "Veigar_Base_Q_tar.troy", target, lifetime: 1f);
+                AddParticleTarget(owner, null, "Veigar_Base_Q_tar.troy", target);
             }
 
             if (target.IsDead)
@@ -72,11 +72,11 @@ namespace Spells
                 }
                 if (ownerSkinID == 8)
                 {
-                    AddParticleTarget(owner, owner, "Veigar_Skin08_Q_powerup.troy", owner, lifetime: 1f);
+                    AddParticleTarget(owner, null, "Veigar_Skin08_Q_powerup.troy", owner);
                 }
                 else
                 {
-                    AddParticleTarget(owner, owner, "Veigar_Base_Q_powerup.troy", owner, lifetime: 1f);
+                    AddParticleTarget(owner, null, "Veigar_Base_Q_powerup.troy", owner);
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace Spells
 
         public void OnUpdate(float diff)
         {
-            Owner.Stats.ManaRegeneration.FlatBonus = Owner.Stats.ManaRegeneration.BaseValue * ((100 / Owner.Stats.ManaPoints.Total) * ((Owner.Stats.ManaPoints.Total - Owner.Stats.CurrentMana) / 100));
+            Owner.Stats.ManaRegeneration.FlatBonus = Owner.Stats.ManaRegeneration.BaseValue * ((100 / Owner.Stats.ManaPoints.Total) * ((Owner.Stats.ManaPoints.Total - Owner.Stats.CurrentMana) / 100)); //I'm too lazy to make this properly
         }
     }
 }

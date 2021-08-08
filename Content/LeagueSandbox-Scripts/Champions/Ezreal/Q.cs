@@ -8,6 +8,7 @@ using LeagueSandbox.GameServer.API;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain;
 
 namespace Spells
 {
@@ -27,23 +28,20 @@ namespace Spells
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
         {
         }
-
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            Owner = owner;
         }
 
         public void OnSpellCast(ISpell spell)
         {
             var owner = spell.CastInfo.Owner;
-            if(owner.SkinID == 5)
+            if (owner.SkinID == 5)
             {
                 AddParticleTarget(owner, owner, "Ezreal_Pulsefire_MythicShot_Activate.troy", owner, size:1, bone: "L_HAND");
             }
             else
             {
                 AddParticleTarget(owner, owner, "ezreal_bow.troy", owner, bone: "L_HAND");
-
             }
         }
 
@@ -95,10 +93,9 @@ namespace Spells
         };
 
         //Vector2 direction;
-
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, true);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -127,7 +124,6 @@ namespace Spells
             AddParticleTarget(owner, target, "Ezreal_mysticshot_tar.troy", target);
             missile.SetToRemove();
         }
-
         public void OnSpellCast(ISpell spell)
         {
         }
