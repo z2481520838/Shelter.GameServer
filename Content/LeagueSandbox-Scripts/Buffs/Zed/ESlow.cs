@@ -31,7 +31,7 @@ namespace Buffs
                 StatsModifier2.MoveSpeed.PercentBonus -= 0.1f + 0.075f * (ownerSpell.CastInfo.SpellLevel - 1);
                 unit.AddStatModifier(StatsModifier2);
             }
-
+           p = AddParticleTarget(ownerSpell.CastInfo.Owner, null, "Global_Slow.troy", unit, buff.Duration);
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
@@ -40,6 +40,7 @@ namespace Buffs
             {
                 unit.RemoveStatModifier(StatsModifier2);
             }
+            RemoveParticle(p);
         }
 
         public void OnUpdate(float diff)
