@@ -59,7 +59,7 @@ namespace Spells
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
             AddParticleTarget(owner, null, "Zed_E_tar.troy", target);
 
-            owner.GetSpell(3).LowerCooldown(2);
+            owner.GetSpell(2).LowerCooldown(2);
             if (target.HasBuff("ZedSlow"))
             {
                 AddBuff("ZedSlow", 1.5f, 1, spell, target, owner);
