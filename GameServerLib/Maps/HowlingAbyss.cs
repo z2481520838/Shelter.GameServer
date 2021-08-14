@@ -279,7 +279,7 @@ namespace LeagueSandbox.GameServer.Maps
                     _nexus.Add(new Nexus(_game, $"ARAM{teamName}Nexus", teamId, nexusRadius, position, sightRange, Crc32Algorithm.Compute(Encoding.UTF8.GetBytes(mapObject.Name)) | 0xFF000000));
                 }
                 // Inhibitors
-                else if (objectType == GameObjectTypes.ObjAnimated_BarracksDampener)
+                else if (objectType == GameObjectTypes.ObjAnimated_BarracksDampener && !mapObject.Name.Contains("____P"))
                 {
                     _inhibitors[teamId][lane].Add(new Inhibitor(_game, teamName + "Inhibitor", lane, teamId, inhibRadius, position, sightRange, Crc32Algorithm.Compute(Encoding.UTF8.GetBytes(mapObject.Name)) | 0xFF000000));
                 }
