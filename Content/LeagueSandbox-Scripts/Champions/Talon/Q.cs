@@ -32,7 +32,7 @@ namespace Spells
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
             //var owner = spell.CastInfo.Owner as IChampion;
-            AddBuff("TalonNoxianDiplomacyBuff", 6.0f, 1, spell, owner, owner);
+            //AddBuff("TalonNoxianDiplomacyBuff", 6.0f, 1, spell, owner, owner);
         }
 
         public void OnSpellCast(ISpell spell)
@@ -71,21 +71,24 @@ namespace Spells
             // TODO
         };
 
+        IAttackableUnit Target;
         public void OnActivate(IObjAiBase owner, ISpell spell)
-        {
-            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+        {   //Disabled Until i have the time to fix it
+            //ApiEventManager.OnLaunchAttack.AddListener(this, owner, TargetExecute, true);
         }
 
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
+        public void TargetExecute(IObjAiBase owner, ISpell spell)
         {
-            var owner = spell.CastInfo.Owner;
-            var spellLevel = owner.GetSpell("TalonNoxianDiplomacy").CastInfo.SpellLevel;
+            if (owner.HasBuff("TalonNoxianDiplomacyBuff"))
+                {
+                var spellLevel = owner.GetSpell("TalonNoxianDiplomacy").CastInfo.SpellLevel;
 
-            var ADratio = owner.Stats.AttackDamage.TotalBonus * 0.3f;
-            var damage = 40f + (30f * (spellLevel - 1)) + ADratio;
+                var ADratio = owner.Stats.AttackDamage.TotalBonus * 0.3f;
+                var damage = 40f + (30f * (spellLevel - 1)) + ADratio;
 
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            AddBuff("TalonBleedDebuff", 6f, 1, spell, target, owner);
+                Target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+                AddBuff("TalonBleedDebuff", 6f, 1, spell, Target, owner);
+            }
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -94,6 +97,7 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
+            Target = target;
         }
 
         public void OnSpellCast(ISpell spell)

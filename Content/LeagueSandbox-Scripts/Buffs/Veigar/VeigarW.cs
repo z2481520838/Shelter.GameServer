@@ -9,6 +9,7 @@ using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell.Sector;
 using System.Collections.Generic;
+using GameServerCore.Domain.GameObjects.Spell.Missile;
 
 namespace Buffs
 {
@@ -25,7 +26,7 @@ namespace Buffs
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(ownerSpell, ownerSpell.CastInfo.Owner), TargetExecute, true);
+            ApiEventManager.OnSpellHit.AddListener(this, ownerSpell, TargetExecute, false);
 
             DamageSector = ownerSpell.CreateSpellSector(new SectorParameters
             {
@@ -33,7 +34,7 @@ namespace Buffs
                 Lifetime = -1.0f,
                 Tickrate = 0,
                 SingleTick = true,
-                OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes,
+                OverrideFlags = SpellDataFlags.AffectMinions | SpellDataFlags.AffectEnemies | SpellDataFlags.AffectFriends | SpellDataFlags.AffectBarracksOnly,
                 Type = SectorType.Area
             });
 
@@ -57,14 +58,9 @@ namespace Buffs
         {
             DamageSector.ExecuteTick();
             AddParticle(ownerSpell.CastInfo.Owner, null, particles2, DamageSector.Position);
-
-            /*var Unit = unit as IChampion;
-            var script = Unit.GetSpell("VeigarDarkMatter").Script as Spells.VeigarDarkMatter;
-
-            script.DamageSector.ExecuteTick();*/
         }
 
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
             var ownerSkinID = owner.SkinID;
@@ -73,13 +69,6 @@ namespace Buffs
             var StacksPerLevel = spell.CastInfo.SpellLevel;
 
             target.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            /*if (target is IChampion && target.IsDead)
-            {
-                var buffer = owner.Stats.AbilityPower.FlatBonus;
-
-                StatsModifier.AbilityPower.FlatBonus = owner.Stats.AbilityPower.FlatBonus + StacksPerLevel - buffer;
-                owner.AddStatModifier(StatsModifier);
-            }*/
         }
 
         public void OnUpdate(float diff)

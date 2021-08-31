@@ -27,7 +27,7 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -68,7 +68,7 @@ namespace Spells
             });
         }
 
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var buff = spell.CastInfo.Owner.GetBuffWithName("RiftWalk");
             float MANA = spell.CastInfo.Owner.Stats.ManaPoints.Total * 0.02f + (0.01f * buff.StackCount);

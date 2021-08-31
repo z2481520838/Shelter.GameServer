@@ -8,6 +8,7 @@ using LeagueSandbox.GameServer.API;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
@@ -37,11 +38,11 @@ namespace Spells
             var owner = spell.CastInfo.Owner as IChampion;
             PlayAnimation(owner, "Spell4");
 
-             for (int bladeCount = 0; bladeCount <= 7; bladeCount++)
-             {
-                 var targetPos = GetPointFromUnit(owner, 100f, bladeCount * 45f);
-                 SpellCast(owner, 3, SpellSlotType.ExtraSlots, targetPos, targetPos, true, Vector2.Zero);
-             }
+            for (int bladeCount = 0; bladeCount <= 7; bladeCount++)
+            {
+                var targetPos = GetPointFromUnit(owner, 100f, bladeCount * 45f);
+                SpellCast(owner, 3, SpellSlotType.ExtraSlots, targetPos, targetPos, true, Vector2.Zero);
+            }
             AddBuff("TalonDisappear", 2.5f, 1, spell, owner, owner, false);
             AddParticleTarget(owner, owner, "talon_ult_cas.troy", owner, 1f);
             AddParticleTarget(owner, owner, "talon_ult_sound.troy", owner, 1f);
@@ -86,7 +87,7 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -96,16 +97,111 @@ namespace Spells
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
             UnitsHit.Clear();
+            var missile = spell.CreateSpellMissile(new MissileParameters
+            {
+                Type = MissileType.Circle,
+                OverrideEndPosition = end
+            });
+
+            ApiEventManager.OnSpellMissileEnd.AddListener(this, missile, OnMissileEnd, true);
         }
 
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
+        public void OnMissileEnd(ISpellMissile missile)
+        {
+            var owner = missile.CastInfo.Owner;
+            SpellCast(owner, 4, SpellSlotType.ExtraSlots, true, owner, missile.Position);
+        }
+
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
             var spellLevel = owner.GetSpell("TalonShadowAssault").CastInfo.SpellLevel;
             var ADratio = owner.Stats.AttackDamage.TotalBonus * 0.75f;
-            var damage = 120 + 50f*(spellLevel - 1) + ADratio;
+            var damage = 120 + 50f * (spellLevel - 1) + ADratio;
 
-            if (!UnitsHit.Contains(target))
+            if (!UnitsHit.Contains(target) && target != spell.CastInfo.Owner)
+            {
+                UnitsHit.Add(target);
+                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);
+                AddParticleTarget(owner, target, "talon_w_tar.troy", target, 1f);
+            }
+        }
+
+        public void OnSpellCast(ISpell spell)
+        {
+        }
+
+        public void OnSpellPostCast(ISpell spell)
+        {
+        }
+
+        public void OnSpellChannel(ISpell spell)
+        {
+        }
+
+        public void OnSpellChannelCancel(ISpell spell)
+        {
+        }
+
+        public void OnSpellPostChannel(ISpell spell)
+        {
+        }
+
+        public void OnUpdate(float diff)
+        {
+        }
+    }
+    public class TalonShadowAssaultMisTwo : ISpellScript
+    {
+        public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
+        {
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Circle
+            },
+            IsDamagingSpell = true,
+            TriggersSpellCasts = true
+
+            // TODO
+        };
+        public List<IAttackableUnit> UnitsHit = new List<IAttackableUnit>();
+
+        public void OnActivate(IObjAiBase owner, ISpell spell)
+        {
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
+        }
+
+        public void OnDeactivate(IObjAiBase owner, ISpell spell)
+        {
+        }
+
+        public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
+        {
+            UnitsHit.Clear();
+            //var missile = spell.CreateSpellMissile(new MissileParameters
+            //{
+            //    Type = MissileType.Circle,
+            //    OverrideEndPosition = end
+            //});
+
+            //ApiEventManager.OnSpellMissileEnd.AddListener(this, missile, OnMissileEnd, true);
+        }
+
+        public void OnMissileEnd(ISpellMissile missile)
+        {
+            var owner = missile.CastInfo.Owner;
+            //SpellCast(owner, 4, SpellSlotType.ExtraSlots, true, owner, missile.Position);
+        }
+
+
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
+        {
+            var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("TalonShadowAssault").CastInfo.SpellLevel;
+            var ADratio = owner.Stats.AttackDamage.TotalBonus * 0.75f;
+            var damage = 120 + 50f * (spellLevel - 1) + ADratio;
+
+            if (!UnitsHit.Contains(target) && target != spell.CastInfo.Owner)
             {
                 UnitsHit.Add(target);
                 target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_ATTACK, false);

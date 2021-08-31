@@ -9,6 +9,7 @@ using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Scripting.CSharp;
 using GameServerCore.Domain;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
@@ -51,7 +52,6 @@ namespace Spells
             FaceDirection(targetPos, owner);
 
             SpellCast(owner, 1, SpellSlotType.ExtraSlots, targetPos, targetPos, true, Vector2.Zero);
-
         }
 
         public void OnSpellChannel(ISpell spell)
@@ -86,7 +86,7 @@ namespace Spells
         //Vector2 direction;
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -97,7 +97,7 @@ namespace Spells
         {
         }
 
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
             float ad = owner.Stats.AttackDamage.Total;
@@ -151,7 +151,7 @@ namespace Spells
         //Vector2 direction;
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -162,7 +162,7 @@ namespace Spells
         {
         }
 
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
             float ad = owner.Stats.AttackDamage.Total;

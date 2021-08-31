@@ -36,6 +36,7 @@ namespace Buffs
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
+            ApiEventManager.OnPreAttack.RemoveListener(this, unit as IObjAiBase);
         }
 
         public void OnPreAttack(ISpell spell)

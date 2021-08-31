@@ -24,7 +24,7 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -51,7 +51,7 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
         }
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
             var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
@@ -92,7 +92,7 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellSectorHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -116,7 +116,7 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
         }
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellSector sector)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
             var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;

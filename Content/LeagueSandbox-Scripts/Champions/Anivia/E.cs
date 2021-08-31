@@ -9,6 +9,7 @@ using LeagueSandbox.GameServer.API;
 using System.Collections.Generic;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
@@ -27,7 +28,7 @@ namespace Spells
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
-            ApiEventManager.OnSpellMissileHit.AddListener(this, new KeyValuePair<ISpell, IObjAiBase>(spell, owner), TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -45,7 +46,7 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
         }
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
             float ap = owner.Stats.AbilityPower.Total * 0.5f;
