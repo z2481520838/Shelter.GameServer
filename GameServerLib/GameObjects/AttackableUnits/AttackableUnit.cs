@@ -437,7 +437,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                 damage = defense >= 0 ? 100 / (100 + defense) * damage : (2 - 100 / (100 - defense)) * damage;
             }
 
-            ApiEventManager.OnTakeDamage.Publish(this, attacker);
+            ApiEventManager.OnPreTakeDamage.Publish(this, attacker);
 
             Stats.CurrentHealth = Math.Max(0.0f, Stats.CurrentHealth - damage);
             if (!IsDead && Stats.CurrentHealth <= 0)
@@ -453,6 +453,8 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                     DamageSource = source,
                     DeathDuration = 0 // TODO: Unhardcode
                 };
+
+                ApiEventManager.OnTakeDamage.Publish(this, attacker);
             }
 
             int attackerId = 0, targetId = 0;
@@ -537,9 +539,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
 
             SetToRemove();
 
-            var onDie = _game.ScriptEngine.GetStaticMethod<Action<IAttackableUnit, IAttackableUnit>>(Model, "Passive", "OnDie");
-            onDie?.Invoke(this, data.Killer);
-
+            ApiEventManager.OnDeath.Publish(data);
             var exp = _game.Map.MapProperties.GetExperienceFor(this);
             var champs = _game.ObjectManager.GetChampionsInRange(Position, EXP_RANGE, true);
             //Cull allied champions
@@ -556,7 +556,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
             }
 
             if (data.Killer != null && data.Killer is IChampion champion)
-                champion.OnKill(this);
+                champion.OnKill(data);
         }
 
         /// <summary>
@@ -614,7 +614,6 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
 
                     prevbuff.DeactivateBuff();
                     RemoveBuff(b.Name, false);
-                    BuffList.Remove(prevbuff);
 
                     // Clear the newly given buff's slot since we will move it into the previous buff's slot.
                     RemoveBuffSlot(b);
@@ -632,13 +631,22 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                     {
                         _game.PacketNotifier.NotifyNPC_BuffReplace(b);
                     }
+
+                    // New buff means new script, so we need to activate it.
                     b.ActivateBuff();
                 }
-                // If the buff is supposed to reset the timer on any existing buff instances of the same name.
                 else if (b.BuffAddType == BuffAddType.RENEW_EXISTING)
                 {
+                    // Clear the newly created buff's slot so we aren't wasting slots.
+                    if (b != ParentBuffs[b.Name])
+                    {
+                        RemoveBuffSlot(b);
+                    }
+
+                    // Reset the already existing buff's timer.
                     ParentBuffs[b.Name].ResetTimeElapsed();
 
+                    // Update the visual buff in-game (just resets the time on the icon).
                     if (!b.IsHidden)
                     {
                         _game.PacketNotifier.NotifyNPC_BuffReplace(ParentBuffs[b.Name]);
