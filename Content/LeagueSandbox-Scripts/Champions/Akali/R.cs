@@ -45,7 +45,7 @@ namespace Spells
             var trueCoords = current + range;
 
             //TODO: Dash to the correct location (in front of the enemy IChampion) instead of far behind or inside them
-            //ForceMovement(owner, target, "Spell4", 2200, 0, 0, 0, 20000);
+            //ForceMovement(owner, target, "Spell4", 1000, 0, 0, 0, 200);
             ForceMovement(owner, "Spell4", target.Position, 2200, 0, 0, 0);
             //ForceMovement(spell.CastInfo.Owner, "Spell4", trueCoords, 2200, 0, 0, 0);
             AddParticleTarget(owner, target, "akali_shadowDance_tar.troy", target);

@@ -4,6 +4,7 @@ using GameServerCore.Domain.GameObjects;
 using GameServerCore.Domain.GameObjects.Spell;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 using GameServerCore.Scripting.CSharp;
+using LeagueSandbox.GameServer.API;
 
 namespace Buffs
 {
@@ -21,6 +22,7 @@ namespace Buffs
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             var owner = ownerSpell.CastInfo.Owner;
+
             switch (ownerSpell.CastInfo.SpellLevel)
             {
                 case 1:
@@ -40,7 +42,6 @@ namespace Buffs
             unit.AddStatModifier(StatsModifier);
             // TODO: add immunity to slows
         }
-
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             RemoveParticle(p);

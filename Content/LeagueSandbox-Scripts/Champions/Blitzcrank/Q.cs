@@ -102,7 +102,7 @@ namespace Spells
             var owner = spell.CastInfo.Owner;
             var spellLevel = owner.GetSpell("RocketGrab").CastInfo.SpellLevel;
             var ap = owner.Stats.AbilityPower.Total;
-            var damage = 80 + (spellLevell - 1) * 55) + ap;
+            var damage = 80 + (spellLevel - 1) * 55 + ap;
 
             var dist = System.Math.Abs(Vector2.Distance(target.Position, owner.Position));
             var time = dist / 1350f;
