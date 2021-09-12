@@ -294,6 +294,7 @@ namespace LeagueSandbox.GameServer
             {
                 foreach (var champion in ObjectManager.GetAllChampions())
                 {
+                    champion.LoadPassiveScript(champion.Spells[(int)SpellSlotType.PassiveSpellSlot]);
                     champion.GetBuffs().ForEach(buff => buff.LoadScript());
                     champion.Spells.Values.ToList().ForEach(spell => spell.LoadScript());
                 }
