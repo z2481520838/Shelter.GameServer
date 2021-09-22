@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using GameServerCore.Enums;
+using System.Numerics;
 
 namespace GameServerCore.Domain.GameObjects
 {
@@ -7,8 +8,10 @@ namespace GameServerCore.Domain.GameObjects
         Vector2 Facing { get; }
         string Name { get; }
         string SpawnAnimation { get; }
-        byte CampId { get; }
+        MonsterCampType CampId { get; }
         byte CampUnk { get; }
         float SpawnAnimationTime { get; }
+
+        MonsterSpawnType MinionSpawnType { get; }
     }
 }

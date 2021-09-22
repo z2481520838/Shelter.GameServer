@@ -17,66 +17,77 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 
 namespace LeagueSandbox.GameServer.Maps
 {
-    internal class NewTwistedTreeline : IMapProperties
+    internal class SummonersRifNoJungle : IMapProperties
     {
         private static readonly List<Vector2> BlueTopWaypoints = new List<Vector2>
         {
-            new Vector2(2524.0f, 8507.0f),
-            new Vector2(2507.0f, 9243.0f),
-            new Vector2(3295.0f, 9760.0f),
-            new Vector2(4980.0f, 9223.0f),
-            new Vector2(6939.0f, 8323.0f),
-            new Vector2(7719.0f, 8208.0f),
-            new Vector2(8976.0f, 8460.0f),
-            new Vector2(11033.0f, 9513.0f),
-            new Vector2(12518.0f, 9578.0f),
-            new Vector2(13105.0f, 9215.0f),
-            new Vector2(13230.0f, 8664.0f),
-            new Vector2(12768.0f, 7295.0f)
+            new Vector2(917.0f, 1725.0f),
+            new Vector2(1170.0f, 4041.0f),
+            new Vector2(861.0f, 6459.0f),
+            new Vector2(880.0f, 10180.0f),
+            new Vector2(1268.0f, 11675.0f),
+            new Vector2(2806.0f, 13075.0f),
+            new Vector2(3907.0f, 13243.0f),
+            new Vector2(7550.0f, 13407.0f),
+            new Vector2(10244.0f, 13238.0f),
+            new Vector2(10947.0f, 13135.0f),
+            new Vector2(12511.0f, 12776.0f)
         };
         private static readonly List<Vector2> BlueBotWaypoints = new List<Vector2>
         {
-            new Vector2(2385.0f, 6108.0f),
-            new Vector2(2370.0f, 5265.0f),
-            new Vector2(3380.0f, 4769.0f),
-            new Vector2(4583.0f, 4927.0f),
-            new Vector2(6240.0f, 4933.0f),
-            new Vector2(7718.0f, 5146.0f),
-            new Vector2(9564.0f, 4931.0f),
-            new Vector2(10771.0f, 4950.0f),
-            new Vector2(12373.0f, 4832.0f),
-            new Vector2(13060.0f, 5348.0f),
-            new Vector2(13028.0f, 6060.0f),
-            new Vector2(12780.0f, 7237.0f)
+            new Vector2(1487.0f, 1302.0f),
+            new Vector2(3789.0f, 1346.0f),
+            new Vector2(6430.0f, 1005.0f),
+            new Vector2(10995.0f, 1234.0f),
+            new Vector2(12841.0f, 3051.0f),
+            new Vector2(13148.0f, 4202.0f),
+            new Vector2(13249.0f, 7884.0f),
+            new Vector2(12886.0f, 10356.0f),
+            new Vector2(12511.0f, 12776.0f)
+        };
+        private static readonly List<Vector2> BlueMidWaypoints = new List<Vector2>
+        {
+            new Vector2(1418.0f, 1686.0f),
+            new Vector2(2997.0f, 2781.0f),
+            new Vector2(4472.0f, 4727.0f),
+            new Vector2(8375.0f, 8366.0f),
+            new Vector2(10948.0f, 10821.0f),
+            new Vector2(12511.0f, 12776.0f)
         };
         private static readonly List<Vector2> RedTopWaypoints = new List<Vector2>
         {
-            new Vector2(13230.0f, 8664.0f),
-            new Vector2(13105.0f, 9215.0f),
-            new Vector2(12518.0f, 9578.0f),
-            new Vector2(11033.0f, 9513.0f),
-            new Vector2(8976.0f, 8460.0f),
-            new Vector2(7719.0f, 8208.0f),
-            new Vector2(6939.0f, 8323.0f),
-            new Vector2(4980.0f, 9223.0f),
-            new Vector2(3295.0f, 9760.0f),
-            new Vector2(2507.0f, 9243.0f),
-            new Vector2(2524.0f, 8507.0f)
+            new Vector2(12451.0f, 13217.0f),
+            new Vector2(10947.0f, 13135.0f),
+            new Vector2(10244.0f, 13238.0f),
+            new Vector2(7550.0f, 13407.0f),
+            new Vector2(3907.0f, 13243.0f),
+            new Vector2(2806.0f, 13075.0f),
+            new Vector2(1268.0f, 11675.0f),
+            new Vector2(880.0f, 10180.0f),
+            new Vector2(861.0f, 6459.0f),
+            new Vector2(1170.0f, 4041.0f),
+            new Vector2(1418.0f, 1686.0f)
         };
         private static readonly List<Vector2> RedBotWaypoints = new List<Vector2>
         {
-            new Vector2(12780.0f, 7237.0f),
-            new Vector2(13028.0f, 6060.0f),
-            new Vector2(13060.0f, 5348.0f),
-            new Vector2(12373.0f, 4832.0f),
-            new Vector2(10771.0f, 4950.0f),
-            new Vector2(9564.0f, 4931.0f),
-            new Vector2(7718.0f, 5146.0f),
-            new Vector2(6240.0f, 4933.0f),
-            new Vector2(4583.0f, 4927.0f),
-            new Vector2(3380.0f, 4769.0f),
-            new Vector2(2370.0f, 5265.0f),
-            new Vector2(2385.0f, 6108.0f)
+            new Vector2(13062.0f, 12760.0f),
+            new Vector2(12886.0f, 10356.0f),
+            new Vector2(13249.0f, 7884.0f),
+            new Vector2(13148.0f, 4202.0f),
+            new Vector2(12841.0f, 3051.0f),
+            new Vector2(10995.0f, 1234.0f),
+            new Vector2(6430.0f, 1005.0f),
+            new Vector2(3789.0f, 1346.0f),
+            new Vector2(1418.0f, 1686.0f)
+        };
+        private static readonly List<Vector2> RedMidWaypoints = new List<Vector2>
+        {
+            new Vector2(12511.0f, 12776.0f),
+            new Vector2(10948.0f, 10821.0f),
+            new Vector2(8375.0f, 8366.0f),
+            new Vector2(4472.0f, 4727.0f),
+            new Vector2(2997.0f, 2781.0f),
+            new Vector2(1418.0f, 1686.0f)
         };
 
         private static readonly List<MinionSpawnType> RegularMinionWave = new List<MinionSpawnType>
@@ -131,27 +142,25 @@ namespace LeagueSandbox.GameServer.Maps
         private Game _game;
         private int _cannonMinionCount;
         private int _minionNumber;
-        private readonly long _firstSpawnTime = 75 * 1000;
-        private long _nextSpawnTime = 45 * 1000;
-        private readonly long _spawnInterval = 75 * 1000;
-        private long _jungleSpawnTime = 90 * 1000;
+        private readonly long _firstSpawnTime = 90 * 1000;
+        private long _nextSpawnTime = 90 * 1000;
+        private readonly long _spawnInterval = 30 * 1000;
         private Dictionary<TeamId, Fountain> _fountains = new Dictionary<TeamId, Fountain>();
         private readonly List<Nexus> _nexus;
         private readonly Dictionary<TeamId, Dictionary<LaneID, List<Inhibitor>>> _inhibitors;
         private readonly Dictionary<TeamId, Dictionary<LaneID, List<LaneTurret>>> _turrets;
-        private List<MonsterCamp> _monsterCamps = new List<MonsterCamp>();
         private readonly Dictionary<TeamId, SurrenderHandler> _surrenders;
         private MapData _mapData;
 
         public float GoldPerSecond { get; set; } = 1.9f;
-        public float StartingGold { get; set; } = 825.0f;
+        public float StartingGold { get; set; } = 475.0f;
         public bool HasFirstBloodHappened { get; set; } = false;
         public bool IsKillGoldRewardReductionActive { get; set; } = true;
         public int BluePillId { get; set; } = 2001;
         public long FirstGoldTime { get; set; } = 90 * 1000;
         public bool SpawnEnabled { get; set; }
 
-        public NewTwistedTreeline(Game game)
+        public SummonersRifNoJungle(Game game)
         {
             _game = game;
             _mapData = game.Config.MapData;
@@ -215,28 +224,55 @@ namespace LeagueSandbox.GameServer.Maps
         public void AddTurret(MapData.MapObject parentObject, Vector2 position, TeamId team, string teamName, TurretType type, LaneID lane)
         {
             string towerModel = "";
-            if (parentObject.Name.Contains("07"))
+            if (team == TeamId.TEAM_BLUE)
             {
-                type = TurretType.INHIBITOR_TURRET;
+                if (type == TurretType.FOUNTAIN_TURRET)
+                {
+                    towerModel = "TurretShrine";
+                }
+                else if (type == TurretType.NEXUS_TURRET)
+                {
+                    towerModel = "TurretAngel";
+                }
+                else if (type == TurretType.INHIBITOR_TURRET)
+                {
+                    towerModel = "TurretDragon";
+                }
+                else if (type == TurretType.INNER_TURRET)
+                {
+                    towerModel = "TurretNormal2";
+                }
+                else if (type == TurretType.OUTER_TURRET)
+                {
+                    towerModel = "TurretNormal";
+                }
             }
-            if (type == TurretType.FOUNTAIN_TURRET)
+            else
             {
-                towerModel = "Turret4";
-            }
-            else if (type == TurretType.NEXUS_TURRET)
-            {
-                towerModel = "Turret3";
-            }
-            else if (type == TurretType.INHIBITOR_TURRET)
-            {
-                towerModel = "Turret1";
-            }
-            else if (type == TurretType.INNER_TURRET)
-            {
-                towerModel = "Turret2";
+                if (type == TurretType.FOUNTAIN_TURRET)
+                {
+                    towerModel = "TurretShrine";
+                }
+                else if (type == TurretType.NEXUS_TURRET)
+                {
+                    towerModel = "TurretGiant";
+                }
+                // Nexus and Inhib Towers Might be swapped, double check if that's right.
+                else if (type == TurretType.INHIBITOR_TURRET)
+                {
+                    towerModel = "TurretNormal";
+                }
+                else if (type == TurretType.INNER_TURRET)
+                {
+                    towerModel = "TurretWorm2";
+                }
+                else if (type == TurretType.OUTER_TURRET)
+                {
+                    towerModel = "TurretWorm";
+                }
             }
 
-            _turrets[team][lane].Add(new LaneTurret(_game, parentObject.Name + "_A", "TT_" + teamName + towerModel, position, team, type, GetTurretItems(type), 0, lane, parentObject));
+            _turrets[team][lane].Add(new LaneTurret(_game, parentObject.Name + "_A", teamName + towerModel, position, team, type, GetTurretItems(type), 0, lane, parentObject));
         }
 
         public TurretType GetTurretType(int trueIndex, LaneID lane)
@@ -479,16 +515,9 @@ namespace LeagueSandbox.GameServer.Maps
             allInhibitors.AddRange(teamInhibitors[TeamId.TEAM_BLUE]);
             allInhibitors.AddRange(teamInhibitors[TeamId.TEAM_PURPLE]);
 
-            int laneCounter = 0;
             foreach (var inhibitor in allInhibitors)
             {
-                var laneID = inhibitor.Lane;
-                if (inhibitor.Team == TeamId.TEAM_BLUE && inhibitor.Lane == LaneID.BOTTOM)
-                {
-                    laneID = LaneID.MIDDLE;
-                }
-
-                LaneTurret inhibitorTurret = _turrets[inhibitor.Team][laneID].First(turret => turret.Type == TurretType.INHIBITOR_TURRET); ;
+                var inhibitorTurret = _turrets[inhibitor.Team][inhibitor.Lane].First(turret => turret.Type == TurretType.INHIBITOR_TURRET);
 
                 // Adds Protection to Inhibitors
                 if (inhibitorTurret != null)
@@ -503,85 +532,29 @@ namespace LeagueSandbox.GameServer.Maps
                 // Adds Protection to Turrets
                 foreach (var turret in _turrets[inhibitor.Team][inhibitor.Lane])
                 {
-                    if (turret.Type == TurretType.INHIBITOR_TURRET)
+                    if (turret.Type == TurretType.NEXUS_TURRET)
+                    {
+                        _game.ProtectionManager.AddProtection(turret, false, _inhibitors[inhibitor.Team][inhibitor.Lane].ToArray());
+                    }
+                    else if (turret.Type == TurretType.INHIBITOR_TURRET)
                     {
                         _game.ProtectionManager.AddProtection(turret, false, _turrets[inhibitor.Team][inhibitor.Lane].First(dependTurret => dependTurret.Type == TurretType.INNER_TURRET));
+                    }
+                    else if (turret.Type == TurretType.INNER_TURRET)
+                    {
+                        _game.ProtectionManager.AddProtection(turret, false, _turrets[inhibitor.Team][inhibitor.Lane].First(dependTurret => dependTurret.Type == TurretType.OUTER_TURRET));
                     }
 
                     // Adds Turrets
                     _game.ObjectManager.AddObject(turret);
                 }
-                laneCounter++;
-                if (laneCounter == 2)
-                {
-                    foreach (var turret in _turrets[inhibitor.Team][LaneID.MIDDLE])
-                    {
-                        if (turret.Type == TurretType.NEXUS_TURRET)
-                        {
-                            _game.ProtectionManager.AddProtection(turret, false, _inhibitors[inhibitor.Team][inhibitor.Lane].ToArray());
-                        }
-                        else if (turret.Type == TurretType.INHIBITOR_TURRET && inhibitor.Team == TeamId.TEAM_BLUE)
-                        {
-                            _game.ProtectionManager.AddProtection(turret, false, _turrets[inhibitor.Team][LaneID.BOTTOM].First(dependTurret => dependTurret.Type == TurretType.INNER_TURRET));
-                        }
-                        _game.ObjectManager.AddObject(turret);
-                    }
-                    if(inhibitor.Team == TeamId.TEAM_BLUE)
-                    laneCounter = 0;
-                }
             }
 
             //Map props
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(1360.9241f, 5072.1309f), 291.2142f, new Vector3(134.0f, 11.1111f, 0.0f), 288.8889f, -22.2222f, "LevelProp_TT_Brazier1", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(423.5712f, 6529.0327f), 385.9983f, new Vector3(0.0f, -33.3334f, 0.0f), 277.7778f, -11.1111f, "LevelProp_TT_Brazier2", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(399.4241f, 8021.057f), 692.2211f, new Vector3(0.0f, -22.2222f, 0.0f), 300f, 0.0f, "LevelProp_TT_Brazier3", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(1314.294f, 9495.576f), 582.8416f, new Vector3(48.0f, -33.3334f, 0.0f), 277.7778f, 22.2223f, "LevelProp_TT_Brazier4", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(14080.0f, 9530.3379f), 305.0638f, new Vector3(120.0f, 11.1111f, 0.0f), 277.7778f, 0.0f, "LevelProp_TT_Brazier5", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(14990.46f, 8053.91f), 675.8145f, new Vector3(0.0f, -22.2222f, 0.0f), 266.6666f, -11.1111f, "LevelProp_TT_Brazier6", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(15016.35f, 6532.84f), 664.7033f, new Vector3(0.0f, -11.1111f, 0.0f), 255.5555f, -11.1111f, "LevelProp_TT_Brazier7", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(14102.99f, 5098.367f), 580.504f, new Vector3(36.0f, 0.0f, 0.0f), 244.4445f, 11.1111f, "LevelProp_TT_Brazier8", "TT_Brazier"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(3624.281f, 3730.965f), -100.4387f, new Vector3(0.0f, 88.8889f, 0.0f), -33.3334f, 66.6667f, "LevelProp_TT_Chains_Bot_Lane", "TT_Chains_Bot_Lane"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(3778.364f, 7573.525f), -496.0713f, new Vector3(0.0f, -233.3334f, 0.0f), -333.3333f, 277.7778f, "LevelProp_TT_Chains_Order_Base", "TT_Chains_Order_Base"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(11636.06f, 7618.667f), -551.6268f, new Vector3(0.0f, 200f, 0.0f), -388.8889f, 33.3334f, "LevelProp_TT_Chains_Xaos_Base", "TT_Chains_Xaos_Base"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(759.1779f, 4740.938f), 507.9883f, new Vector3(0.0f, -155.5555f, 0.0f), 44.4445f, 222.2222f, "LevelProp_TT_Chains_Order_Periph", "TT_Chains_Order_Periph"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(3000.0f, 7289.682f), 19.51249f, new Vector3(0.0f, 0.0f, 0.0f), 144.4445f, 0.0f, "LevelProp_TT_Nexus_Gears", "TT_Nexus_Gears"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(12436.4775f, 7366.5859f), -124.9320f, new Vector3(180.0f, -44.4445f, 0.0f), 122.2222f, -122.2222f, "LevelProp_TT_Nexus_Gears1", "TT_Nexus_Gears"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(14169.09f, 7916.989f), 178.1922f, new Vector3(150f, 22.2223f, 0.0f), 33.3333f, -66.6667f, "LevelProp_TT_Shopkeeper1", "TT_Shopkeeper"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(1340.8141f, 7996.8691f), 126.2980f, new Vector3(208f, -66.6667f, 0.0f), 22.2223f, -55.5556f, "LevelProp_TT_Shopkeeper", "TT_Shopkeeper"));
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(7706.3052f, 6720.3926f), -124.9320f, new Vector3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, "LevelProp_TT_Speedshrine_Gears", "TT_Speedshrine_Gears"));
-
-
-            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(7688f, 6700.3926f), 64f, new Vector3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, "HA_FB_HealthRelic", "HA_FB_HealthRelic"));
-
-            _monsterCamps = new List<MonsterCamp>() {
-
-                /*new MonsterCamp(_game, MonsterCampType.BARON, new Vector2(7768f, 10121f), new List<MonsterSpawnType>() { MonsterSpawnType.MINION_TYPE_TT_SPIDERBOSS }, new List<Vector2>() { new Vector2(7688f, 10121f)}, 360),
-
-                 new MonsterCamp(_game, MonsterCampType.BLUE_LIZARD_ELDER, new Vector2(7688f, 6700.0f), new List<MonsterSpawnType>() {MonsterSpawnType.MINION_TYPE_TT_RELIC}, new List<Vector2>() { new Vector2(7688f, 6700.3926f) }, 300),
-
-                //bleu 
-
-                new MonsterCamp(_game, MonsterCampType.BLUE_GOLEMS, new Vector2(5138.874f, 7915.0f), new List<MonsterSpawnType>() { MonsterSpawnType.MINION_TYPE_TT_GOLEM, MonsterSpawnType.MINION_TYPE_TT_GOLEM2 }, new List<Vector2>() { new Vector2(5138.874f, 7915.0f), new Vector2(4988.874f, 8019.0f) }, 50),
-
-                new MonsterCamp(_game, MonsterCampType.BLUE_WRAITHS, new Vector2(4315f, 5833.166f), new List<MonsterSpawnType>() { MonsterSpawnType.MINION_TYPE_TT_NWRAITH, MonsterSpawnType.MINION_TYPE_TT_NWRAITH2 }, new List<Vector2>() { new Vector2(4315.874f, 5833.166f), new Vector2(4474f, 5972.166f)}, 50),
-
-                new MonsterCamp(_game, MonsterCampType.BLUE_WOLVES, new Vector2(6144.874f, 6079.166f), new List<MonsterSpawnType>() { MonsterSpawnType.MINION_TYPE_TT_NWOLF, MonsterSpawnType.MINION_TYPE_TT_NWOLF2, MonsterSpawnType.MINION_TYPE_TT_NWOLF2 }, new List<Vector2>() { new Vector2(6144.874f, 6079.166f), new Vector2(5934.874f, 6139.166f), new Vector2(6086.874f, 6291.166f)}, 50),
-
-               
-                
-                 // violet 
-
-                new MonsterCamp(_game, MonsterCampType.RED_GOLEMS, new Vector2(10420.874f, 8097.0f), new List<MonsterSpawnType>() { MonsterSpawnType.MINION_TYPE_TT_GOLEM, MonsterSpawnType.MINION_TYPE_TT_GOLEM2 }, new List<Vector2>() { new Vector2(10420.874f, 8097.0f), new Vector2(10292.874f, 7895.0f)}, 50),
-
-
-                new MonsterCamp(_game, MonsterCampType.RED_WRAITHS, new Vector2(10956.874f, 5988.166f), new List<MonsterSpawnType>() { MonsterSpawnType.MINION_TYPE_TT_NWRAITH, MonsterSpawnType.MINION_TYPE_TT_NWRAITH2}, new List<Vector2>() { new Vector2(10956.874f, 5988.166f), new Vector2(11078.874f, 5761.166f) }, 50),
-
-                new MonsterCamp(_game, MonsterCampType.RED_WOLVES, new Vector2(9254.874f, 6042.166f), new List<MonsterSpawnType>() { MonsterSpawnType.MINION_TYPE_TT_NWOLF, MonsterSpawnType.MINION_TYPE_TT_NWOLF2, MonsterSpawnType.MINION_TYPE_TT_NWOLF2}, new List<Vector2>() { new Vector2(9254.874f, 6042.166f), new Vector2(9278.874f, 6255.166f), new Vector2(9501.874f, 6142.166f)}, 50),
-
-
-
-                */
-            };
+            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(12465.0f, 14422.257f), 101.0f, new Vector3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, "LevelProp_Yonkey", "Yonkey"));
+            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(-76.0f, 1769.1589f), 94.0f, new Vector3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, "LevelProp_Yonkey1", "Yonkey"));
+            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(13374.17f, 14245.673f), 194.9741f, new Vector3(224.0f, 33.33f, 0.0f), 0.0f, -44.44f, "LevelProp_ShopMale", "ShopMale"));
+            _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(-99.5613f, 855.6632f), 191.4039f, new Vector3(158.0f, 0.0f, 0.0f), 0.0f, 0.0f, "LevelProp_ShopMale1", "ShopMale"));
         }
         public void Update(float diff)
         {
@@ -838,16 +811,24 @@ namespace LeagueSandbox.GameServer.Maps
                     {
                         waypoint = BlueTopWaypoints;
                     }
+                    else if (lane == LaneID.MIDDLE)
+                    {
+                        waypoint = BlueMidWaypoints;
+                    }
                     else if (lane == LaneID.BOTTOM)
                     {
                         waypoint = BlueBotWaypoints;
                     }
                 }
-                else if (opposed_team == TeamId.TEAM_BLUE)
+                else if (opposed_team == TeamId.TEAM_BLUE) 
                 {
                     if (lane == LaneID.TOP)
                     {
                         waypoint = RedTopWaypoints;
+                    }
+                    else if (lane == LaneID.MIDDLE)
+                    {
+                        waypoint = RedMidWaypoints;
                     }
                     else if (lane == LaneID.BOTTOM)
                     {

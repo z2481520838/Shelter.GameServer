@@ -75,6 +75,7 @@
         PKT_CHAT_BOX_MESSAGE = 0x68,
         PKT_S2C_SET_TARGET = 0x6A,
         PKT_S2C_SET_ANIMATION = 0x6B,
+        PKT_S2C_AMMO_UPDATE = 0x6B,
         PKT_C2S_BLUE_TIP_CLICKED = 0x6D,
         PKT_S2C_SHOW_PROJECTILE = 0x6E,
         PKT_S2C_BUY_ITEM_ANS = 0x6F,
@@ -130,6 +131,7 @@
         // Packet 0xC0 format is [Net ID 1] [Net ID 2], purpose still unknown
         PKT_S2C_GAME_TIMER = 0xC1,
         PKT_S2C_GAME_TIMER_UPDATE = 0xC2,
+        PKT_S2C_NEUTRAL_CAMP_EMPTY = 0xC3,
         PKT_S2C_CHAR_STATS = 0xC4,
         PKT_S2C_GAME_END = 0xC6,
         PKT_S2C_SURRENDER = 0xC9,

@@ -663,7 +663,7 @@ namespace LeagueSandbox.GameServer.API
 
             for (int i = count - 1; i >= 0; i--)
             {
-                if (_listeners[i].Item2 == spell)
+                if (_listeners[i].Item2 == spell && target != null)
                 {
                     _listeners[i].Item3(spell, target, p, s);
                     if (_listeners[i].Item4 == true)

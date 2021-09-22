@@ -201,8 +201,8 @@ namespace PacketDefinitions420
                 targetPacket.TargetNetID = target.NetId;
             }
 
-            // TODO: Verify if we need to account for other cases.
-            if (attacker is IBaseTurret)
+            // TODO: Verify if we need to account for other cases. (most likely don't want to send mosnter packets to unseen objects either).
+            if (attacker is IBaseTurret || attacker is IMonster)
             {
                 _packetHandlerManager.BroadcastPacket(targetPacket.GetBytes(), Channel.CHL_S2C);
             }
@@ -346,19 +346,19 @@ namespace PacketDefinitions420
             _packetHandlerManager.BroadcastPacketVision(attacker, basicAttackPacket.GetBytes(), Channel.CHL_S2C);
         }
 
-    /// <summary>
-    /// Sends a side bar tip to the specified player (ex: quest tips).
-    /// </summary>
-    /// <param name="userId">User to send the packet to.</param>
-    /// <param name="title">Title of the tip.</param>
-    /// <param name="text">Description text of the tip.</param>
-    /// <param name="imagePath">Path to an image that will be embedded in the tip.</param>
-    /// <param name="tipCommand">Action suggestion(? unconfirmed).</param>
-    /// <param name="playerNetId">NetID to send the packet to.</param>
-    /// <param name="targetNetId">NetID of the target referenced by the tip.</param>
-    /// TODO: tipCommand should be a lib/core enum that gets translated into a league version specific packet enum as it may change over time.
-    public void NotifyBlueTip(int userId, string title, string text, string imagePath, byte tipCommand, uint playerNetId,
-            uint targetNetId)
+        /// <summary>
+        /// Sends a side bar tip to the specified player (ex: quest tips).
+        /// </summary>
+        /// <param name="userId">User to send the packet to.</param>
+        /// <param name="title">Title of the tip.</param>
+        /// <param name="text">Description text of the tip.</param>
+        /// <param name="imagePath">Path to an image that will be embedded in the tip.</param>
+        /// <param name="tipCommand">Action suggestion(? unconfirmed).</param>
+        /// <param name="playerNetId">NetID to send the packet to.</param>
+        /// <param name="targetNetId">NetID of the target referenced by the tip.</param>
+        /// TODO: tipCommand should be a lib/core enum that gets translated into a league version specific packet enum as it may change over time.
+        public void NotifyBlueTip(int userId, string title, string text, string imagePath, byte tipCommand, uint playerNetId,
+                uint targetNetId)
         {
             var packet = new BlueTip(title, text, imagePath, tipCommand, playerNetId, targetNetId);
             _packetHandlerManager.SendPacket(userId, packet, Channel.CHL_S2C);
@@ -448,84 +448,84 @@ namespace PacketDefinitions420
                 IsSummonerSpell = isSummonerSpell
             };
 
-            switch(changeType)
+            switch (changeType)
             {
                 case GameServerCore.Enums.ChangeSlotSpellDataType.TargetingType:
-                {
-                    if (targetingType != TargetingType.Invalid)
                     {
-                        spellData = new ChangeSpellDataTargetingType()
+                        if (targetingType != TargetingType.Invalid)
                         {
-                            SpellSlot = slot,
-                            IsSummonerSpell = isSummonerSpell,
-                            TargetingType = (byte)targetingType
-                        };
+                            spellData = new ChangeSpellDataTargetingType()
+                            {
+                                SpellSlot = slot,
+                                IsSummonerSpell = isSummonerSpell,
+                                TargetingType = (byte)targetingType
+                            };
+                        }
+                        break;
                     }
-                    break;
-                }
                 case GameServerCore.Enums.ChangeSlotSpellDataType.SpellName:
-                {
-                    spellData = new ChangeSpellDataSpellName()
                     {
-                        SpellSlot = slot,
-                        IsSummonerSpell = isSummonerSpell,
-                        SpellName = newName
-                    };
-                    break;
-                }
-                case GameServerCore.Enums.ChangeSlotSpellDataType.Range:
-                {
-                    spellData = new ChangeSpellDataRange()
-                    {
-                        SpellSlot = slot,
-                        IsSummonerSpell = isSummonerSpell,
-                        CastRange = newRange
-                    };
-                    break;
-                }
-                case GameServerCore.Enums.ChangeSlotSpellDataType.MaxGrowthRange:
-                {
-                    spellData = new ChangeSpellDataMaxGrowthRange()
-                    {
-                        SpellSlot = slot,
-                        IsSummonerSpell = isSummonerSpell,
-                        OverrideMaxCastRange = newMaxCastRange
-                    };
-                    break;
-                }
-                case GameServerCore.Enums.ChangeSlotSpellDataType.RangeDisplay:
-                {
-                    spellData = new ChangeSpellDataRangeDisplay()
-                    {
-                        SpellSlot = slot,
-                        IsSummonerSpell = isSummonerSpell,
-                        OverrideCastRangeDisplay = newDisplayRange
-                    };
-                    break;
-                }
-                case GameServerCore.Enums.ChangeSlotSpellDataType.IconIndex:
-                {
-                    spellData = new ChangeSpellDataIconIndex()
-                    {
-                        SpellSlot = slot,
-                        IsSummonerSpell = isSummonerSpell,
-                        IconIndex = newIconIndex
-                    };
-                    break;
-                }
-                case GameServerCore.Enums.ChangeSlotSpellDataType.OffsetTarget:
-                {
-                    if (offsetTargets != null)
-                    {
-                        spellData = new ChangeSpellDataOffsetTarget()
+                        spellData = new ChangeSpellDataSpellName()
                         {
                             SpellSlot = slot,
                             IsSummonerSpell = isSummonerSpell,
-                            Targets = offsetTargets
+                            SpellName = newName
                         };
+                        break;
                     }
-                    break;
-                }
+                case GameServerCore.Enums.ChangeSlotSpellDataType.Range:
+                    {
+                        spellData = new ChangeSpellDataRange()
+                        {
+                            SpellSlot = slot,
+                            IsSummonerSpell = isSummonerSpell,
+                            CastRange = newRange
+                        };
+                        break;
+                    }
+                case GameServerCore.Enums.ChangeSlotSpellDataType.MaxGrowthRange:
+                    {
+                        spellData = new ChangeSpellDataMaxGrowthRange()
+                        {
+                            SpellSlot = slot,
+                            IsSummonerSpell = isSummonerSpell,
+                            OverrideMaxCastRange = newMaxCastRange
+                        };
+                        break;
+                    }
+                case GameServerCore.Enums.ChangeSlotSpellDataType.RangeDisplay:
+                    {
+                        spellData = new ChangeSpellDataRangeDisplay()
+                        {
+                            SpellSlot = slot,
+                            IsSummonerSpell = isSummonerSpell,
+                            OverrideCastRangeDisplay = newDisplayRange
+                        };
+                        break;
+                    }
+                case GameServerCore.Enums.ChangeSlotSpellDataType.IconIndex:
+                    {
+                        spellData = new ChangeSpellDataIconIndex()
+                        {
+                            SpellSlot = slot,
+                            IsSummonerSpell = isSummonerSpell,
+                            IconIndex = newIconIndex
+                        };
+                        break;
+                    }
+                case GameServerCore.Enums.ChangeSlotSpellDataType.OffsetTarget:
+                    {
+                        if (offsetTargets != null)
+                        {
+                            spellData = new ChangeSpellDataOffsetTarget()
+                            {
+                                SpellSlot = slot,
+                                IsSummonerSpell = isSummonerSpell,
+                                Targets = offsetTargets
+                            };
+                        }
+                        break;
+                    }
             }
 
             var changePacket = new ChangeSlotSpellData()
@@ -1518,7 +1518,7 @@ namespace PacketDefinitions420
         public void NotifyMonsterSpawned(IMonster m)
         {
             var sp = new SpawnMonster(_navGrid, m);
-            _packetHandlerManager.BroadcastPacketVision(m, sp, Channel.CHL_S2C);
+            _packetHandlerManager.BroadcastPacket(sp.GetBytes(), Channel.CHL_S2C);
         }
 
         /// <summary>
@@ -1916,8 +1916,14 @@ namespace PacketDefinitions420
                 IsSummonerSpell = isSummonerSpell,
                 ForceDoClient = forceClient
             };
+            // TODO: Verify if we want to send packets from unseen monsters (maybe send packets when they come into vision).
+            if (attacker is IMonster)
+            {
+                _packetHandlerManager.BroadcastPacket(stopAttack.GetBytes(), Channel.CHL_S2C);
+            }
             _packetHandlerManager.BroadcastPacketVision(attacker, stopAttack.GetBytes(), Channel.CHL_S2C);
         }
+
 
         /// <summary>
         /// Sends a packet to all players detailing that the specified Champion has leveled up.
@@ -3024,7 +3030,7 @@ namespace PacketDefinitions420
 
             _packetHandlerManager.BroadcastPacketVision(obj, wpList.GetBytes(), Channel.CHL_S2C);
         }
-
+        
         /// <summary>
         /// Sends a packet to all players that have vision of the specified unit.
         /// The packet details a list of waypoints with speed parameters which determine what kind of movement will be done to reach the waypoints, or optionally a GameObject.
@@ -3080,6 +3086,26 @@ namespace PacketDefinitions420
             };
 
             _packetHandlerManager.BroadcastPacketVision(u, speedWpGroup.GetBytes(), Channel.CHL_S2C);
+        }
+
+        public void NotifyCreateMonsterCamp(Vector2 pos, byte campId, TeamId team, string icon)
+        {
+            var Z = _navGrid.GetHeightAtLocation(pos);
+
+            var camp = new CreateMonsterCamp(pos.X, pos.Y, Z, icon, campId, 0, 0);
+            _packetHandlerManager.BroadcastPacket(camp.GetBytes(), Channel.CHL_S2C);
+        }
+
+        // TODO: Send to team of killer and enemy team if they have vision of the monster camp rather than everyone.
+        public void NotifyMonsterCampEmpty(IMonsterCamp monsterCamp, IChampion killer)
+        {
+            var emptyCamp = new NeutralCampEmpty(monsterCamp, killer);
+            _packetHandlerManager.BroadcastPacket(emptyCamp.GetBytes(), Channel.CHL_S2C);
+        }
+        public void NotifyAttachMinimapIcon(IAttackableUnit unit, bool ChangeIcon, string IconCategory, bool ChangeBorder, string BorderCategory, string BorderScriptName)
+        {
+            var icon = new AttachMinimapIcon(unit, ChangeIcon, IconCategory, ChangeBorder, BorderCategory, BorderScriptName);
+            _packetHandlerManager.BroadcastPacket(icon, Channel.CHL_S2C);
         }
     }
 }

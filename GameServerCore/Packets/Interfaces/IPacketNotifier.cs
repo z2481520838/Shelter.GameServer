@@ -888,6 +888,8 @@ namespace GameServerCore.Packets.Interfaces
         /// </summary>
         /// <param name="u">Unit that is dashing.</param>
         void NotifyWaypointGroupWithSpeed(IAttackableUnit u);
+        void NotifyAttachMinimapIcon(IAttackableUnit unit, bool ChangeIcon, string IconCategory, bool ChangeBorder, string BorderCategory, string BorderScriptName);
+
         /// <summary>
         /// Sends a packet to all players with vision of the given unit detailing its waypoints.
         /// </summary>
@@ -923,5 +925,8 @@ namespace GameServerCore.Packets.Interfaces
             float backDistance = 0,
             float travelTime = 0
         );
+
+        void NotifyMonsterCampEmpty(IMonsterCamp monsterCamp, IChampion killer);
+        void NotifyCreateMonsterCamp(Vector2 pos, byte campId, TeamId team, string icon);
     }
 }

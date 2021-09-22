@@ -28,17 +28,17 @@ namespace PacketDefinitions420.PacketDefinitions.S2C
             Write(navGrid.GetHeightAtLocation(m.Facing.X, m.Facing.Y)); //facing z
             Write(m.Facing.Y); //facing y
 
-			WriteConstLengthString(m.Name, 64);
+            WriteConstLengthString(m.Name, 64);
 
-			WriteConstLengthString(m.Model, 64);
+            WriteConstLengthString(m.Model, 64);
 
-			WriteConstLengthString(m.Name, 64);
+            WriteConstLengthString(m.Name, 64);
 
             Fill(0, 64); // empty
 
             Write((int)m.Team); // Probably a short
             Fill(0, 12);
-            Write(1); //campId 1
+            Write((int)m.CampId); //campId 1
             Write(100);
             Write(74);
             Write((long)1);

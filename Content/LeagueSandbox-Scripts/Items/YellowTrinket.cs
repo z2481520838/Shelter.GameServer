@@ -15,6 +15,7 @@ namespace Spells
         public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
         {
             // TODO
+            TriggersSpellCasts = true,
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
