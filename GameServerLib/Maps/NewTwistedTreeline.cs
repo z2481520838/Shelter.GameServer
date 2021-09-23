@@ -575,8 +575,8 @@ namespace LeagueSandbox.GameServer.Maps
                 GetMonsterSpawnInterval(MonsterCampType.BLUE_GOLEMS)),
 
                 new MonsterCamp(_game, MonsterCampType.BLUE_WRAITHS, new Vector2(4315f, 5833.166f),
-                new List<MonsterSpawnType>() { MonsterSpawnType.TT_NWRAITH, MonsterSpawnType.TT_NWRAITH2 },
-                new List<Vector2>() { new Vector2(4315.874f, 5833.166f), new Vector2(4474f, 5972.166f)},
+                new List<MonsterSpawnType>() { MonsterSpawnType.TT_NWRAITH, MonsterSpawnType.TT_NWRAITH2, MonsterSpawnType.TT_NWRAITH2 },
+                new List<Vector2>() { new Vector2(4449.0f, 5830.0f), new Vector2(4474f, 5972.166f), new Vector2(4297.0f, 5743.0f)},
                 GetMonsterSpawnInterval(MonsterCampType.BLUE_WRAITHS)),
 
                 new MonsterCamp(_game, MonsterCampType.BLUE_WOLVES, new Vector2(6144.874f, 6079.166f),
@@ -592,8 +592,8 @@ namespace LeagueSandbox.GameServer.Maps
 
 
                 new MonsterCamp(_game, MonsterCampType.RED_WRAITHS, new Vector2(10956.874f, 5988.166f),
-                new List<MonsterSpawnType>() { MonsterSpawnType.TT_NWRAITH, MonsterSpawnType.TT_NWRAITH2},
-                new List<Vector2>() { new Vector2(10956.874f, 5988.166f), new Vector2(11078.874f, 5761.166f) },
+                new List<MonsterSpawnType>() { MonsterSpawnType.TT_NWRAITH, MonsterSpawnType.TT_NWRAITH2, MonsterSpawnType.TT_NWRAITH2},
+                new List<Vector2>() { new Vector2(10919.0f, 5786.0f), new Vector2(10956.874f, 5988.166f), new Vector2(11122.0f, 5675.0f) },
                 GetMonsterSpawnInterval(MonsterCampType.RED_WRAITHS)),
 
                 new MonsterCamp(_game, MonsterCampType.RED_WOLVES, new Vector2(9254.874f, 6042.166f),
