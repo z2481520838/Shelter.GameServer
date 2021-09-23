@@ -239,6 +239,11 @@ namespace LeagueSandbox.GameServer.Content
 
         public MapData.MapObject AddMapObject(string objectName, string contentType, string mapName, int mapId)
         {
+            //Hotfix for riot's incompetent file naming
+            if(objectName == "orderShop01" && mapId == 10)
+            {
+                objectName = "OrderShop01";
+            }
             // Define the full path to the object file.
             var objectFileName = $"{mapName}/Scene/{objectName}.sco";
             var objectFilePath = $"{GetContentTypePath(contentType)}/{objectFileName}.json";
