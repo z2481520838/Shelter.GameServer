@@ -85,7 +85,7 @@
         /// <summary>
         /// Gromp
         /// </summary>
-        SRU_GROMP = 0x1F,
+        SRU_GROMP = 0x0F,
 
         /// <summary>
         /// New Blue Buff

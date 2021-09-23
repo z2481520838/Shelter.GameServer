@@ -96,20 +96,28 @@ namespace LeagueSandbox.GameServer.GameObjects
                     return "SRU_Krug";
                 case MonsterSpawnType.SRU_KRUG_MINI:
                     return "SRU_KrugMini";
+
+                //NEW TWISTED TREELINE
+                case MonsterSpawnType.TT_SPIDERBOSS:
+                    return "TT_Spiderboss";
+                case MonsterSpawnType.TT_GOLEM:
+                    return "TT_NGolem";
+                case MonsterSpawnType.TT_GOLEM2:
+                    return "TT_NGolem2";
+                case MonsterSpawnType.TT_NWOLF:
+                    return "TT_NWolf";
+                case MonsterSpawnType.TT_NWOLF2:
+                    return "TT_NWolf2";
+                case MonsterSpawnType.TT_NWRAITH:
+                    return "TT_NWraith";
+                case MonsterSpawnType.TT_NWRAITH2:
+                    return "TT_NWraith2";
+                case MonsterSpawnType.TT_RELIC:
+                    return "TT_Relic";
+
                 default:
                     return "TestCubeRender";
             }
-
-            //NEW TWISTED TREELINE
-            /*{MonsterSpawnType.TT_SPIDERBOSS, "TT_Spiderboss"}, //Vilemaw
-            {MonsterSpawnType.TT_GOLEM, "TT_NGolem"},
-            {MonsterSpawnType.TT_GOLEM2, "TT_NGolem2"},
-            {MonsterSpawnType.TT_NWOLF, "TT_NWolf"},
-            {MonsterSpawnType.TT_NWOLF2, "TT_NWolf2"},
-            {MonsterSpawnType.TT_NWRAITH, "TT_NWraith"},
-            {MonsterSpawnType.TT_NWRAITH2, "TT_NWraith2"},
-            {MonsterSpawnType.TT_RELIC, "TT_Relic"},*/
-
         }
 
         private static string GetMinimapIcon(MonsterCampType type)
