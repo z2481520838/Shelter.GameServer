@@ -103,7 +103,7 @@ namespace LeagueSandbox.GameServer.Maps
                 [1] = typeof(SummonersRift),
                 // [2] = typeof(HarrowingRift),
                 // [3] = typeof(ProvingGrounds),
-                // [4] = typeof(TwistedTreeline),
+                [4] = typeof(TwistedTreeline),
                 // [6] = typeof(WinterRift),
                 // [8] = typeof(CrystalScar),
                  [10] = typeof(NewTwistedTreeline),

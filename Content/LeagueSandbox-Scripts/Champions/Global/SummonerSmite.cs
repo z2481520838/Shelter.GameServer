@@ -27,13 +27,17 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
+            var damage = new float[] {390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 420, 760, 800, 850, 900, 950, 1000 }[owner.Stats.Level - 1];
+
+
+            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_SPELL, false);
             if (target is IMonster)
             {
-                var damage = new float[] {390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 420,
-                760, 800, 850, 900, 950, 1000}[owner.Stats.Level - 1];
-                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_SPELL, false);
-
                 owner.Stats.CurrentHealth += owner.Stats.HealthPoints.Total * 0.15f;
+            }
+            else
+            {
+                owner.Stats.CurrentHealth += 50f;
             }
             if (!target.IsDead)
             {
