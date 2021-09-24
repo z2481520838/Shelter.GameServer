@@ -63,12 +63,15 @@ namespace Buffs
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
-            var ownerSkinID = owner.SkinID;
-            var APratio = owner.Stats.AbilityPower.Total;
-            var damage = 120f + ((spell.CastInfo.SpellLevel - 1) * 50) + APratio;
-            var StacksPerLevel = spell.CastInfo.SpellLevel;
+            if (!(target is IBaseTurret || target is ILaneTurret || target.Team == owner.Team || target == owner))
+            {
+                var ownerSkinID = owner.SkinID;
+                var APratio = owner.Stats.AbilityPower.Total;
+                var damage = 120f + ((spell.CastInfo.SpellLevel - 1) * 50) + APratio;
+                var StacksPerLevel = spell.CastInfo.SpellLevel;
 
-            target.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+                target.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            }
         }
 
         public void OnUpdate(float diff)
