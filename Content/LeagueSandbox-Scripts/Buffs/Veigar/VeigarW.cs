@@ -26,7 +26,7 @@ namespace Buffs
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            ApiEventManager.OnSpellHit.AddListener(this, ownerSpell, TargetExecute, false);
+            ApiEventManager.OnSpellHit.AddListener(this, ownerSpell, TargetExecute, true);
 
             DamageSector = ownerSpell.CreateSpellSector(new SectorParameters
             {

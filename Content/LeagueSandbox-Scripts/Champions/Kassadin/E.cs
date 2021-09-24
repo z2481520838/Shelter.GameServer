@@ -42,8 +42,8 @@ namespace Spells
         {
             var owner = spell.CastInfo.Owner;
 
-            //var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            //FaceDirection(spellPos, owner, false);
+            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
+            FaceDirection(spellPos, owner, false);
 
             var sector = spell.CreateSpellSector(new SectorParameters
             {
