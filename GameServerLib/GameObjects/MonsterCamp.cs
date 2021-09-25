@@ -141,21 +141,20 @@ namespace LeagueSandbox.GameServer.GameObjects
         // should probably split that functionality into separate methods
         public bool IsAlive()
         {
-            if (NextSpawnTime > _game.GameTime)
-            {
-                return false;
-            }
-
-            bool alive = false;
+            List<bool> alive = new List<bool>();
             foreach (var monster in monsters)
             {
                 if (monster != null && !monster.IsDead)
                 {
-                    alive = true;
+                    alive.Add(true);
+                }
+                else
+                {
+                    alive.Add(false);
                 }
             }
 
-            _isAlive = alive;
+            _isAlive = alive.Contains(true);
 
             if (!_isAlive && !_setToSpawn)
             {
