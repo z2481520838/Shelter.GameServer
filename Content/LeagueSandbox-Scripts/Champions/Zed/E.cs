@@ -54,15 +54,18 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
-            var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
-            var damage = 40 + spell.CastInfo.SpellLevel * 30 + AD;
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
-            AddParticleTarget(owner, null, "Zed_E_tar.troy", target);
-
-            owner.GetSpell(2).LowerCooldown(2);
-            if (target.HasBuff("ZedSlow"))
+            if (owner != target)
             {
-                AddBuff("ZedSlow", 1.5f, 1, spell, target, owner);
+                var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
+                var damage = 40 + spell.CastInfo.SpellLevel * 30 + AD;
+                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
+                AddParticleTarget(owner, null, "Zed_E_tar.troy", target);
+
+                owner.GetSpell(2).LowerCooldown(2);
+                if (target.HasBuff("ZedSlow"))
+                {
+                    AddBuff("ZedSlow", 1.5f, 1, spell, target, owner);
+                }
             }
         }
         public void OnSpellChannel(ISpell spell)
@@ -119,14 +122,17 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
-            var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
-            var damage = 40 + spell.CastInfo.SpellLevel * 30 + AD;
-            
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
-            AddParticleTarget(owner, null, "Zed_E_tar.troy", target);
-            if (!target.HasBuff("ZedSlow"))
+            if (owner != target)
             {
-                AddBuff("ZedSlow", 1.5f, 1, spell, target, owner);
+                var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
+                var damage = 40 + spell.CastInfo.SpellLevel * 30 + AD;
+
+                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
+                AddParticleTarget(owner, null, "Zed_E_tar.troy", target);
+                if (!target.HasBuff("ZedSlow"))
+                {
+                    AddBuff("ZedSlow", 1.5f, 1, spell, target, owner);
+                }
             }
         }
 

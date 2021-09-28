@@ -59,6 +59,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
+            if(owner != target)
+            {
+
             var AP = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.25f;
             var AD = spell.CastInfo.Owner.Stats.AttackDamage.TotalBonus * 0.6f;
             float damage = 5f + spell.CastInfo.SpellLevel * 35f + AP + AD;
@@ -73,6 +76,7 @@ namespace Spells
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
             AddParticleTarget(owner, target, "katarina_w_tar.troy", target, 1f);
             AddBuff("KatarinaWHaste", 1f, 1, spell, owner, owner);
+            }
         }
 
 
