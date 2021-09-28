@@ -520,7 +520,7 @@ namespace LeagueSandbox.GameServer.Maps
                     {
                         if (turret.Type == TurretType.NEXUS_TURRET)
                         {
-                            _game.ProtectionManager.AddProtection(turret, false, _inhibitors[inhibitor.Team][inhibitor.Lane].ToArray());
+                            _game.ProtectionManager.AddProtection(turret, false, new Inhibitor[] { _inhibitors[inhibitor.Team][LaneID.TOP].First(), _inhibitors[inhibitor.Team][LaneID.BOTTOM].First() });
                         }
                         else if (turret.Type == TurretType.INHIBITOR_TURRET && inhibitor.Team == TeamId.TEAM_BLUE)
                         {

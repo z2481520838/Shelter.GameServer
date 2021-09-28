@@ -261,12 +261,12 @@ namespace LeagueSandbox.GameServer.Maps
                 }
                 else if (type == TurretType.NEXUS_TURRET)
                 {
-                    towerModel = "TurretGiant";
+                    towerModel = "TurretNormal";
                 }
                 // Nexus and Inhib Towers Might be swapped, double check if that's right.
                 else if (type == TurretType.INHIBITOR_TURRET)
                 {
-                    towerModel = "TurretNormal";
+                    towerModel = "TurretGiant";
                 }
                 else if (type == TurretType.INNER_TURRET)
                 {
@@ -540,7 +540,7 @@ namespace LeagueSandbox.GameServer.Maps
                 {
                     if (turret.Type == TurretType.NEXUS_TURRET)
                     {
-                        _game.ProtectionManager.AddProtection(turret, false, _inhibitors[inhibitor.Team][inhibitor.Lane].ToArray());
+                        _game.ProtectionManager.AddProtection(turret, false, new Inhibitor[] { _inhibitors[inhibitor.Team][LaneID.TOP].First(), _inhibitors[inhibitor.Team][LaneID.MIDDLE].First(), _inhibitors[inhibitor.Team][LaneID.BOTTOM].First()});
                     }
                     else if (turret.Type == TurretType.INHIBITOR_TURRET)
                     {
@@ -591,7 +591,7 @@ namespace LeagueSandbox.GameServer.Maps
 
                 new MonsterCamp(_game, MonsterCampType.BLUE_WRAITHS,
                 new Vector2(6536.759f, 5235.117f),
-                new List<MonsterSpawnType>() { MonsterSpawnType.GREAT_WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH },
+                new List<MonsterSpawnType>() { MonsterSpawnType.WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH },
                 new List<Vector2>() { new Vector2(6439f, 5220f), new Vector2(6622f, 5283f), new Vector2(6493f, 5134f), new Vector2(6651f, 5169f) },
                 GetMonsterSpawnInterval(MonsterCampType.BLUE_WRAITHS)),
 
@@ -609,7 +609,7 @@ namespace LeagueSandbox.GameServer.Maps
 
                 new MonsterCamp(_game, MonsterCampType.BLUE_GROMP,
                 new Vector2(1982.3355f, 8250.126f),
-                new List<MonsterSpawnType>() { MonsterSpawnType.WRAITH },
+                new List<MonsterSpawnType>() { MonsterSpawnType.GREAT_WRAITH },
                 new List<Vector2>() { new Vector2(1820.6832f, 8176.1597f) },
                 GetMonsterSpawnInterval(MonsterCampType.BLUE_GROMP)),
 
@@ -627,7 +627,7 @@ namespace LeagueSandbox.GameServer.Maps
 
                 new MonsterCamp(_game, MonsterCampType.RED_WRAITHS,
                 new Vector2(7453.7f, 9239.1f),
-                new List<MonsterSpawnType>() { MonsterSpawnType.GREAT_WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH },
+                new List<MonsterSpawnType>() { MonsterSpawnType.WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH, MonsterSpawnType.LESSER_WRAITH },
                 new List<Vector2>() { new Vector2(7562.0127f, 9189.633f), new Vector2(7419.434f, 9111.344f), new Vector2(7361.434f, 9261.344f), new Vector2(7538.852f, 9307.1455f) },
                 GetMonsterSpawnInterval(MonsterCampType.RED_WRAITHS)),
 
@@ -645,7 +645,7 @@ namespace LeagueSandbox.GameServer.Maps
 
                 new MonsterCamp(_game, MonsterCampType.RED_GROMP,
                 new Vector2(12142.5f, 6186.6f),
-                new List<MonsterSpawnType>() { MonsterSpawnType.WRAITH },
+                new List<MonsterSpawnType>() { MonsterSpawnType.GREAT_WRAITH },
                 new List<Vector2>() { new Vector2(12191.434f, 6213.3438f) },
                 GetMonsterSpawnInterval(MonsterCampType.RED_GROMP))
             };
