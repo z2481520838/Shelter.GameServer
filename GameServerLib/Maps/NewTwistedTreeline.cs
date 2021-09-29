@@ -660,21 +660,21 @@ namespace LeagueSandbox.GameServer.Maps
                             }
                         }
                     }
-                    if(_game.GameTime >= _VilemawFirstSpawnTime)
+                    if (_game.GameTime >= _VilemawFirstSpawnTime)
                     {
                         if (!HasFirstVilemawSpawnHappened)
                         {
-                            _monsterCamps[1].Spawn();
+                            _monsterCamps[0].Spawn();
                             HasFirstVilemawSpawnHappened = true;
                         }
-                        if (!_monsterCamps[1].IsAlive())
+                        else if (!_monsterCamps[0].IsAlive())
                         {
-                            _monsterCamps[1].RespawnCooldown -= diff;
+                            _monsterCamps[0].RespawnCooldown -= diff;
 
-                            if (_monsterCamps[1].RespawnCooldown <= 0)
+                            if (_monsterCamps[0].RespawnCooldown <= 0)
                             {
-                                _monsterCamps[1].Spawn();
-                                _monsterCamps[1].RespawnCooldown = GetMonsterSpawnInterval(_monsterCamps[1].CampType);
+                                _monsterCamps[0].Spawn();
+                                _monsterCamps[0].RespawnCooldown = GetMonsterSpawnInterval(_monsterCamps[1].CampType);
                             }
                         }
                     }
@@ -718,7 +718,7 @@ namespace LeagueSandbox.GameServer.Maps
         {
             foreach (var camp in _monsterCamps)
             {
-                if (camp.CampType == MonsterCampType.BARON)
+                if (camp.CampType == MonsterCampType.TT_SPIDERBOSS)
                 {
                     continue;
                 }
