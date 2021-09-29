@@ -148,6 +148,7 @@ namespace LeagueSandbox.GameServer.Maps
         public float StartingGold { get; set; } = 825.0f;
         public bool HasFirstBloodHappened { get; set; } = false;
         public bool HasFirstJungleSpawnHappened { get; set; } = false;
+        public bool HasFirstVilemawSpawnHappened { get; set; } = false;
         public bool IsKillGoldRewardReductionActive { get; set; } = true;
         public int BluePillId { get; set; } = 2001;
         public long FirstGoldTime { get; set; } = 90 * 1000;
@@ -557,11 +558,11 @@ namespace LeagueSandbox.GameServer.Maps
             //          _game.ObjectManager.AddObject(new LevelProp(_game, new Vector2(7688f, 6700.3926f), 64f, new Vector3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, "HA_FB_HealthRelic", "HA_FB_HealthRelic"));
 
             _monsterCamps = new List<MonsterCamp>() {
-
-                new MonsterCamp(_game, MonsterCampType.BARON, new Vector2(7768f, 10121f),
+                //Neutral
+                new MonsterCamp(_game, MonsterCampType.TT_SPIDERBOSS, new Vector2(7768f, 10121f),
                 new List<MonsterSpawnType>() { MonsterSpawnType.TT_SPIDERBOSS },
-                new List<Vector2>() { new Vector2(7688f, 10121f)},
-                GetMonsterSpawnInterval(MonsterCampType.BARON) ),
+                new List<Vector2>() { new Vector2(7826, 10104l) },
+                GetMonsterSpawnInterval(MonsterCampType.TT_SPIDERBOSS), new Vector2(7740, 9275)),
 
                  /*new MonsterCamp(_game, MonsterCampType.RED_RED_BUFF, new Vector2(7688f, 6700.0f),
                  new List<MonsterSpawnType>() {MonsterSpawnType.TT_RELIC},
@@ -638,22 +639,18 @@ namespace LeagueSandbox.GameServer.Maps
                     {
                         //Jungle Spawning has to be optmized, since it can cause some laggining when it is first spawned
                         SpawnJungle();
-                        foreach (var camp in _monsterCamps)
-                        {
-                            camp.RespawnCooldown = GetMonsterSpawnInterval(camp.CampType);
-                        }
                         HasFirstJungleSpawnHappened = true;
                     }
 
                     foreach (var camp in _monsterCamps)
                     {
+                        if ((camp.CampType == MonsterCampType.TT_SPIDERBOSS))
+                        {
+                            continue;
+                        }
+
                         if (!camp.IsAlive())
                         {
-                            if ((camp.CampType == MonsterCampType.BARON && _game.GameTime <= _VilemawFirstSpawnTime))
-                            {
-                                continue;
-                            }
-
                             camp.RespawnCooldown -= diff;
 
                             if (camp.RespawnCooldown <= 0)
@@ -662,9 +659,23 @@ namespace LeagueSandbox.GameServer.Maps
                                 camp.RespawnCooldown = GetMonsterSpawnInterval(camp.CampType);
                             }
                         }
-                        else
+                    }
+                    if(_game.GameTime >= _VilemawFirstSpawnTime)
+                    {
+                        if (!HasFirstVilemawSpawnHappened)
                         {
-                            camp.RespawnCooldown = GetMonsterSpawnInterval(camp.CampType);
+                            _monsterCamps[1].Spawn();
+                            HasFirstVilemawSpawnHappened = true;
+                        }
+                        if (!_monsterCamps[1].IsAlive())
+                        {
+                            _monsterCamps[1].RespawnCooldown -= diff;
+
+                            if (_monsterCamps[1].RespawnCooldown <= 0)
+                            {
+                                _monsterCamps[1].Spawn();
+                                _monsterCamps[1].RespawnCooldown = GetMonsterSpawnInterval(_monsterCamps[1].CampType);
+                            }
                         }
                     }
                 }
@@ -931,8 +942,8 @@ namespace LeagueSandbox.GameServer.Maps
             {
                 case MonsterCampType.RED_RED_BUFF:
                     return 180 * 1000;
-                case MonsterCampType.BARON:
-                    return 420 * 1000;
+                case MonsterCampType.TT_SPIDERBOSS:
+                    return 300 * 1000;
                 default:
                     return 50 * 1000;
             }

@@ -565,7 +565,7 @@ namespace LeagueSandbox.GameServer.Maps
             //I doubt there's a way to unhardcode this, since I couldn't find anything on League's files... Maybe could be organized when map scripting gets properly implemented?
             _monsterCamps = new List<MonsterCamp>
             {
-
+                //Neutral Camp
                 new MonsterCamp(_game, MonsterCampType.BARON,
                 new Vector2(4531.5f, 10193.7f),
                 new List<MonsterSpawnType>() { MonsterSpawnType.WORM },

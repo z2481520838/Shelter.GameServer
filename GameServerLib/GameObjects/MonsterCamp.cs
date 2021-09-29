@@ -14,6 +14,7 @@ namespace LeagueSandbox.GameServer.GameObjects
 
         public List<MonsterSpawnType> MonsterTypes { get; }
         public List<Vector2> MonsterSpawnPositions { get; }
+        public Vector2 FacingDirection { get; }
 
         public float RespawnCooldown { get; set; }
         public float NextSpawnTime { get; protected set; } = 0f;
@@ -25,7 +26,7 @@ namespace LeagueSandbox.GameServer.GameObjects
 
         List<Monster> monsters = new List<Monster>();
 
-        public MonsterCamp(Game game, MonsterCampType campType, Vector2 position, List<MonsterSpawnType> monsterTypes, List<Vector2> monsterSpawnPositions = null, float respawnCooldown = 1)
+        public MonsterCamp(Game game, MonsterCampType campType, Vector2 position, List<MonsterSpawnType> monsterTypes, List<Vector2> monsterSpawnPositions = null, float respawnCooldown = 1, Vector2 facingDirection = default)
         {
             _game = game;
             CampType = campType;
@@ -33,6 +34,14 @@ namespace LeagueSandbox.GameServer.GameObjects
             MonsterTypes = monsterTypes;
             RespawnCooldown = respawnCooldown;
             MonsterSpawnPositions = monsterSpawnPositions;
+            if(facingDirection == default)
+            {
+                FacingDirection = Position;
+            }
+            else
+            {
+                FacingDirection = facingDirection;
+            }
         }
 
         private static string GetMonsterModel(MonsterSpawnType type)
@@ -183,13 +192,13 @@ namespace LeagueSandbox.GameServer.GameObjects
             {
                 if (MonsterSpawnPositions != null)
                 {
-                    var m = new Monster(_game, MonsterSpawnPositions[i], Position, type, GetMonsterModel(type), GetMonsterModel(type), CampType);
+                    var m = new Monster(_game, MonsterSpawnPositions[i], FacingDirection, type, GetMonsterModel(type), GetMonsterModel(type), CampType);
                     monsters.Add(m);
                     _game.ObjectManager.AddObject(m);
                 }
                 else
                 {
-                    var m = new Monster(_game, Position, Position, type, GetMonsterModel(type), GetMonsterModel(type), CampType);
+                    var m = new Monster(_game, Position, FacingDirection, type, GetMonsterModel(type), GetMonsterModel(type), CampType);
                     monsters.Add(m);
                     _game.ObjectManager.AddObject(m);
                 }
