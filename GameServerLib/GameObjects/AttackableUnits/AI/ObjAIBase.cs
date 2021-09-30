@@ -905,6 +905,10 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
         public override void Update(float diff)
         {
             base.Update(diff);
+            if(Inventory != null)
+            {
+                Inventory.OnUpdate(diff);
+            }
             CharScript.OnUpdate(diff);
             foreach (var s in Spells.Values)
             {
