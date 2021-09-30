@@ -9,7 +9,7 @@ using LeagueSandbox.GameServer.GameObjects.Stats;
 
 namespace Items
 {
-    public class Dorans_Shield : IItemScript
+    public class ItemID_1054 : IItemScript
     {
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 

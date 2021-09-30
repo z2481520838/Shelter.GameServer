@@ -137,11 +137,6 @@ namespace LeagueSandbox.GameServer.Items
             };
 
             //itemInfo.SafeGetFloat("Data", "PercentEXPBonus"); // TODO
-            if (result.Name.Contains("'"))
-            {
-                result.Name = result.Name.Replace("'", string.Empty);
-            }
-
             result.CreateRecipe(owner);
             return result;
         }

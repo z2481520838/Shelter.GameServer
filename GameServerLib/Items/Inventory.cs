@@ -17,14 +17,14 @@ namespace LeagueSandbox.GameServer.Items
         private const byte EXTRA_INVENTORY_SIZE = 7;
         private const byte RUNE_INVENTORY_SIZE = 30;
         private InventoryManager _owner;
-        private Game _game;
+        private CSharpScriptEngine ScriptEngine;
         public Dictionary<string, IItemScript> ItemScripts = new Dictionary<string, IItemScript>();
         public IItem[] Items { get; }
 
-        public Inventory(InventoryManager owner, Game game)
+        public Inventory(InventoryManager owner, CSharpScriptEngine scriptEngine)
         {
             _owner = owner;
-            _game = game;
+            ScriptEngine = scriptEngine;
             Items = new IItem[BASE_INVENTORY_SIZE + EXTRA_INVENTORY_SIZE + RUNE_INVENTORY_SIZE];
         }
 
@@ -51,7 +51,7 @@ namespace LeagueSandbox.GameServer.Items
 
                 if (!ItemScripts.ContainsKey(item.Name))
                 {
-                    ItemScripts.Add(item.Name, _game.ScriptEngine.CreateObject<IItemScript>("Items", item.Name) ?? new ItemScriptEmpty());
+                    ItemScripts.Add(item.Name, ScriptEngine.CreateObject<IItemScript>("Items", $"ItemID_{item.ItemId}") ?? new ItemScriptEmpty());
                     ItemScripts[item.Name].OnActivate(owner);
                 }
             }

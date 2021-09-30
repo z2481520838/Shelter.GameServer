@@ -6,6 +6,7 @@ using System.Numerics;
 using GameServerCore.Domain;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Packets.Interfaces;
+using LeagueSandbox.GameServer.Scripting.CSharp;
 
 namespace LeagueSandbox.GameServer.Items
 {
@@ -14,10 +15,10 @@ namespace LeagueSandbox.GameServer.Items
         private readonly IPacketNotifier _packetNotifier;
         private readonly Inventory _inventory;
 
-        private InventoryManager(Game game)
+        private InventoryManager(IPacketNotifier packetNotifier, CSharpScriptEngine scriptEngine)
         {
-            _packetNotifier = game.PacketNotifier;
-            _inventory = new Inventory(this, game);
+            _packetNotifier = packetNotifier;
+            _inventory = new Inventory(this, scriptEngine);
         }
 
         public KeyValuePair<IItem, bool> AddItem(IItemData itemData, IObjAiBase owner = null)
@@ -134,9 +135,9 @@ namespace LeagueSandbox.GameServer.Items
             return result;
         }
 
-        public static InventoryManager CreateInventory(Game game)
+        public static InventoryManager CreateInventory(IPacketNotifier packetNotifier, CSharpScriptEngine scriptEngine)
         {
-            return new InventoryManager(game);
+            return new InventoryManager(packetNotifier, scriptEngine);
         }
 
         public IEnumerator GetEnumerator()
