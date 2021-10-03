@@ -24,6 +24,11 @@
         /// </summary>
         STACKS_AND_CONTINUE,
         /// <summary>
+        /// Adds a stack to any buff with same name, and resets it's timer, while also not triggering OnActivate again.
+        /// EX: Riven's passive.
+        /// </summary>
+        STACKS_AND_CONTINUE_AND_RENEWS,
+        /// <summary>
         /// Adds a completely new buff instance to the buff target regardless of any other buffs of the same name applied.
         /// Inherits stack count of the oldest buff of the same name.
         /// </summary>

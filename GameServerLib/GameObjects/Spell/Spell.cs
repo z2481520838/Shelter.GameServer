@@ -110,8 +110,12 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
         public void LoadScript()
         {
             ApiEventManager.RemoveAllListenersForOwner(Script);
-
-            Script = _scriptEngine.CreateObject<ISpellScript>("Spells", SpellName) ?? new SpellScriptEmpty();
+            string nameSpace = "Spells";
+            if (CastInfo.SpellSlot >= (byte)SpellSlotType.InventorySlots && CastInfo.SpellSlot < (byte)SpellSlotType.BluePillSlot)
+            {
+                nameSpace = "ItemSpells";
+            }
+            Script = _scriptEngine.CreateObject<ISpellScript>("nameSpace", SpellName) ?? new SpellScriptEmpty();
 
             if (Script.ScriptMetadata.TriggersSpellCasts)
             {
@@ -309,6 +313,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
                     }
                 }
             }
+            ApiEventManager.OnCastAnySpell.Publish(this.CastInfo.Owner, this);
 
             // If we are supposed to automatically cast a skillshot for this spell, then calculate the proper end position before casting.
             if (Script.ScriptMetadata.MissileParameters != null && Script.ScriptMetadata.MissileParameters.Type == MissileType.Circle)
@@ -368,7 +373,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
             {
                 _game.PacketNotifier.NotifyNPC_CastSpellAns(this);
             }
-
+            ApiEventManager.OnCastAnySpell.Publish(this.CastInfo.Owner, this);
             if (CastInfo.DesignerCastTime > 0)
             {
                 if (Script.ScriptMetadata.TriggersSpellCasts)
@@ -379,6 +384,10 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
                 if (CastInfo.IsAutoAttack)
                 {
                     ApiEventManager.OnPreAttack.Publish(CastInfo.Owner, this);
+                }
+                else
+                {
+                    ApiEventManager.OnCastAnySpell.Publish(this.CastInfo.Owner, this);
                 }
 
                 if (!CastInfo.UseAttackCastDelay)
@@ -662,7 +671,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
         {
             if (CastInfo.IsAutoAttack)
             {
-                ApiEventManager.OnLaunchAttack.Publish(CastInfo.Owner, this);
+                ApiEventManager.OnLaunchAttack.Publish(CastInfo.Owner, CastInfo.Targets[0].Unit, this);
             }
 
             if (CastInfo.IsAutoAttack || CastInfo.UseAttackCastTime)

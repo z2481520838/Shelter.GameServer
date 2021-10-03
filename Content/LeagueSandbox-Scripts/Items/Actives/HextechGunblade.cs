@@ -10,13 +10,13 @@ using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell.Sector;
 
-namespace Spells
+namespace ItemSpells
 {
-    public class DeathfireGrasp : ISpellScript
+    public class HextechGunbladeSpell : ISpellScript
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
-            // TODO
+            //TODO
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
@@ -57,28 +57,56 @@ namespace Spells
         }
     }
 
-    public class DeathfireGraspSpell : ISpellScript
+    public class HextechGunblade : ISpellScript
     {
+        IBuff buff;
+
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
             MissileParameters = new MissileParameters
             {
                 Type = MissileType.Target
-            }
-            // TODO
+            },
+            //IsDamagingSpell = true,
+            //TriggersSpellCasts = true
+
         };
+
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
+
+            buff = AddBuff("HextechGunbladePassive", 1f, 1, spell, owner, owner, true);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
         {
+            RemoveBuff(buff);
         }
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, true);
+        }
+
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
+        {
+            var owner = spell.CastInfo.Owner;
+            var APratio = owner.Stats.AbilityPower.Total * 0.4f;
+            var damage = 150f + APratio;
+            
+
+            AddParticleTarget(owner, owner, "hextech_gunBlade_tar.troy", target, 1f);
+            AddBuff("HextechGunblade", 2f, 1, spell, target, owner);
+
+            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+
+            if (target.IsDead)
+            {
+                AddParticle(owner, owner, "hextech_gunBlade_tar.troy", target.Position, lifetime: 1f);
+            }
+            missile.SetToRemove();
+
         }
 
         public void OnSpellCast(ISpell spell)
@@ -87,14 +115,6 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-        }
-
-        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
-        {
-            AddBuff("DeathfireGraspSpell", 4.0f, 1, spell, target, spell.CastInfo.Owner);
-            var damage = target.Stats.HealthPoints.Total * 0.15f;
-            target.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_DEFAULT, false);
-            missile.SetToRemove();
         }
 
         public void OnSpellChannel(ISpell spell)

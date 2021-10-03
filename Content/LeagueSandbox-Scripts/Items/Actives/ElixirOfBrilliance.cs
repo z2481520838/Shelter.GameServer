@@ -7,7 +7,7 @@ using System.Numerics;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace Spells
+namespace ItemSpells
 {
     public class PotionOfBrilliance : ISpellScript
     {

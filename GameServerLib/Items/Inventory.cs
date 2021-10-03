@@ -51,7 +51,7 @@ namespace LeagueSandbox.GameServer.Items
 
                 if (!ItemScripts.ContainsKey(item.Name))
                 {
-                    ItemScripts.Add(item.Name, ScriptEngine.CreateObject<IItemScript>("Items", $"ItemID_{item.ItemId}") ?? new ItemScriptEmpty());
+                    ItemScripts.Add(item.Name, ScriptEngine.CreateObject<IItemScript>("ItemPassives", $"ItemID_{item.ItemId}") ?? new ItemScriptEmpty());
                     ItemScripts[item.Name].OnActivate(owner);
                 }
             }

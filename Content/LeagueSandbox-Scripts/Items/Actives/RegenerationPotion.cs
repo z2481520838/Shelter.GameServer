@@ -6,7 +6,7 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using System.Numerics;
 using GameServerCore.Scripting.CSharp;
 
-namespace Spells
+namespace ItemSpells
 {
     public class RegenerationPotion : ISpellScript
     {

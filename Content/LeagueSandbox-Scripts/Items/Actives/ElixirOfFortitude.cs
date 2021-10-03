@@ -7,11 +7,11 @@ using System.Numerics;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace Spells
+namespace ItemSpells
 {
-    public class YoumusBlade : ISpellScript
+    public class PotionOfGiantStrength : ISpellScript
     {
-        public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
+        public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
         {
             // TODO
         };
@@ -26,8 +26,7 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            AddBuff("YoumuusGhostblade", 6.0f, 1, spell, owner, owner);
-            AddParticleTarget(owner, owner, "spectral_fury_activate_speed.troy", owner, 6f, 2f);
+            AddBuff("PotionOfGiantStrength", 180f, 1, spell, owner, owner);
         }
 
         public void OnSpellCast(ISpell spell)

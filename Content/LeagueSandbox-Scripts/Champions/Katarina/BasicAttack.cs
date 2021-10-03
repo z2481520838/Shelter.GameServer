@@ -31,7 +31,7 @@ namespace Spells
             ApiEventManager.OnLaunchAttack.AddListener(this, owner, OnLaunchAttack, true);
         }
 
-        public void OnLaunchAttack(ISpell spell)
+        public void OnLaunchAttack(IObjAiBase owner, IAttackableUnit unit, ISpell spell)
         {
             spell.CastInfo.Owner.SetAutoAttackSpell("KatarinaBasicAttack2", false);
         }
@@ -83,7 +83,7 @@ namespace Spells
             ApiEventManager.OnLaunchAttack.AddListener(this, owner, OnLaunchAttack, true);
         }
 
-        public void OnLaunchAttack(ISpell spell)
+        public void OnLaunchAttack(IObjAiBase owner, IAttackableUnit unit, ISpell spell)
         {
             spell.CastInfo.Owner.SetAutoAttackSpell("KatarinaBasicAttack", false);
         }

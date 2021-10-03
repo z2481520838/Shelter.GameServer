@@ -7,15 +7,13 @@ using System.Numerics;
 using GameServerCore.Scripting.CSharp;
 
 
-namespace Spells
+namespace ItemSpells
 {
-    public class TrinketTotemLvl1 : ISpellScript
+    public class ItemCrystalFlask : ISpellScript
     {
-        IMinion ward;
         public ISpellScriptMetadata ScriptMetadata => new SpellScriptMetadata()
         {
             // TODO
-            TriggersSpellCasts = true,
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
@@ -28,23 +26,7 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            var Cursor = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var current = new Vector2(owner.Position.X, owner.Position.Y);
-            var distance = Cursor - current;
-            Vector2 truecoords;
-            if (distance.Length() > 500f)
-            {
-                distance = Vector2.Normalize(distance);
-                var range = distance * 500f;
-                truecoords = current + range;
-            }
-            else
-            {
-                truecoords = Cursor;
-            }
-
-            ward = AddMinion(owner, "YellowTrinket", "YellowTrinket", truecoords);
-            AddBuff("YellowTriket", 65f, 1, spell, ward, ward);
+            AddBuff("ItemCrystalFlask", 12.0f, 1, spell, owner, owner);
         }
 
         public void OnSpellCast(ISpell spell)

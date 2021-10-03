@@ -7,7 +7,7 @@ using System.Numerics;
 using GameServerCore.Scripting.CSharp;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 
-namespace Items
+namespace ItemPassives
 {
     public class ItemID_1054 : IItemScript
     {
