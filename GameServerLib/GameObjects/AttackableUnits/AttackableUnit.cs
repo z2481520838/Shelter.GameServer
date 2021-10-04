@@ -686,8 +686,8 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                 //If the buff stacks and resets the timer, but doesn't trigger OnActivate again
                 else if (b.BuffAddType == BuffAddType.STACKS_AND_CONTINUE_AND_RENEWS)
                 {
-                    ParentBuffs[b.Name].ResetTimeElapsed();
                     ParentBuffs[b.Name].IncrementStackCount();
+                    ParentBuffs[b.Name].ResetTimeElapsed();
 
                     if (!b.IsHidden)
                     {
