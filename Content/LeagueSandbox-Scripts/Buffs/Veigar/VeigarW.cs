@@ -30,7 +30,7 @@ namespace Buffs
 
             DamageSector = ownerSpell.CreateSpellSector(new SectorParameters
             {
-                HalfLength = 225f,
+                Length = 225f,
                 Lifetime = -1.0f,
                 Tickrate = 0,
                 SingleTick = true,

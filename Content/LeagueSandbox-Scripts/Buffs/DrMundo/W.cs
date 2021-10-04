@@ -35,7 +35,7 @@ namespace Buffs
             DRMundoWAOE = ownerSpell.CreateSpellSector(new SectorParameters
             {
                 BindObject = ownerSpell.CastInfo.Owner,
-                HalfLength = 165f,
+                Length = 165f,
                 Tickrate = 1,
                 CanHitSameTargetConsecutively = true,
                 OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes,

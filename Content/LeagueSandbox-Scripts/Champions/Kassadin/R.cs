@@ -61,7 +61,7 @@ namespace Spells
 
             var AOEdmg = spell.CreateSpellSector(new SectorParameters
             {
-                HalfLength = 250f,
+                Length = 250f,
                 SingleTick = true,
                 OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes,
                 Type = SectorType.Area

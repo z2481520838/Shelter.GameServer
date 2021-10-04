@@ -47,7 +47,7 @@ namespace Spells
 
             var sector = spell.CreateSpellSector(new SectorParameters
             {
-                HalfLength = 650f,
+                Length = 650f,
                 SingleTick = true,
                 ConeAngle = 39f,
                 Type = SectorType.Cone

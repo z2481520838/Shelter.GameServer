@@ -42,7 +42,7 @@ namespace Spells
             AddParticleTarget(owner, null, "Zed_E_cas.troy", owner);
             spell.CreateSpellSector(new SectorParameters
             {
-                HalfLength = 250f,
+                Length = 250f,
                 SingleTick = true,
                 Type = SectorType.Area
             });
@@ -106,7 +106,7 @@ namespace Spells
         {
             spell.CreateSpellSector(new SectorParameters
             {
-                HalfLength = 250f,
+                Length = 250f,
                 SingleTick = true,
                 Type = SectorType.Area
             });

@@ -39,7 +39,7 @@ namespace Spells
         {
             spell.CreateSpellSector(new SectorParameters
             {
-                HalfLength = 400f,
+                Length = 400f,
                 SingleTick = true,
                 Type = SectorType.Area,
                 OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes

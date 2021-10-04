@@ -47,7 +47,7 @@ namespace Spells
             spell.CastInfo.Owner.StopMovement();
             spell.CreateSpellSector(new SectorParameters
             {
-                HalfLength = 550f,
+                Length = 550f,
                 Tickrate = 4,
                 Type = SectorType.Area,
                 CanHitSameTargetConsecutively = true,

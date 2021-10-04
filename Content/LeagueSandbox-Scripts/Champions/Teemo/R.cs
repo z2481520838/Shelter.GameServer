@@ -49,7 +49,7 @@ namespace Spells
             mushroomRanges.Add(spell.CreateSpellSector(new SectorParameters
             {
                 BindObject = mushroom,
-                HalfLength = 80f,
+                Length = 80f,
                 Tickrate = 60,
                 OverrideFlags = SpellDataFlags.AffectEnemies | SpellDataFlags.AffectNeutral | SpellDataFlags.AffectMinions | SpellDataFlags.AffectHeroes,
                 Type = SectorType.Area,
