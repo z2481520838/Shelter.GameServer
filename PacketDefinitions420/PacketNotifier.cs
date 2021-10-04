@@ -935,7 +935,13 @@ namespace PacketDefinitions420
             var fxPacket = new FX_Create_Group();
             var fxDataList = new List<FXCreateData>();
 
-            var targetHeight = _navGrid.GetHeightAtLocation(particle.TargetPosition.X, particle.TargetPosition.Y);
+            var targetPos = particle.StartPosition;
+            if (particle.BindObject == null && particle.TargetObject == null)
+            {
+                targetPos = particle.EndPosition;
+            }
+
+            var targetHeight = _navGrid.GetHeightAtLocation(particle.StartPosition.X, particle.StartPosition.Y);
             var higherValue = Math.Max(targetHeight, particle.GetHeight());
 
             // TODO: implement option for multiple particles instead of hardcoding one
@@ -949,9 +955,9 @@ namespace PacketDefinitions420
                 PositionY = higherValue,
                 PositionZ = (short)((position.Z - _navGrid.MapHeight / 2) / 2),
 
-                TargetPositionX = (short)((particle.TargetPosition.X - _navGrid.MapWidth / 2) / 2),
+                TargetPositionX = (short)((targetPos.X - _navGrid.MapWidth / 2) / 2),
                 TargetPositionY = higherValue,
-                TargetPositionZ = (short)((particle.TargetPosition.Y - _navGrid.MapHeight / 2) / 2),
+                TargetPositionZ = (short)((targetPos.Y - _navGrid.MapHeight / 2) / 2),
 
                 OwnerPositionX = (short)((ownerPos.X - _navGrid.MapWidth / 2) / 2),
                 OwnerPositionY = ownerPos.Y,
