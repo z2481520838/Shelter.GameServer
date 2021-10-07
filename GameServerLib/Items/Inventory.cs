@@ -18,7 +18,7 @@ namespace LeagueSandbox.GameServer.Items
         private const byte RUNE_INVENTORY_SIZE = 30;
         private InventoryManager _owner;
         private CSharpScriptEngine ScriptEngine;
-        public Dictionary<string, IItemScript> ItemScripts = new Dictionary<string, IItemScript>();
+        public Dictionary<int, IItemScript> ItemScripts = new Dictionary<int, IItemScript>();
         public IItem[] Items { get; }
 
         public Inventory(InventoryManager owner, CSharpScriptEngine scriptEngine)
@@ -49,10 +49,10 @@ namespace LeagueSandbox.GameServer.Items
                     owner.SetSpell(item.SpellName, (byte)(owner.Inventory.GetItemSlot(GetItem(item.SpellName)) + (byte)SpellSlotType.InventorySlots), true);
                 }
 
-                if (!ItemScripts.ContainsKey(item.Name))
+                if (!ItemScripts.ContainsKey(item.ItemId))
                 {
-                    ItemScripts.Add(item.Name, ScriptEngine.CreateObject<IItemScript>("ItemPassives", $"ItemID_{item.ItemId}") ?? new ItemScriptEmpty());
-                    ItemScripts[item.Name].OnActivate(owner);
+                    ItemScripts.Add(item.ItemId, ScriptEngine.CreateObject<IItemScript>("ItemPassives", $"ItemID_{item.ItemId}") ?? new ItemScriptEmpty());
+                    ItemScripts[item.ItemId].OnActivate(owner);
                 }
             }
 
@@ -63,7 +63,6 @@ namespace LeagueSandbox.GameServer.Items
 
             return AddNewItem(item);
         }
-
         public IItem SetExtraItem(byte slot, IItemData item)
         {
             if (slot < BASE_INVENTORY_SIZE)
@@ -116,23 +115,17 @@ namespace LeagueSandbox.GameServer.Items
             {
                 throw new Exception("Stacks to be Removed can't be a negative number!");
             }
+            var item = Items[slot];
+            var itemID = item.ItemData.ItemId;
 
-            int finalStacks = Items[slot].StackCount - stacksToRemove;
+            int finalStacks = item.StackCount - stacksToRemove;
+
 
             if (finalStacks <= 0)
             {
                 if (owner != null)
                 {
                     owner.Stats.RemoveModifier(Items[slot].ItemData);
-
-                    var item = GetItem(slot);
-
-                    ItemScripts[item.ItemData.Name].OnDeactivate(owner);
-                    if (ItemScripts[item.ItemData.Name].StatsModifier != null)
-                    {
-                        owner.Stats.RemoveModifier(ItemScripts[item.ItemData.Name].StatsModifier);
-                    }
-                    ItemScripts.Remove(GetItem(slot).ItemData.Name);
                 }
                 Items[slot] = null;
             }
@@ -140,6 +133,28 @@ namespace LeagueSandbox.GameServer.Items
             {
                 Items[slot].SetStacks(finalStacks);
             }
+
+            if (!HasItemWithID(itemID) && owner != null)
+            {
+                ItemScripts[item.ItemData.ItemId].OnDeactivate(owner);
+                if (ItemScripts[itemID].StatsModifier != null)
+                {
+                    owner.Stats.RemoveModifier(ItemScripts[item.ItemData.ItemId].StatsModifier);
+                }
+                ItemScripts.Remove(itemID);
+            }
+        }
+
+        public bool HasItemWithID (int ItemID)
+        {
+            foreach (var item in Items)
+            {
+                if(item != null && ItemID == item.ItemData.ItemId)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public byte GetItemSlot(IItem item)
