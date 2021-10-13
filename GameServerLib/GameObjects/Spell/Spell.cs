@@ -113,11 +113,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
             string nameSpace = "Spells";
             if (CastInfo.SpellSlot >= (byte)SpellSlotType.InventorySlots && CastInfo.SpellSlot < (byte)SpellSlotType.BluePillSlot)
             {
-                nameSpace = "ItemSpells";
-            }
-            else if(this.CastInfo.SpellSlot == (byte)SpellSlotType.PassiveSpellSlot)
-            {
-                return;
+               nameSpace = "ItemSpells";
             }
             Script = _scriptEngine.CreateObject<ISpellScript>(nameSpace, SpellName) ?? new SpellScriptEmpty();
 
@@ -376,6 +372,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
             {
                 _game.PacketNotifier.NotifyNPC_CastSpellAns(this);
             }
+
             if (CastInfo.DesignerCastTime > 0)
             {
                 if (Script.ScriptMetadata.TriggersSpellCasts)
@@ -386,10 +383,6 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
                 if (CastInfo.IsAutoAttack)
                 {
                     ApiEventManager.OnPreAttack.Publish(CastInfo.Owner, this);
-                }
-                else
-                {
-                    ApiEventManager.OnCastAnySpell.Publish(this.CastInfo.Owner, this);
                 }
 
                 if (!CastInfo.UseAttackCastDelay)
@@ -673,7 +666,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
         {
             if (CastInfo.IsAutoAttack)
             {
-                ApiEventManager.OnLaunchAttack.Publish(CastInfo.Owner, CastInfo.Targets[0].Unit, this);
+                ApiEventManager.OnLaunchAttack.Publish(CastInfo.Owner, this);
             }
 
             if (CastInfo.IsAutoAttack || CastInfo.UseAttackCastTime)

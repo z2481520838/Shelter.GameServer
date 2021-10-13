@@ -146,7 +146,7 @@ namespace LeagueSandbox.GameServer.Items
         }
         public void OnUpdate(float diff)
         {
-            foreach(var item in _inventory.ItemScripts)
+            foreach (var item in _inventory.ItemScripts)
             {
                 item.Value.OnUpdate(diff);
             }

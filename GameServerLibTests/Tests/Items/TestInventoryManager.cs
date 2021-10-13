@@ -6,6 +6,7 @@ using LeagueSandbox.GameServer.Content;
 using LeagueSandbox.GameServer.Items;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PacketDefinitions420;
 
 namespace LeagueSandbox.GameServerTests.Tests.Items
 {
@@ -18,7 +19,7 @@ namespace LeagueSandbox.GameServerTests.Tests.Items
         {
             var itemManager = new ItemManager();
             itemManager.AddItems(ItemContentCollection.LoadItemsFrom(path + "LeagueSandbox-Default/Items"));
-
+   
             IPacketNotifier _packetNotifier = new Game().PacketNotifier;
             CSharpScriptEngine _scriptEngine = new CSharpScriptEngine();
             var inventoryManager = InventoryManager.CreateInventory(_packetNotifier, _scriptEngine);
@@ -103,7 +104,7 @@ namespace LeagueSandbox.GameServerTests.Tests.Items
 
             IPacketNotifier _packetNotifier = new Game().PacketNotifier;
             CSharpScriptEngine _scriptEngine = new CSharpScriptEngine();
-            var manager = InventoryManager.CreateInventory(_packetNotifier, _scriptEngine);
+            var manager = InventoryManager.CreateInventory(_packetNotifier, _scriptEngine); ;
 
             // Add an item and make sure it exists in the proper slot
             var item = manager.SetExtraItem(7, itemManager.GetItemType(2001));

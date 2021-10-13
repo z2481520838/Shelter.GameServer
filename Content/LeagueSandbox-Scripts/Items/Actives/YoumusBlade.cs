@@ -6,7 +6,6 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using System.Numerics;
 using GameServerCore.Scripting.CSharp;
 
-
 namespace ItemSpells
 {
     public class YoumusBlade : ISpellScript
@@ -27,7 +26,6 @@ namespace ItemSpells
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
             AddBuff("YoumuusGhostblade", 6.0f, 1, spell, owner, owner);
-            AddParticleTarget(owner, owner, "spectral_fury_activate_speed.troy", owner, 6f, 2f);
         }
 
         public void OnSpellCast(ISpell spell)
