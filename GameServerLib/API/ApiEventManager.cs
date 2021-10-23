@@ -315,10 +315,10 @@ namespace LeagueSandbox.GameServer.API
     }
     public class EventOnLaunchAttack
     {
-        private readonly List<Tuple<object, IObjAiBase, Action<IObjAiBase, IAttackableUnit, ISpell>, bool>> _listeners = new List<Tuple<object, IObjAiBase, Action<IObjAiBase, IAttackableUnit, ISpell>, bool>>();
-        public void AddListener(object owner, IObjAiBase unit, Action<IObjAiBase, IAttackableUnit, ISpell> callback, bool singleInstance)
+        private readonly List<Tuple<object, IObjAiBase, Action<ISpell>, bool>> _listeners = new List<Tuple<object, IObjAiBase, Action<ISpell>, bool>>();
+        public void AddListener(object owner, IObjAiBase unit, Action<ISpell> callback, bool singleInstance)
         {
-            var listenerTuple = new Tuple<object, IObjAiBase, Action<IObjAiBase, IAttackableUnit, ISpell>, bool>(owner, unit, callback, singleInstance);
+            var listenerTuple = new Tuple<object, IObjAiBase, Action<ISpell>, bool>(owner, unit, callback, singleInstance);
             _listeners.Add(listenerTuple);
         }
         public void RemoveListener(object owner, IObjAiBase unit)
@@ -329,7 +329,7 @@ namespace LeagueSandbox.GameServer.API
         {
             _listeners.RemoveAll((listener) => listener.Item1 == owner);
         }
-        public void Publish(IObjAiBase owner, IAttackableUnit target, ISpell spell)
+        public void Publish(ISpell spell)
         {
             var count = _listeners.Count;
 
@@ -340,10 +340,10 @@ namespace LeagueSandbox.GameServer.API
 
             for (int i = count - 1; i >= 0; i--)
             {
-                if (_listeners[i].Item2 == owner)
+                if (_listeners[i].Item2 == spell.CastInfo.Owner)
                 {
-                    _listeners[i].Item3(owner, target, spell);
-                    if (_listeners[i].Item4 == true)
+                    _listeners[i].Item3(spell);
+                    if (_listeners[i].Item4)
                     {
                         _listeners.RemoveAt(i);
                     }

@@ -27,7 +27,7 @@ namespace Spells
             ApiEventManager.OnLaunchAttack.AddListener(this, owner, OnLaunchAttack, false);
         }
 
-        public void OnLaunchAttack(IObjAiBase owner, IAttackableUnit unit, ISpell spell)
+        public void OnLaunchAttack(ISpell spell)
         {
             spell.CastInfo.Owner.SetAutoAttackSpell("NasusBasicAttack2", false);
         }
@@ -77,7 +77,7 @@ namespace Spells
             ApiEventManager.OnLaunchAttack.AddListener(this, owner, OnLaunchAttack, false);
         }
 
-        public void OnLaunchAttack(IObjAiBase owner, IAttackableUnit unit, ISpell spell)
+        public void OnLaunchAttack(ISpell spell)
         {
             spell.CastInfo.Owner.SetAutoAttackSpell("NasusBasicAttack", false);
         }
