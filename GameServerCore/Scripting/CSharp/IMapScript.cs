@@ -27,7 +27,9 @@ namespace GameServerCore.Domain
         Dictionary<TeamId, string> InhibitorModels { get; }
         Dictionary<TeamId, Dictionary<TurretType, string>> TowerModels { get; }
         Dictionary<TeamId, Dictionary<MinionSpawnType, string>> MinionModels { get; }
+        Dictionary<MonsterSpawnType, string> MonsterModels { get; }
         Dictionary<LaneID, List<Vector2>> MinionPaths { get; }
+        public List<IMonsterCamp> JungleCamps { get; }
         Tuple<int, List<MinionSpawnType>> MinionWaveToSpawn(float gameTime, int cannonMinionCount, bool isInhibitorDead, bool areAllInhibitorsDead);
         TurretType GetTurretType(int trueIndex, LaneID lane, TeamId teamId);
         void Init(IMapScriptHandler map);

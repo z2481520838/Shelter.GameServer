@@ -6,14 +6,13 @@ using LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI;
 
 namespace LeagueSandbox.GameServer.GameObjects
 {
-    class MonsterCamp : IMonsterCamp
+    public class MonsterCamp : IMonsterCamp
     {
         public MonsterCampType CampType { get; }
 
         public Vector2 Position { get; }
 
-        public List<MonsterSpawnType> MonsterTypes { get; }
-        public List<Vector2> MonsterSpawnPositions { get; }
+        public Dictionary<Vector2, MonsterSpawnType> MonsterList { get; set; } = new Dictionary<Vector2, MonsterSpawnType>();
         public Vector2 FacingDirection { get; }
 
         public float RespawnCooldown { get; set; }
@@ -26,106 +25,23 @@ namespace LeagueSandbox.GameServer.GameObjects
 
         List<Monster> monsters = new List<Monster>();
 
-        public MonsterCamp(Game game, MonsterCampType campType, Vector2 position, List<MonsterSpawnType> monsterTypes, List<Vector2> monsterSpawnPositions = null, float respawnCooldown = 1, Vector2 facingDirection = default)
+        public MonsterCamp(Game game, MonsterCampType campType, Vector2 position, Dictionary<Vector2, MonsterSpawnType> listOfMonsters, float respawnCooldown = 1, Vector2 facingDirection = default)
         {
             _game = game;
             CampType = campType;
             Position = position;
-            MonsterTypes = monsterTypes;
-            RespawnCooldown = respawnCooldown;
-            MonsterSpawnPositions = monsterSpawnPositions;
-            if(facingDirection == default)
+            RespawnCooldown = respawnCooldown * 1000;
+            foreach (Vector2 coord in listOfMonsters.Keys)
+            {
+                MonsterList.Add(coord, listOfMonsters[coord]);
+            }
+            if (facingDirection == default)
             {
                 FacingDirection = Position;
             }
             else
             {
                 FacingDirection = facingDirection;
-            }
-        }
-
-        private static string GetMonsterModel(MonsterSpawnType type)
-        {
-            switch (type)
-            {
-                //OLD SUMMONERS RIFT && OLD TWISTED TREELINE
-                case MonsterSpawnType.WORM:
-                    return "Worm";
-                case MonsterSpawnType.DRAGON:
-                    return "Dragon";
-                case MonsterSpawnType.WRAITH:
-                    return "Wraith";
-                case MonsterSpawnType.ANCIENT_GOLEM:
-                    return "AncientGolem";
-                case MonsterSpawnType.YOUNG_LIZARD_ANCIENT:
-                    return "YoungLizard";
-                case MonsterSpawnType.GIANT_WOLF:
-                    return "GiantWolf";
-                case MonsterSpawnType.WOLF:
-                    return "Wolf";
-                case MonsterSpawnType.GREAT_WRAITH:
-                    return "GreatWraith";
-                case MonsterSpawnType.LESSER_WRAITH:
-                    return "LesserWraith";
-                case MonsterSpawnType.ELDER_LIZARD:
-                    return "LizardElder";
-                case MonsterSpawnType.YOUNG_LIZARD_ELDER:
-                    return "YoungLizard";
-                case MonsterSpawnType.GOLEM:
-                    return "Golem";
-                case MonsterSpawnType.LESSER_GOLEM:
-                    return "SmallGolem";
-
-                //NEW SUMMONERS RIFT
-                case MonsterSpawnType.SRU_BARON:
-                    return "SRU_Baron";
-                case MonsterSpawnType.SRU_DRAGON:
-                    return "SRU_Dragon";
-                case MonsterSpawnType.SRU_GROMP:
-                    return "SRU_Gromp";
-                case MonsterSpawnType.SRU_BLUE:
-                    return "SRU_Blue";
-                case MonsterSpawnType.SRU_BLUEMINI:
-                    return "SRU_BlueMini";
-                case MonsterSpawnType.SRU_BLUEMINI2:
-                    return "SRU_BlueMini2";
-                case MonsterSpawnType.SRU_MURKWOLF:
-                    return "SRU_Murkwolf";
-                case MonsterSpawnType.SRU_MURKWOLF_MINI:
-                    return "SRU_MurkwolfMini";
-                case MonsterSpawnType.SRU_RAZORBEAK:
-                    return "SRU_Razorbeak";
-                case MonsterSpawnType.SRU_RAZORBRAK_MINI:
-                    return "SRU_RazorbeakMini";
-                case MonsterSpawnType.SRU_RED:
-                    return "SRU_Red";
-                case MonsterSpawnType.SRU_RED_MINI:
-                    return "SRU_RedMini";
-                case MonsterSpawnType.SRU_KRUG:
-                    return "SRU_Krug";
-                case MonsterSpawnType.SRU_KRUG_MINI:
-                    return "SRU_KrugMini";
-
-                //NEW TWISTED TREELINE
-                case MonsterSpawnType.TT_SPIDERBOSS:
-                    return "TT_Spiderboss";
-                case MonsterSpawnType.TT_GOLEM:
-                    return "TT_NGolem";
-                case MonsterSpawnType.TT_GOLEM2:
-                    return "TT_NGolem2";
-                case MonsterSpawnType.TT_NWOLF:
-                    return "TT_NWolf";
-                case MonsterSpawnType.TT_NWOLF2:
-                    return "TT_NWolf2";
-                case MonsterSpawnType.TT_NWRAITH:
-                    return "TT_NWraith";
-                case MonsterSpawnType.TT_NWRAITH2:
-                    return "TT_NWraith2";
-                case MonsterSpawnType.TT_RELIC:
-                    return "TT_Relic";
-
-                default:
-                    return "TestCubeRender";
             }
         }
 
@@ -180,29 +96,18 @@ namespace LeagueSandbox.GameServer.GameObjects
             if (!_notifiedClient)
             {
                 _game.PacketNotifier.NotifyCreateMonsterCamp(Position, (byte)CampType, 0, GetMinimapIcon(CampType));
-                _notifiedClient = true;
+                //_notifiedClient = true;
             }
 
             if (_isAlive) return;
 
             monsters = new List<Monster>();
 
-            int i = 0;
-            foreach (var type in MonsterTypes)
+            foreach (var coord in MonsterList.Keys)
             {
-                if (MonsterSpawnPositions != null)
-                {
-                    var m = new Monster(_game, MonsterSpawnPositions[i], FacingDirection, type, GetMonsterModel(type), GetMonsterModel(type), CampType);
-                    monsters.Add(m);
-                    _game.ObjectManager.AddObject(m);
-                }
-                else
-                {
-                    var m = new Monster(_game, Position, FacingDirection, type, GetMonsterModel(type), GetMonsterModel(type), CampType);
-                    monsters.Add(m);
-                    _game.ObjectManager.AddObject(m);
-                }
-                i++;
+                var m = new Monster(_game, coord, FacingDirection, MonsterList[coord], _game.Map.MapScript.MonsterModels[MonsterList[coord]], _game.Map.MapScript.MonsterModels[MonsterList[coord]], CampType);
+                _game.ObjectManager.AddObject(m);
+                monsters.Add(m);
             }
 
             _setToSpawn = false;

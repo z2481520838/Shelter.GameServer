@@ -22,6 +22,7 @@ namespace MapScripts
         public long NextSpawnTime { get; set; } = 10 * 1000;
         public long SpawnInterval { get; set; } = 10 * 1000;
         public bool MinionPathingOverride { get; set; } = false;
+        public List<IMonsterCamp> JungleCamps { get; set; }
 
         //General things that will affect players globaly, such as default gold per-second, Starting gold....
         public float GoldPerSecond { get; set; } = 1.9f;
@@ -62,7 +63,7 @@ namespace MapScripts
                 {TurretType.FOUNTAIN_TURRET, "OdinChaosTurretShrine" },
             } }
         };
-
+        public Dictionary<MonsterSpawnType, string> MonsterModels { get; set; }
         //Turret Items
         public Dictionary<TurretType, int[]> TurretItems { get; set; } = new Dictionary<TurretType, int[]>
         {

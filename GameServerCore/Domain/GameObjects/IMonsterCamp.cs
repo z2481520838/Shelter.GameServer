@@ -8,12 +8,10 @@ namespace GameServerCore.Domain.GameObjects
     {
         MonsterCampType CampType { get; }
         Vector2 Position { get; }
-        List<MonsterSpawnType> MonsterTypes { get; }
-        float RespawnCooldown { get; }
-        public float NextSpawnTime { get; }
-
+        public Dictionary<Vector2, MonsterSpawnType> MonsterList { get; set; }
+        float RespawnCooldown { get; set; }
+        float NextSpawnTime { get; }
         bool IsAlive();
-
         void Spawn();
     }
 }

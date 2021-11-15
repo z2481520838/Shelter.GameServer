@@ -126,5 +126,6 @@ namespace GameServerCore.Maps
         /// <returns></returns>
         float GameTime();
         void LoadBuildingProtection();
+        IMonsterCamp CreateMonsterCamp(MonsterCampType campType, Vector2 campPosition, Dictionary<Vector2, MonsterSpawnType> listOfMonsters, float timeToRespawn = 1, Vector2 facingDirection = default);
     }
 }

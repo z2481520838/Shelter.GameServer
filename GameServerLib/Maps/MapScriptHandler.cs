@@ -67,6 +67,7 @@ namespace LeagueSandbox.GameServer.Maps
         public List<IMapObject> InfoPoints { get; set; } = new List<IMapObject>();
         public Dictionary<LaneID, List<Vector2>> BlueMinionPathing;
         public Dictionary<LaneID, List<Vector2>> PurpleMinionPathing;
+        public Dictionary<string, IMonsterCamp> MonsterCamps { get; set; } = new Dictionary<string, IMonsterCamp>();
 
         /// <summary>
         /// Instantiates map related game settings such as collision handler, navigation grid, announcer events, and map properties.
@@ -562,6 +563,12 @@ namespace LeagueSandbox.GameServer.Maps
         public float GameTime()
         {
             return _game.GameTime;
+        }
+
+        //Unofficial stuff
+        public IMonsterCamp CreateMonsterCamp(MonsterCampType campType, Vector2 campPosition, Dictionary<Vector2, MonsterSpawnType> listOfMonsters, float timeToRespawn = 1, Vector2 facingDirection = default)
+        {
+            return new MonsterCamp(_game, campType, campPosition, listOfMonsters, timeToRespawn, facingDirection);
         }
     }
 }
