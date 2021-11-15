@@ -248,7 +248,7 @@ namespace MapScripts
 
         public void OnMatchStart()
         {
-            _monsterCamps = new List<IMonsterCamp>() {
+            JungleCamps = new List<IMonsterCamp>() {
                 //Neutral,
                 _map.CreateMonsterCamp(MonsterCampType.TT_SPIDERBOSS, new Vector2(7711.15f, 10080.0f),
                 new Dictionary<Vector2, MonsterSpawnType>{
@@ -308,7 +308,7 @@ namespace MapScripts
         //This function gets executed every server tick
         public void Update(float diff)
         {
-            foreach (var camp in _monsterCamps)
+            foreach (var camp in JungleCamps)
             {
                 if (!camp.IsAlive())
                 {
