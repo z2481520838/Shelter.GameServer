@@ -11,6 +11,7 @@ using GameServerCore.Domain;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Enums;
 using GameServerCore.Maps;
+using GameServerCore.NetInfo;
 using LeagueSandbox.GameServer.Content;
 using LeagueSandbox.GameServer.GameObjects;
 using LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI;
@@ -96,7 +97,7 @@ namespace LeagueSandbox.GameServer.Maps
             CollisionHandler = new CollisionHandler(this);
 
             MapScript = _scriptEngine.CreateObject<IMapScript>("MapScripts", $"Map{Id}") ?? new EmptyMapScript();
-            if(game.Config.MapData.SpawnBarracks != null)
+            if (game.Config.MapData.SpawnBarracks != null)
             {
                 SpawnBarracks = game.Config.MapData.SpawnBarracks;
             }
@@ -106,9 +107,30 @@ namespace LeagueSandbox.GameServer.Maps
         /// Function called every tick of the game. Updates CollisionHandler, MapProperties, and executes AnnouncerEvents.
         /// </summary>
         /// <param name="diff">Number of milliseconds since this tick occurred.</param>
+        List<Tuple<uint, ClientInfo>> _disconnectedPlayers = new List<Tuple<uint, ClientInfo>>();
+
+
+
         public void Update(float diff)
         {
             CollisionHandler.Update();
+
+            foreach (var player in _game.PlayerManager.GetPlayers())
+            {
+                if (player.Item2.IsDisconnected && !_disconnectedPlayers.Contains(player))
+                {
+                    _disconnectedPlayers.Add(player);
+                }
+                else if (!player.Item2.IsDisconnected && _disconnectedPlayers.Contains(player))
+                {
+                    _disconnectedPlayers.Remove(player);
+                }
+            }
+            if (_disconnectedPlayers.Count == _game.PlayerManager.GetPlayers().Count)
+            {
+                _game.SetToExit = true;
+            }
+
             foreach (var announce in AnnouncerEvents)
             {
                 if (!announce.IsAnnounced && _game.GameTime >= announce.EventTime)
@@ -376,7 +398,7 @@ namespace LeagueSandbox.GameServer.Maps
                         else if (turret.Type == TurretType.INNER_TURRET)
                         {
                             //Checks if there are outer turrets
-                            if(TurretList[inhibitor.Team][inhibitor.Lane].Any(outerTurret => outerTurret.Type == TurretType.OUTER_TURRET))
+                            if (TurretList[inhibitor.Team][inhibitor.Lane].Any(outerTurret => outerTurret.Type == TurretType.OUTER_TURRET))
                             {
                                 _game.ProtectionManager.AddProtection(turret, false, TurretList[inhibitor.Team][inhibitor.Lane].First(dependTurret => dependTurret.Type == TurretType.OUTER_TURRET));
                             }
@@ -532,9 +554,9 @@ namespace LeagueSandbox.GameServer.Maps
 
         //General Map stuff, such as Announcements and surrender
         //TODO: See if the "IsMapSpecific" parameter is actually needed.
-        public IRegion CreateRegion(TeamId team, Vector2 position, RegionType type = RegionType.Default , IGameObject collisionUnit = null, IGameObject visionTarget = null, bool giveVision = false, float visionRadius = 0, bool revealStealth = false, bool hasCollision = false, float collisionRadius = 0, float grassRadius = 0, float scale = 1, float addedSize = 0, float lifeTime = 0, int clientID = 0)
+        public IRegion CreateRegion(TeamId team, Vector2 position, RegionType type = RegionType.Default, IGameObject collisionUnit = null, IGameObject visionTarget = null, bool giveVision = false, float visionRadius = 0, bool revealStealth = false, bool hasCollision = false, float collisionRadius = 0, float grassRadius = 0, float scale = 1, float addedSize = 0, float lifeTime = 0, int clientID = 0)
         {
-           return new Region(_game, team, position, type, collisionUnit, visionTarget, giveVision, visionRadius, revealStealth, hasCollision, collisionRadius, grassRadius, scale, addedSize, lifeTime, clientID);
+            return new Region(_game, team, position, type, collisionUnit, visionTarget, giveVision, visionRadius, revealStealth, hasCollision, collisionRadius, grassRadius, scale, addedSize, lifeTime, clientID);
         }
         public void AddAnnouncement(long time, Announces ID, bool IsMapSpecific)
         {

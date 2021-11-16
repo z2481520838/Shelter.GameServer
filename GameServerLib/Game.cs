@@ -193,7 +193,7 @@ namespace LeagueSandbox.GameServer
             }
 
             _logger.Info("Game is ready.");
-            var timer = new Timer(180000) { AutoReset = false };
+            var timer = new Timer(360000) { AutoReset = false };
             timer.Elapsed += (a, b) =>
             {
                 if(!IsRunning)
