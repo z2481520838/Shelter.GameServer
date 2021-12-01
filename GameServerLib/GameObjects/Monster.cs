@@ -85,11 +85,11 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
 
             ApiEventManager.OnTakeDamage.AddListener(this, this, TakeDamage, false);
         }
-        public void TakeDamage(IAttackableUnit unit, IAttackableUnit source)
+        public void TakeDamage(IDamageData damageData)
         {
             if (resetting) return;
-            AlertCamp(source);
-            SetTargetUnit(source, true);
+            AlertCamp(damageData.Attacker);
+            SetTargetUnit(damageData.Attacker, true);
         }
 
         public void AlertCamp(IAttackableUnit source)

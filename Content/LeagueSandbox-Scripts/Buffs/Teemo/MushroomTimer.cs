@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using GameServerCore.Domain.GameObjects.Spell.Sector;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.GameObjects.Stats;
-using LeaguePackets.Game.Common;
-
 namespace Buffs
 {
     internal class BantamTrap : IBuffGameScript
