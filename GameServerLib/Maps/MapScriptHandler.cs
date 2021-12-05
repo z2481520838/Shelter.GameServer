@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Text;
 using Force.Crc32;
 using GameServerCore;
@@ -44,6 +45,10 @@ namespace LeagueSandbox.GameServer.Maps
         /// </summary>
         public ICollisionHandler CollisionHandler { get; private set; }
         /// <summary>
+        /// Gamemode name designated by the game config. Determines which MapScript to load.
+        /// </summary>
+        public string GameMode { get; private set; }
+        /// <summary>
         /// Navigation Grid to be instanced by the map. Used for terrain data.
         /// </summary>
         public INavigationGrid NavigationGrid { get; private set; }
@@ -68,7 +73,6 @@ namespace LeagueSandbox.GameServer.Maps
         public List<IMapObject> InfoPoints { get; set; } = new List<IMapObject>();
         public Dictionary<LaneID, List<Vector2>> BlueMinionPathing;
         public Dictionary<LaneID, List<Vector2>> PurpleMinionPathing;
-        public Dictionary<string, IMonsterCamp> MonsterCamps { get; set; } = new Dictionary<string, IMonsterCamp>();
 
         /// <summary>
         /// Instantiates map related game settings such as collision handler, navigation grid, announcer events, and map properties.
@@ -80,7 +84,7 @@ namespace LeagueSandbox.GameServer.Maps
             MapData = game.Config.MapData;
             _scriptEngine = game.ScriptEngine;
             _logger = LoggerProvider.GetLogger();
-
+            GameMode = game.Config.GameConfig.GameMode;
             Id = _game.Config.GameConfig.Map;
 
             try
@@ -96,7 +100,13 @@ namespace LeagueSandbox.GameServer.Maps
             AnnouncerEvents = new List<IAnnounce>();
             CollisionHandler = new CollisionHandler(this);
 
-            MapScript = _scriptEngine.CreateObject<IMapScript>("MapScripts", $"Map{Id}") ?? new EmptyMapScript();
+            if (String.IsNullOrEmpty(GameMode))
+            {
+                _logger.Error("No GameMode Specified, Defaulting to CLASSIC...");
+                GameMode = "CLASSIC";
+            }
+            MapScript = _scriptEngine.CreateObject<IMapScript>($"MapScripts.Map{Id}", $"{GameMode}") ?? new EmptyMapScript();
+
             if (game.Config.MapData.SpawnBarracks != null)
             {
                 SpawnBarracks = game.Config.MapData.SpawnBarracks;
@@ -107,30 +117,9 @@ namespace LeagueSandbox.GameServer.Maps
         /// Function called every tick of the game. Updates CollisionHandler, MapProperties, and executes AnnouncerEvents.
         /// </summary>
         /// <param name="diff">Number of milliseconds since this tick occurred.</param>
-        List<Tuple<uint, ClientInfo>> _disconnectedPlayers = new List<Tuple<uint, ClientInfo>>();
-
-
-
         public void Update(float diff)
         {
             CollisionHandler.Update();
-
-            foreach (var player in _game.PlayerManager.GetPlayers())
-            {
-                if (player.Item2.IsDisconnected && !_disconnectedPlayers.Contains(player))
-                {
-                    _disconnectedPlayers.Add(player);
-                }
-                else if (!player.Item2.IsDisconnected && _disconnectedPlayers.Contains(player))
-                {
-                    _disconnectedPlayers.Remove(player);
-                }
-            }
-            if (_disconnectedPlayers.Count == _game.PlayerManager.GetPlayers().Count)
-            {
-                _game.SetToExit = true;
-            }
-
             foreach (var announce in AnnouncerEvents)
             {
                 if (!announce.IsAnnounced && _game.GameTime >= announce.EventTime)
@@ -148,8 +137,9 @@ namespace LeagueSandbox.GameServer.Maps
             {
                 if (_minionNumber > 0)
                 {
+                    // Spawn new Minion every 0.8s
                     if (_game.GameTime >= MapScript.NextSpawnTime + _minionNumber * 8 * 100)
-                    { // Spawn new wave every 0.8s
+                    { 
                         if (SetUpLaneMinion())
                         {
                             _minionNumber = 0;
@@ -398,7 +388,7 @@ namespace LeagueSandbox.GameServer.Maps
                         else if (turret.Type == TurretType.INNER_TURRET)
                         {
                             //Checks if there are outer turrets
-                            if (TurretList[inhibitor.Team][inhibitor.Lane].Any(outerTurret => outerTurret.Type == TurretType.OUTER_TURRET))
+                            if(TurretList[inhibitor.Team][inhibitor.Lane].Any(outerTurret => outerTurret.Type == TurretType.OUTER_TURRET))
                             {
                                 _game.ProtectionManager.AddProtection(turret, false, TurretList[inhibitor.Team][inhibitor.Lane].First(dependTurret => dependTurret.Type == TurretType.OUTER_TURRET));
                             }
@@ -506,7 +496,7 @@ namespace LeagueSandbox.GameServer.Maps
         }
         public bool IsMinionSpawnEnabled()
         {
-            return _game.Config.MinionSpawnsEnabled;
+            return _game.Config.GameFeatures.HasFlag(FeatureFlags.EnableLaneMinions);
         }
 
         public bool SetUpLaneMinion()
@@ -554,9 +544,9 @@ namespace LeagueSandbox.GameServer.Maps
 
         //General Map stuff, such as Announcements and surrender
         //TODO: See if the "IsMapSpecific" parameter is actually needed.
-        public IRegion CreateRegion(TeamId team, Vector2 position, RegionType type = RegionType.Default, IGameObject collisionUnit = null, IGameObject visionTarget = null, bool giveVision = false, float visionRadius = 0, bool revealStealth = false, bool hasCollision = false, float collisionRadius = 0, float grassRadius = 0, float scale = 1, float addedSize = 0, float lifeTime = 0, int clientID = 0)
+        public IRegion CreateRegion(TeamId team, Vector2 position, RegionType type = RegionType.Default , IGameObject collisionUnit = null, IGameObject visionTarget = null, bool giveVision = false, float visionRadius = 0, bool revealStealth = false, bool hasCollision = false, float collisionRadius = 0, float grassRadius = 0, float scale = 1, float addedSize = 0, float lifeTime = 0, int clientID = 0)
         {
-            return new Region(_game, team, position, type, collisionUnit, visionTarget, giveVision, visionRadius, revealStealth, hasCollision, collisionRadius, grassRadius, scale, addedSize, lifeTime, clientID);
+           return new Region(_game, team, position, type, collisionUnit, visionTarget, giveVision, visionRadius, revealStealth, hasCollision, collisionRadius, grassRadius, scale, addedSize, lifeTime, clientID);
         }
         public void AddAnnouncement(long time, EventID ID, bool isMapSpecific)
         {
@@ -580,17 +570,14 @@ namespace LeagueSandbox.GameServer.Maps
         {
             FountainList.Add(team, new Fountain(_game, team, position, 1000));
         }
-
+        public void SetGameFeatures(FeatureFlags featureFlag, bool isEnabled)
+        {
+            _game.Config.SetGameFeatures(featureFlag, isEnabled);
+        }
         //Game Time
         public float GameTime()
         {
             return _game.GameTime;
-        }
-
-        //Unofficial stuff
-        public IMonsterCamp CreateMonsterCamp(MonsterCampType campType, Vector2 campPosition, Dictionary<Vector2, MonsterSpawnType> listOfMonsters, float timeToRespawn = 1, Vector2 facingDirection = default)
-        {
-            return new MonsterCamp(_game, campType, campPosition, listOfMonsters, timeToRespawn, facingDirection);
         }
     }
 }
