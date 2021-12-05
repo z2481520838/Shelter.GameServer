@@ -5,12 +5,14 @@ using GameServerCore.Domain;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Enums;
 using GameServerCore.Maps;
+using LeagueSandbox.GameServer.Content;
 
-namespace MapScripts
+namespace MapScripts.Map1
 {
-    public class Map1 : IMapScript
+    public class CLASSIC : IMapScript
     {
         public bool EnableBuildingProtection { get; set; } = true;
+        public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
 
         //General Map variable
         private IMapScriptHandler _map;
@@ -30,7 +32,7 @@ namespace MapScripts
         public bool IsKillGoldRewardReductionActive { get; set; } = true;
         public int BluePillId { get; set; } = 2001;
         public long FirstGoldTime { get; set; } = 90 * 1000;
-        
+
         //Tower type enumeration might vary slightly from map to map, so we set that up here
         public TurretType GetTurretType(int trueIndex, LaneID lane, TeamId teamId)
         {
@@ -257,7 +259,7 @@ namespace MapScripts
         };
 
         //This function is executed in-between Loading the map structures and applying the structure protections. Is the first thing on this script to be executed
-        public void Init(IMapScriptHandler map)
+        public virtual void Init(IMapScriptHandler map)
         {
             _map = map;
 
@@ -268,10 +270,13 @@ namespace MapScripts
             map.ChangeTowerOnMapList("Turret_T1_C_06_A", TeamId.TEAM_BLUE, LaneID.MIDDLE, LaneID.TOP);
             map.ChangeTowerOnMapList("Turret_T1_C_07_A", TeamId.TEAM_BLUE, LaneID.MIDDLE, LaneID.BOTTOM);
 
-            // Announcer events
-            map.AddAnnouncement(30 * 1000, EventID.OnStartGameMessage1, true); // Welcome to "Map"
-            map.AddAnnouncement(FirstSpawnTime - 30 * 1000, EventID.OnStartGameMessage2, true); // 30 seconds until minions spawn
-            map.AddAnnouncement(FirstSpawnTime, EventID.OnMinionsSpawn, false); // Minions have spawned
+            // Welcome to "Map"
+            map.AddAnnouncement(30 * 1000, EventID.OnStartGameMessage1, true);
+            // 30 seconds until minions spawn
+            map.AddAnnouncement(FirstSpawnTime - 30 * 1000, EventID.OnStartGameMessage2, true);
+            // Minions have spawned
+            map.AddAnnouncement(FirstSpawnTime, EventID.OnMinionsSpawn, false);
+
             //Map props
             _map.AddLevelProp("LevelProp_Yonkey", "Yonkey", new Vector2(12465.0f, 14422.257f), 101.0f, new Vector3(0.0f, 66.0f, 0.0f), new Vector3(-33.3334f, 122.2222f, -133.3333f), Vector3.One);
             _map.AddLevelProp("LevelProp_Yonkey1", "Yonkey", new Vector2(-76.0f, 1769.1589f), 94.0f, new Vector3(0.0f, 30.0f, 0.0f), new Vector3(0.0f, -11.1111f, -22.2222f), Vector3.One);
@@ -279,7 +284,7 @@ namespace MapScripts
             _map.AddLevelProp("LevelProp_ShopMale1", "ShopMale", new Vector2(-99.5613f, 855.6632f), 191.4039f, new Vector3(0.0f, 158.0f, 0.0f), Vector3.Zero, Vector3.One);
         }
 
-        public void OnMatchStart()
+        public virtual void OnMatchStart()
         {
             JungleCamps = new List<IMonsterCamp>
             {
@@ -413,12 +418,8 @@ namespace MapScripts
         }
         public float GetGoldFor(IAttackableUnit u)
         {
-            if (!(u is ILaneMinion m))
+            if (u is IChampion c)
             {
-                if (!(u is IChampion c))
-                {
-                    return 0.0f;
-                }
 
                 var gold = 300.0f; //normal gold for a kill
                 if (c.KillDeathCounter < 5 && c.KillDeathCounter >= 0)
@@ -464,20 +465,52 @@ namespace MapScripts
                 return firstDeathGold;
             }
 
-            var dic = new Dictionary<MinionSpawnType, float>
+            else if (u is ILaneMinion mi)
             {
-                { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
-            };
+                var dic = new Dictionary<MinionSpawnType, float>
+                {
+                    { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
+                };
 
-            if (!dic.ContainsKey(m.MinionSpawnType))
-            {
-                return 0.0f;
+                if (!dic.ContainsKey(mi.MinionSpawnType))
+                {
+                    return 0.0f;
+                }
+
+                return dic[mi.MinionSpawnType];
             }
 
-            return dic[m.MinionSpawnType];
+            else if (u is IMonster mo)
+            {
+                var dic = new Dictionary<MonsterSpawnType, float>
+            {
+                { MonsterSpawnType.GREAT_WRAITH, 35.0f },
+                { MonsterSpawnType.LESSER_WRAITH, 4.0f },
+                { MonsterSpawnType.GIANT_WOLF, 40.0f },
+                { MonsterSpawnType.WOLF, 8.0f },
+                { MonsterSpawnType.GOLEM, 55.0f },
+                { MonsterSpawnType.LESSER_GOLEM, 15.0f },
+                { MonsterSpawnType.WRAITH, 65.0f },
+                { MonsterSpawnType.ANCIENT_GOLEM, 60.0f },
+                { MonsterSpawnType.ELDER_LIZARD, 60.0f },
+                { MonsterSpawnType.YOUNG_LIZARD_ANCIENT, 7.0f },
+                { MonsterSpawnType.YOUNG_LIZARD_ELDER, 7.0f },
+                { MonsterSpawnType.DRAGON, 150.0f },
+                { MonsterSpawnType.WORM, 320.0f },
+            };
+
+                if (!dic.ContainsKey(mo.MinionSpawnType))
+                {
+                    return 0.0f;
+                }
+
+                return dic[mo.MinionSpawnType];
+            }
+
+            return 0.0f;
         }
 
         public float GetExperienceFor(IAttackableUnit u)

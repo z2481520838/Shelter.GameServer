@@ -133,5 +133,6 @@ namespace GameServerCore.Maps
         /// </summary>
         /// <returns></returns>
         void SetGameFeatures(FeatureFlags featureFlag, bool isEnabled);
+        IMonsterCamp CreateMonsterCamp(MonsterCampType campType, Vector2 campPosition, Dictionary<Vector2, MonsterSpawnType> listOfMonsters, float timeToRespawn = 1, Vector2 facingDirection = default);
     }
 }

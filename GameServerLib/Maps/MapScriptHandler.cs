@@ -579,5 +579,10 @@ namespace LeagueSandbox.GameServer.Maps
         {
             return _game.GameTime;
         }
+        //Unofficial stuff
+        public IMonsterCamp CreateMonsterCamp(MonsterCampType campType, Vector2 campPosition, Dictionary<Vector2, MonsterSpawnType> listOfMonsters, float timeToRespawn = 1, Vector2 facingDirection = default)
+        {
+            return new MonsterCamp(_game, campType, campPosition, listOfMonsters, timeToRespawn, facingDirection);
+        }
     }
 }
