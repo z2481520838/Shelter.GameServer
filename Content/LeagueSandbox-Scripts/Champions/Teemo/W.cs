@@ -8,6 +8,7 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 using LeagueSandbox.GameServer.API;
 using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain;
 
 namespace Spells
 {
@@ -30,10 +31,10 @@ namespace Spells
             Owner = owner;
             ApiEventManager.OnTakeDamage.AddListener(this, owner, TakeDamage, false);
         }
-        public void TakeDamage(IAttackableUnit unit, IAttackableUnit source)
+        public void TakeDamage(IDamageData damageData)
         {
-            Unit = unit;
-            if (Owner != null && !Owner.HasBuff("MoveQuick") && (source is IChampion || source is IBaseTurret || source is ILaneTurret))
+            Unit = damageData.Target;
+            if (Owner != null && !Owner.HasBuff("MoveQuick") && (damageData.Attacker is IChampion || damageData.Attacker is IBaseTurret || damageData.Attacker is ILaneTurret))
             {
                 RemoveBuff(Owner, "MoveQuickPassive");
                 takeDamage = true;
