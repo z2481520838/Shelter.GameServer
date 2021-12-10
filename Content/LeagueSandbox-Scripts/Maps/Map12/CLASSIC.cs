@@ -26,6 +26,7 @@ namespace MapScripts.Map12
         public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
         public bool HasFirstBloodHappened { get; set; } = false;
         public long NextSpawnTime { get; set; } = 45 * 1000;
+        public List<IMonsterCamp> JungleCamps { get; set; }
         private IMapScriptHandler _map;
 
         //Tower type enumeration might vary slightly from map to map, so we set that up here
@@ -93,6 +94,7 @@ namespace MapScripts.Map12
             { TurretType.INHIBITOR_TURRET, new[] { 1501, 1502, 1503, 1505 } },
             { TurretType.NEXUS_TURRET, new[] { 1501, 1502, 1503, 1505 } }
         };
+        public Dictionary<MonsterSpawnType, string> MonsterModels { get; set; }
 
         public Dictionary<LaneID, List<Vector2>> MinionPaths { get; set; }
         //List of every wave type

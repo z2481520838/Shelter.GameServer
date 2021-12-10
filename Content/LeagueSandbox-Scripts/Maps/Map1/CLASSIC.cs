@@ -13,7 +13,7 @@ namespace MapScripts.Map1
 {
     public class CLASSIC : IMapScript
     {
-        public IMapScriptMetadata MapScriptMetadata { get; set; } = new MapScriptMetadata 
+        public IMapScriptMetadata MapScriptMetadata { get; set; } = new MapScriptMetadata
         {
             MinionPathingOverride = true,
             EnableBuildingProtection = true
@@ -21,8 +21,8 @@ namespace MapScripts.Map1
         public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
         public bool HasFirstBloodHappened { get; set; } = false;
         public long NextSpawnTime { get; set; } = 90 * 1000;
+        public List<IMonsterCamp> JungleCamps { get; set; }
         public IMapScriptHandler _map;
-
 
         //Tower type enumeration might vary slightly from map to map, so we set that up here
         public TurretType GetTurretType(int trueIndex, LaneID lane, TeamId teamId)
@@ -100,7 +100,17 @@ namespace MapScripts.Map1
             { TurretType.INHIBITOR_TURRET, new[] { 1501, 1502, 1503, 1505 } },
             { TurretType.NEXUS_TURRET, new[] { 1501, 1502, 1503, 1505 } }
         };
-
+        public Dictionary<MonsterSpawnType, string> MonsterModels { get; set; } = new Dictionary<MonsterSpawnType, string>
+        {
+            {MonsterSpawnType.WORM,"Worm"},
+            {MonsterSpawnType.DRAGON, "Dragon"},
+            {MonsterSpawnType.ELDER_LIZARD, "LizardElder"}, {MonsterSpawnType.YOUNG_LIZARD_ELDER, "YoungLizard"},
+            {MonsterSpawnType.ANCIENT_GOLEM, "AncientGolem" }, {MonsterSpawnType.YOUNG_LIZARD_ANCIENT, "YoungLizard"},
+            {MonsterSpawnType.GREAT_WRAITH, "GreatWraith" },
+            {MonsterSpawnType.GIANT_WOLF, "GiantWolf" }, {MonsterSpawnType.WOLF, "Wolf"},
+            {MonsterSpawnType.GOLEM, "Golem" }, {MonsterSpawnType.LESSER_GOLEM, "SmallGolem"},
+            {MonsterSpawnType.WRAITH, "Wraith" }, {MonsterSpawnType.LESSER_WRAITH, "LesserWraith"}
+        };
         //List of every path minions will take, separated by team and lane
         public Dictionary<LaneID, List<Vector2>> MinionPaths { get; set; } = new Dictionary<LaneID, List<Vector2>>
         {
@@ -250,7 +260,7 @@ namespace MapScripts.Map1
             map.ChangeTowerOnMapList("Turret_T1_C_07_A", TeamId.TEAM_BLUE, LaneID.MIDDLE, LaneID.BOTTOM);
 
             // Announcer events
-            
+
             // Welcome to "Map"
             map.AddAnnouncement(30 * 1000, EventID.OnStartGameMessage1, true);
             // 30 seconds until minions spawn
@@ -265,25 +275,145 @@ namespace MapScripts.Map1
         }
         public virtual void OnMatchStart()
         {
+            JungleCamps = new List<IMonsterCamp>
+            {
+                //Neutral Camp
+                _map.CreateMonsterCamp(MonsterCampType.BARON, new Vector2(4591.434f, 10215.344f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(4591.434f, 10215.344f), MonsterSpawnType.WORM}},
+                1200.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.DRAGON, new Vector2(9430.364f, 4184.46f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(9430.364f, 4184.46f), MonsterSpawnType.DRAGON}},
+                150.0f),
+
+                //Blue side
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_RED_BUFF, new Vector2(7384f, 3844f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(7450f, 3897f), MonsterSpawnType.ELDER_LIZARD},
+                { new Vector2(7254f, 3885f), MonsterSpawnType.YOUNG_LIZARD_ELDER},
+                { new Vector2(7473f, 3708f), MonsterSpawnType.YOUNG_LIZARD_ELDER}},
+                115.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_BLUE_BUFF, new Vector2(3450f, 7722f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(3556f, 7643f), MonsterSpawnType.ANCIENT_GOLEM},
+                { new Vector2(3335f, 7605f), MonsterSpawnType.YOUNG_LIZARD_ANCIENT},
+                { new Vector2(3469f, 7825f), MonsterSpawnType.YOUNG_LIZARD_ANCIENT}},
+                115.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_GOLEMS, new Vector2(7903f, 2478f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(7903f, 2478f), MonsterSpawnType.GOLEM},
+                { new Vector2(8116f, 2492f), MonsterSpawnType.LESSER_GOLEM}},
+                125.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_WRAITHS, new Vector2(6536.759f, 5235.117f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(6439f, 5220f), MonsterSpawnType.WRAITH},
+                { new Vector2(6622f, 5283f), MonsterSpawnType.LESSER_WRAITH},
+                { new Vector2(6493f, 5134f), MonsterSpawnType.LESSER_WRAITH},
+                { new Vector2(6651f, 5169f), MonsterSpawnType.LESSER_WRAITH}},
+                125.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_WOLVES, new Vector2(3353f, 6163f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(3373f, 6208f), MonsterSpawnType.GIANT_WOLF},
+                { new Vector2(3339f, 6365f), MonsterSpawnType.WOLF},
+                { new Vector2(3516f, 6192f), MonsterSpawnType.WOLF}},
+                125.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_GROMP, new Vector2(1982.3355f, 8250.126f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(1820.6832f, 8176.1597f), MonsterSpawnType.GREAT_WRAITH}},
+                125.0f),
+
+                //Red side
+                _map.CreateMonsterCamp(MonsterCampType.RED_RED_BUFF, new Vector2(6652.7f, 10654.1f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(6523.898f, 10504.402f), MonsterSpawnType.ELDER_LIZARD},
+                { new Vector2(6736.2334f, 10514.005f), MonsterSpawnType.YOUNG_LIZARD_ELDER},
+                { new Vector2(6549.071f, 10735.53f), MonsterSpawnType.YOUNG_LIZARD_ELDER}},
+                115.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.RED_BLUE_BUFF, new Vector2(10584.8f, 6720.3f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(10493.184f, 6763.5405f), MonsterSpawnType.ANCIENT_GOLEM},
+                { new Vector2(10654.244f, 6821.699f), MonsterSpawnType.YOUNG_LIZARD_ANCIENT},
+                { new Vector2(10525.28f, 6662.5273f), MonsterSpawnType.YOUNG_LIZARD_ANCIENT}},
+                115.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.RED_GOLEMS, new Vector2(5981.8f, 11976.6f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(6055.785f, 11905.778f), MonsterSpawnType.GOLEM},
+                { new Vector2(5879.59f, 11880.846f), MonsterSpawnType.LESSER_GOLEM}},
+                125.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.RED_WRAITHS, new Vector2(7453.7f, 9239.1f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(7562.0127f, 9189.633f), MonsterSpawnType.WRAITH},
+                { new Vector2(7419.434f, 9111.344f), MonsterSpawnType.LESSER_WRAITH},
+                { new Vector2(7361.434f, 9261.344f), MonsterSpawnType.LESSER_WRAITH},
+                { new Vector2(7538.852f, 9307.1455f), MonsterSpawnType.LESSER_WRAITH}},
+                125.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.RED_WOLVES, new Vector2(10666.2f, 8213.46f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(10630.8f, 8164.3228f), MonsterSpawnType.GIANT_WOLF},
+                { new Vector2(10505.131f, 8224.73f), MonsterSpawnType.WOLF},
+                { new Vector2(10684.68f, 8089.6265f), MonsterSpawnType.WOLF}},
+                125.0f),
+
+                _map.CreateMonsterCamp(MonsterCampType.RED_GROMP, new Vector2(12142.5f, 6186.6f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(12191.434f, 6213.3438f), MonsterSpawnType.GREAT_WRAITH}},
+                125.0f),
+            };
         }
         //This function gets executed every server tick
         public void Update(float diff)
         {
+            foreach (var camp in JungleCamps)
+            {
+                if (!camp.IsAlive())
+                {
+                    camp.RespawnCooldown -= diff;
+
+                    if (camp.RespawnCooldown <= 0)
+                    {
+                        camp.Spawn();
+                        camp.RespawnCooldown = GetMonsterSpawnInterval(camp.CampType);
+                    }
+                }
+            }
             if (_map.GameTime() >= 120 * 1000)
             {
                 MapScriptMetadata.IsKillGoldRewardReductionActive = false;
             }
         }
-
+        public int GetMonsterSpawnInterval(MonsterCampType monsterType)
+        {
+            switch (monsterType)
+            {
+                case MonsterCampType.BLUE_BLUE_BUFF:
+                case MonsterCampType.BLUE_RED_BUFF:
+                case MonsterCampType.RED_BLUE_BUFF:
+                case MonsterCampType.RED_RED_BUFF:
+                    return 300;
+                case MonsterCampType.DRAGON:
+                    return 660;
+                case MonsterCampType.BARON:
+                    return 720;
+                default:
+                    return 50;
+            }
+        }
 
         public float GetGoldFor(IAttackableUnit u)
         {
-            if (!(u is ILaneMinion m))
+            if (u is IChampion c)
             {
-                if (!(u is IChampion c))
-                {
-                    return 0.0f;
-                }
 
                 var gold = 300.0f; //normal gold for a kill
                 if (c.KillDeathCounter < 5 && c.KillDeathCounter >= 0)
@@ -329,20 +459,52 @@ namespace MapScripts.Map1
                 return firstDeathGold;
             }
 
-            var dic = new Dictionary<MinionSpawnType, float>
+            else if (u is ILaneMinion mi)
             {
-                { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
-            };
+                var dic = new Dictionary<MinionSpawnType, float>
+                {
+                    { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
+                };
 
-            if (!dic.ContainsKey(m.MinionSpawnType))
-            {
-                return 0.0f;
+                if (!dic.ContainsKey(mi.MinionSpawnType))
+                {
+                    return 0.0f;
+                }
+
+                return dic[mi.MinionSpawnType];
             }
 
-            return dic[m.MinionSpawnType];
+            else if (u is IMonster mo)
+            {
+                var dic = new Dictionary<MonsterSpawnType, float>
+            {
+                { MonsterSpawnType.GREAT_WRAITH, 35.0f },
+                { MonsterSpawnType.LESSER_WRAITH, 4.0f },
+                { MonsterSpawnType.GIANT_WOLF, 40.0f },
+                { MonsterSpawnType.WOLF, 8.0f },
+                { MonsterSpawnType.GOLEM, 55.0f },
+                { MonsterSpawnType.LESSER_GOLEM, 15.0f },
+                { MonsterSpawnType.WRAITH, 65.0f },
+                { MonsterSpawnType.ANCIENT_GOLEM, 60.0f },
+                { MonsterSpawnType.ELDER_LIZARD, 60.0f },
+                { MonsterSpawnType.YOUNG_LIZARD_ANCIENT, 7.0f },
+                { MonsterSpawnType.YOUNG_LIZARD_ELDER, 7.0f },
+                { MonsterSpawnType.DRAGON, 150.0f },
+                { MonsterSpawnType.WORM, 320.0f },
+            };
+
+                if (!dic.ContainsKey(mo.MinionSpawnType))
+                {
+                    return 0.0f;
+                }
+
+                return dic[mo.MinionSpawnType];
+            }
+
+            return 0.0f;
         }
 
         public float GetExperienceFor(IAttackableUnit u)
