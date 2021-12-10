@@ -20,6 +20,7 @@ namespace MapScripts
         public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
         public bool HasFirstBloodHappened { get; set; } = false;
         public long NextSpawnTime { get; set; } = 90 * 1000;
+        public List<IMonsterCamp> JungleCamps { get; set; }
         private IMapScriptHandler _map;
 
         //Tower type enumeration might vary slightly from map to map, so we set that up here
@@ -55,6 +56,7 @@ namespace MapScripts
                 {TurretType.FOUNTAIN_TURRET, "ChaosTurretShrine" }
             } }
         };
+        public Dictionary<MonsterSpawnType, string> MonsterModels { get; set; }
 
         //Turret Items
         public Dictionary<TurretType, int[]> TurretItems { get; set; } = new Dictionary<TurretType, int[]>
