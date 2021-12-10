@@ -5,32 +5,23 @@ using GameServerCore.Domain;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Enums;
 using GameServerCore.Maps;
+using GameServerCore.Scripting.CSharp;
 using LeagueSandbox.GameServer.Content;
+using LeagueSandbox.GameServer.Scripting.CSharp;
 
 namespace MapScripts.Map10
 {
     public class CLASSIC : IMapScript
     {
+        public IMapScriptMetadata MapScriptMetadata { get; set; } = new MapScriptMetadata
+        {
+            EnableBuildingProtection = true,
+            StartingGold = 825.0f
+        };
         public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
-        public bool EnableBuildingProtection { get; set; } = true;
-
-        //General Map variable
-        private IMapScriptHandler _map;
-
-        //Stuff about minions
-        public bool SpawnEnabled { get; set; }
-        public long NextSpawnTime { get; set; } = 45 * 1000;
-        public long SpawnInterval { get; set; } = 30 * 1000;
-        public bool MinionPathingOverride { get; set; } = false;
-        public List<IMonsterCamp> JungleCamps { get; set; }
-
-        //General things that will affect players globaly, such as default gold per-second, Starting gold....
-        public float GoldPerSecond { get; set; } = 1.9f;
-        public float StartingGold { get; set; } = 825.0f;
         public bool HasFirstBloodHappened { get; set; } = false;
-        public bool IsKillGoldRewardReductionActive { get; set; } = true;
-        public int BluePillId { get; set; } = 2001;
-        public long FirstGoldTime { get; set; } = 90 * 1000;
+        public long NextSpawnTime { get; set; } = 45 * 1000;
+        private IMapScriptHandler _map;
 
         //Tower type enumeration might vary slightly from map to map, so we set that up here
         public TurretType GetTurretType(int trueIndex, LaneID lane, TeamId teamId)
@@ -192,21 +183,13 @@ namespace MapScripts.Map10
                 {MinionSpawnType.MINION_TYPE_SUPER, "Red_Minion_MechMelee"}
             }}
         };
-        public Dictionary<MonsterSpawnType, string> MonsterModels { get; set; } = new Dictionary<MonsterSpawnType, string>
-        {
-            {MonsterSpawnType.TT_RELIC, "TT_Relic"},
-            {MonsterSpawnType.TT_SPIDERBOSS, "TT_Spiderboss"},
-            {MonsterSpawnType.TT_NWOLF,"TT_NWolf"}, {MonsterSpawnType.TT_NWOLF2, "TT_NWolf2"},
-            {MonsterSpawnType.TT_GOLEM, "TT_NGolem"},{MonsterSpawnType.TT_GOLEM2, "TT_NGolem2"},
-            {MonsterSpawnType.TT_NWRAITH, "TT_NWraith"}, {MonsterSpawnType.TT_NWRAITH2, "TT_NWraith2"},
-        };
 
         //This function is executed in-between Loading the map structures and applying the structure protections. Is the first thing on this script to be executed
         public void Init(IMapScriptHandler map)
         {
             _map = map;
 
-            SpawnEnabled = map.IsMinionSpawnEnabled();
+            MapScriptMetadata.MinionSpawnEnabled = map.IsMinionSpawnEnabled();
             map.AddSurrender(1200000.0f, 300000.0f, 30.0f);
 
             //Due to riot's questionable map-naming scheme some towers are missplaced into other lanes during outomated setup, so we have to manually fix them.
@@ -239,97 +222,23 @@ namespace MapScripts.Map10
         }
         public void OnMatchStart()
         {
-            JungleCamps = new List<IMonsterCamp>() {
-                //Neutral,
-                _map.CreateMonsterCamp(MonsterCampType.TT_SPIDERBOSS, new Vector2(7711.15f, 10080.0f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(7711.15f, 10080.0f), MonsterSpawnType.TT_SPIDERBOSS}  } ,
-                600.0f, new Vector2(7726.41f, 9234.69f)),
-
-                _map.CreateMonsterCamp(MonsterCampType.TT_RELIC, new Vector2(7711.15f, 6722.67f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(7711.15f, 6722.67f), MonsterSpawnType.TT_RELIC}  } ,
-                180.0f, new Vector2(7711.15f, 6322.67f)),
-
-                //BLUE TEAM
-                _map.CreateMonsterCamp(MonsterCampType.BLUE_GOLEMS, new Vector2(5088.37f, 8065.55f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(5088.37f, 8065.55f), MonsterSpawnType.TT_GOLEM},
-                { new Vector2(5176.61f, 7810.42f), MonsterSpawnType.TT_GOLEM2}},
-                100.0f, new Vector2 (4861.72f, 7825.94f)),
-
-                _map.CreateMonsterCamp(MonsterCampType.BLUE_WRAITHS, new Vector2(4414.48f, 5774.88f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(4414.48f, 5774.88f), MonsterSpawnType.TT_NWRAITH},
-                { new Vector2(4247.32f, 5725.39f), MonsterSpawnType.TT_NWRAITH2},
-                { new Vector2(4452.47f, 5909.56f), MonsterSpawnType.TT_NWRAITH2}},
-                100.0f, new Vector2 (4214.47f, 5962.65f)),
-
-                _map.CreateMonsterCamp(MonsterCampType.BLUE_WOLVES, new Vector2(6148.92f, 5993.49f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(6148.92f, 5993.49f), MonsterSpawnType.TT_NWOLF},
-                { new Vector2(6010.29f, 6010.79f), MonsterSpawnType.TT_NWOLF2},
-                { new Vector2(6202.73f, 6156.5f), MonsterSpawnType.TT_NWOLF2}},
-                100.0f, new Vector2(5979.61f, 6236.2f)),
-                
-                 // RED TEAM
-                _map.CreateMonsterCamp(MonsterCampType.RED_GOLEMS, new Vector2(10341.3f, 8084.77f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(10341.3f, 8084.77f), MonsterSpawnType.TT_GOLEM},
-                { new Vector2(10256.8f, 7842.84f), MonsterSpawnType.TT_GOLEM2}},
-                100.0f, new Vector2(10433.8f, 7930.07f)),
-
-                _map.CreateMonsterCamp(MonsterCampType.RED_WRAITHS, new Vector2(11008.2f, 5775.7f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(11008.2f, 5775.7f), MonsterSpawnType.TT_NWRAITH},
-                { new Vector2(10953.2f, 5919.11f), MonsterSpawnType.TT_NWRAITH2},
-                { new Vector2(11168.8f, 5695.25f), MonsterSpawnType.TT_NWRAITH2}},
-                100.0f, new Vector2(11189.8f, 5939.67f)),
-
-                _map.CreateMonsterCamp(MonsterCampType.RED_WOLVES, new Vector2(9239.0f, 6022.87f),
-                new Dictionary<Vector2, MonsterSpawnType>{
-                { new Vector2(9239.0f, 6022.87f), MonsterSpawnType.TT_NWOLF},
-                { new Vector2(9186.8f, 6176.57f), MonsterSpawnType.TT_NWOLF2},
-                { new Vector2(9404.52f, 5996.73f), MonsterSpawnType.TT_NWOLF2}},
-                100.0f, new Vector2(9411.97f, 6214.06f))
-            };
         }
 
         //This function gets executed every server tick
         public void Update(float diff)
         {
-            foreach (var camp in JungleCamps)
-            {
-                if (!camp.IsAlive())
-                {
-                    camp.RespawnCooldown -= diff;
-
-                    if (camp.RespawnCooldown <= 0)
-                    {
-                        camp.Spawn();
-                        camp.RespawnCooldown = GetMonsterSpawnInterval(camp.CampType);
-                    }
-                }
-            }
-        }
-        public int GetMonsterSpawnInterval(MonsterCampType monsterType)
-        {
-            switch (monsterType)
-            {
-                case MonsterCampType.TT_RELIC:
-                    return 90;
-                case MonsterCampType.TT_SPIDERBOSS:
-                    return 300;
-                default:
-                    return 50;
-            }
         }
 
 
         public float GetGoldFor(IAttackableUnit u)
         {
-            if(u is IChampion c)
+            if (!(u is ILaneMinion m))
             {
+                if (!(u is IChampion c))
+                {
+                    return 0.0f;
+                }
+
                 var gold = 300.0f; //normal gold for a kill
                 if (c.KillDeathCounter < 5 && c.KillDeathCounter >= 0)
                 {
@@ -374,47 +283,20 @@ namespace MapScripts.Map10
                 return firstDeathGold;
             }
 
-            else if (u is ILaneMinion mi)
+            var dic = new Dictionary<MinionSpawnType, float>
             {
-                var dic = new Dictionary<MinionSpawnType, float>
-                {
-                    { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                    { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                    { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
-                    { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
-                };
-
-                if (!dic.ContainsKey(mi.MinionSpawnType))
-                {
-                    return 0.0f;
-                }
-
-                return dic[mi.MinionSpawnType];
-            }
-
-            else if (u is IMonster mo)
-            {
-                var dic = new Dictionary<MonsterSpawnType, float>
-            {
-                {MonsterSpawnType.TT_SPIDERBOSS, 320.0f},
-                {MonsterSpawnType.TT_GOLEM, 55.0f},
-                {MonsterSpawnType.TT_GOLEM2, 15.0f},
-                {MonsterSpawnType.TT_NWOLF, 40.0f},
-                {MonsterSpawnType.TT_NWOLF2, 15.0f},
-                {MonsterSpawnType.TT_NWRAITH, 35.0f},
-                {MonsterSpawnType.TT_NWRAITH2, 35.0f},
-                {MonsterSpawnType.TT_RELIC, 7.0f},
+                { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
+                { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
             };
 
-                if (!dic.ContainsKey(mo.MinionSpawnType))
-                {
-                    return 0.0f;
-                }
-
-                return dic[mo.MinionSpawnType];
+            if (!dic.ContainsKey(m.MinionSpawnType))
+            {
+                return 0.0f;
             }
 
-            return 0.0f;
+            return dic[m.MinionSpawnType];
         }
 
         public float GetExperienceFor(IAttackableUnit u)

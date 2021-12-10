@@ -391,23 +391,14 @@ public class PlayerSpawns
 public class GameConfig
 {
     public int Map => (int)_gameData.SelectToken("map");
-    public string GameMode => _gameMode;
+    public string GameMode => _gameData.SelectToken("gameMode").ToString().ToUpper().Replace(" ", string.Empty);
     public string DataPackage => (string)_gameData.SelectToken("dataPackage");
 
     private JToken _gameData;
-    private string _gameMode;
+
     public GameConfig(JToken gameData)
     {
         _gameData = gameData;
-
-        if (_gameData.SelectToken("gameMode") != null)
-        {
-            _gameMode = _gameData.SelectToken("gameMode").ToString().ToUpper().Replace(" ", string.Empty);
-        }
-        else
-        {
-            _gameMode = "CLASSIC";
-        }
     }
 }
 
