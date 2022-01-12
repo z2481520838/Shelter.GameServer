@@ -294,8 +294,32 @@ namespace MapScripts.Map10
         //This function gets executed every server tick
         public void Update(float diff)
         {
-        }
+            foreach (var camp in JungleCamps)
+            {
+                if (!camp.IsAlive())
+                {
+                    camp.RespawnCooldown -= diff;
 
+                    if (camp.RespawnCooldown <= 0)
+                    {
+                        camp.Spawn();
+                        camp.RespawnCooldown = GetMonsterSpawnInterval(camp.CampType);
+                    }
+                }
+            }
+        }
+        public int GetMonsterSpawnInterval(MonsterCampType monsterType)
+        {
+            switch (monsterType)
+            {
+                case MonsterCampType.TT_RELIC:
+                    return 90;
+                case MonsterCampType.TT_SPIDERBOSS:
+                    return 300;
+                default:
+                    return 50;
+            }
+        }
         public void OnNexusDeath(IDeathData deathaData)
         {
             var nexus = deathaData.Unit;
@@ -304,13 +328,8 @@ namespace MapScripts.Map10
 
         public float GetGoldFor(IAttackableUnit u)
         {
-            if (!(u is ILaneMinion m))
+            if (u is IChampion c)
             {
-                if (!(u is IChampion c))
-                {
-                    return 0.0f;
-                }
-
                 var gold = 300.0f; //normal gold for a kill
                 if (c.KillDeathCounter < 5 && c.KillDeathCounter >= 0)
                 {
@@ -354,24 +373,48 @@ namespace MapScripts.Map10
 
                 return firstDeathGold;
             }
-
-            var dic = new Dictionary<MinionSpawnType, float>
+            else if (u is ILaneMinion mi)
             {
-                { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
-                { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
-            };
+                var dic = new Dictionary<MinionSpawnType, float>
+                {
+                    { MinionSpawnType.MINION_TYPE_MELEE, 19.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_CASTER, 16.8f + 0.2f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_CANNON, 40.0f + 0.5f * (int)(_map.GameTime() / (90 * 1000)) },
+                    { MinionSpawnType.MINION_TYPE_SUPER, 40.0f + 1.0f * (int)(_map.GameTime() / (180 * 1000)) }
+                };
 
-            if (!dic.ContainsKey(m.MinionSpawnType))
-            {
-                return 0.0f;
+                if (!dic.ContainsKey(mi.MinionSpawnType))
+                {
+                    return 0.0f;
+                }
+
+                return dic[mi.MinionSpawnType];
             }
 
-            return dic[m.MinionSpawnType];
+            else if (u is IMonster mo)
+            {
+                var dic = new Dictionary<MonsterSpawnType, float> {
+                {MonsterSpawnType.TT_SPIDERBOSS, 320.0f},
+                {MonsterSpawnType.TT_GOLEM, 55.0f},
+                {MonsterSpawnType.TT_GOLEM2, 15.0f},
+                {MonsterSpawnType.TT_NWOLF, 40.0f},
+                {MonsterSpawnType.TT_NWOLF2, 15.0f},
+                {MonsterSpawnType.TT_NWRAITH, 35.0f},
+                {MonsterSpawnType.TT_NWRAITH2, 35.0f},
+                {MonsterSpawnType.TT_RELIC, 7.0f},};
+
+                if (!dic.ContainsKey(mo.MinionSpawnType))
+                {
+                    return 0.0f;
+                }
+
+                return dic[mo.MinionSpawnType];
+            }
+
+            return 0.0f;
         }
 
-        public float GetExperienceFor(IAttackableUnit u)
+                public float GetExperienceFor(IAttackableUnit u)
         {
             if (!(u is ILaneMinion m))
             {
