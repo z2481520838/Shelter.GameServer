@@ -148,5 +148,6 @@ namespace GameServerCore.Maps
         /// <param name="disableUI">Whether or not the UI should get disabled</param>
         /// <param name="deathData">DeathData of what triggered the End of the Game, such as necus death</param>
         void EndGame(TeamId losingTeam, Vector3 finalCameraPosition, float endGameTimer = 5000.0f, bool moveCamera = true, float cameraTimer = 3.0f, bool disableUI = true, IDeathData deathData = null);
+        IMonsterCamp CreateMonsterCamp(MonsterCampType campType, Vector2 campPosition, Dictionary<Vector2, MonsterSpawnType> listOfMonsters, float timeToRespawn = 1, Vector2 facingDirection = default);
     }
 }

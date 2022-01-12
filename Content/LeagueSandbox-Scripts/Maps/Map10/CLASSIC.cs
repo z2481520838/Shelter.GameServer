@@ -21,6 +21,7 @@ namespace MapScripts.Map10
         };
         public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
         public bool HasFirstBloodHappened { get; set; } = false;
+        public List<IMonsterCamp> JungleCamps { get; set; }
         public long NextSpawnTime { get; set; } = 45 * 1000;
         private IMapScriptHandler _map;
 
@@ -78,7 +79,14 @@ namespace MapScripts.Map10
                 {TurretType.INNER_TURRET, "TT_ChaosTurret2" },
             } }
         };
-
+        public Dictionary<MonsterSpawnType, string> MonsterModels { get; set; } = new Dictionary<MonsterSpawnType, string>
+        {
+            {MonsterSpawnType.TT_RELIC, "TT_Relic"},
+            {MonsterSpawnType.TT_SPIDERBOSS, "TT_Spiderboss"},
+            {MonsterSpawnType.TT_NWOLF,"TT_NWolf"}, {MonsterSpawnType.TT_NWOLF2, "TT_NWolf2"},
+            {MonsterSpawnType.TT_GOLEM, "TT_NGolem"},{MonsterSpawnType.TT_GOLEM2, "TT_NGolem2"},
+            {MonsterSpawnType.TT_NWRAITH, "TT_NWraith"}, {MonsterSpawnType.TT_NWRAITH2, "TT_NWraith2"},
+        };
         //Turret Items
         public Dictionary<TurretType, int[]> TurretItems { get; set; } = new Dictionary<TurretType, int[]>
         {
@@ -227,6 +235,60 @@ namespace MapScripts.Map10
             {
                 ApiEventManager.OnDeath.AddListener(this, nexus, OnNexusDeath, true);
             }
+            JungleCamps = new List<IMonsterCamp>() {
+                //Neutral,
+                _map.CreateMonsterCamp(MonsterCampType.TT_SPIDERBOSS, new Vector2(7711.15f, 10080.0f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(7711.15f, 10080.0f), MonsterSpawnType.TT_SPIDERBOSS}  } ,
+                600.0f, new Vector2(7726.41f, 9234.69f)),
+
+                _map.CreateMonsterCamp(MonsterCampType.TT_RELIC, new Vector2(7711.15f, 6722.67f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(7711.15f, 6722.67f), MonsterSpawnType.TT_RELIC}  } ,
+                180.0f, new Vector2(7711.15f, 6322.67f)),
+
+                //BLUE TEAM
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_GOLEMS, new Vector2(5088.37f, 8065.55f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(5088.37f, 8065.55f), MonsterSpawnType.TT_GOLEM},
+                { new Vector2(5176.61f, 7810.42f), MonsterSpawnType.TT_GOLEM2}},
+                100.0f, new Vector2 (4861.72f, 7825.94f)),
+
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_WRAITHS, new Vector2(4414.48f, 5774.88f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(4414.48f, 5774.88f), MonsterSpawnType.TT_NWRAITH},
+                { new Vector2(4247.32f, 5725.39f), MonsterSpawnType.TT_NWRAITH2},
+                { new Vector2(4452.47f, 5909.56f), MonsterSpawnType.TT_NWRAITH2}},
+                100.0f, new Vector2 (4214.47f, 5962.65f)),
+
+                _map.CreateMonsterCamp(MonsterCampType.BLUE_WOLVES, new Vector2(6148.92f, 5993.49f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(6148.92f, 5993.49f), MonsterSpawnType.TT_NWOLF},
+                { new Vector2(6010.29f, 6010.79f), MonsterSpawnType.TT_NWOLF2},
+                { new Vector2(6202.73f, 6156.5f), MonsterSpawnType.TT_NWOLF2}},
+                100.0f, new Vector2(5979.61f, 6236.2f)),
+                
+                 // RED TEAM
+                _map.CreateMonsterCamp(MonsterCampType.RED_GOLEMS, new Vector2(10341.3f, 8084.77f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(10341.3f, 8084.77f), MonsterSpawnType.TT_GOLEM},
+                { new Vector2(10256.8f, 7842.84f), MonsterSpawnType.TT_GOLEM2}},
+                100.0f, new Vector2(10433.8f, 7930.07f)),
+
+                _map.CreateMonsterCamp(MonsterCampType.RED_WRAITHS, new Vector2(11008.2f, 5775.7f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(11008.2f, 5775.7f), MonsterSpawnType.TT_NWRAITH},
+                { new Vector2(10953.2f, 5919.11f), MonsterSpawnType.TT_NWRAITH2},
+                { new Vector2(11168.8f, 5695.25f), MonsterSpawnType.TT_NWRAITH2}},
+                100.0f, new Vector2(11189.8f, 5939.67f)),
+
+                _map.CreateMonsterCamp(MonsterCampType.RED_WOLVES, new Vector2(9239.0f, 6022.87f),
+                new Dictionary<Vector2, MonsterSpawnType>{
+                { new Vector2(9239.0f, 6022.87f), MonsterSpawnType.TT_NWOLF},
+                { new Vector2(9186.8f, 6176.57f), MonsterSpawnType.TT_NWOLF2},
+                { new Vector2(9404.52f, 5996.73f), MonsterSpawnType.TT_NWOLF2}},
+                100.0f, new Vector2(9411.97f, 6214.06f))
+            };
         }
 
         //This function gets executed every server tick
