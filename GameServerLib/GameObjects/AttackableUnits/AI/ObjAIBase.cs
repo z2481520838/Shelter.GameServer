@@ -81,6 +81,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
         public IAttackableUnit TargetUnit { get; set; }
         public Dictionary<short, ISpell> Spells { get; }
         public ICharScript CharScript { get; private set; }
+        public bool IsBot { get; set; }
 
         public ObjAiBase(Game game, string model, Stats.Stats stats, int collisionRadius = 40,
             Vector2 position = new Vector2(), int visionRadius = 0, int skinId = 0, uint netId = 0, TeamId team = TeamId.TEAM_NEUTRAL) :
@@ -522,18 +523,9 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
                 return;
             }
 
-            if (MoveOrder == OrderType.AttackMove
-                || MoveOrder == OrderType.AttackTo
-                || MoveOrder == OrderType.AttackTerrainOnce
-                || MoveOrder == OrderType.AttackTerrainSustained)
-            {
-                idealRange = Stats.Range.Total;
-            }
-
             if (MoveOrder != OrderType.AttackTo && TargetUnit != null)
             {
                 UpdateMoveOrder(OrderType.AttackTo, true);
-                idealRange = Stats.Range.Total;
             }
 
             if (SpellToCast != null)
@@ -947,7 +939,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
 
             var idealRange = Stats.Range.Total;
 
-            if (TargetUnit is IObjBuilding)
+            if (TargetUnit != null)
             {
                 idealRange = Stats.Range.Total + TargetUnit.CollisionRadius;
             }
@@ -1013,7 +1005,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
                         if (AutoAttackSpell.State == SpellState.STATE_READY)
                         {
                             // Stops us from continuing to move towards the target.
-                            RefreshWaypoints(Stats.Range.Total);
+                            RefreshWaypoints(idealRange);
 
                             if (CanAttack())
                             {

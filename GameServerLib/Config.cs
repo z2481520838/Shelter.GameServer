@@ -18,7 +18,7 @@ namespace LeagueSandbox.GameServer
     /// </summary>
     public class Config
     {
-        public Dictionary<string, PlayerConfig> Players { get; private set; }
+        public Dictionary<string, IPlayerConfig> Players { get; private set; }
         public GameConfig GameConfig { get; private set; }
         public MapData MapData { get; private set; }
         public MapSpawns MapSpawns { get; private set; }
@@ -51,7 +51,7 @@ namespace LeagueSandbox.GameServer
 
         private void LoadConfig(Game game, string json)
         {
-            Players = new Dictionary<string, PlayerConfig>();
+            Players = new Dictionary<string, IPlayerConfig>();
 
             var data = JObject.Parse(json);
 
@@ -221,7 +221,10 @@ public class MapData : IMapData
             {
                 type = GameObjectTypes.InfoPoint;
             }
-
+            else if (Name.Contains("Shop"))
+            {
+                type = GameObjectTypes.ObjBuilding_Shop;
+            }
             return type;
         }
 
@@ -229,11 +232,11 @@ public class MapData : IMapData
         {
             var team = TeamId.TEAM_NEUTRAL;
 
-            if (Name.Contains("T1") || Name.Contains("Order"))
+            if (Name.Contains("T1") || Name.ToLower().Contains("order"))
             {
                 team = TeamId.TEAM_BLUE;
             }
-            else if (Name.Contains("T2") || Name.Contains("Chaos"))
+            else if (Name.Contains("T2") || Name.ToLower().Contains("chaos"))
             {
                 team = TeamId.TEAM_PURPLE;
             }
@@ -355,6 +358,7 @@ public class MapData : IMapData
         }
     }
 }
+
 public class MapSpawns
 {
     public Dictionary<int, PlayerSpawns> Blue = new Dictionary<int, PlayerSpawns>();
@@ -403,29 +407,38 @@ public class GameConfig
 }
 
 
-public class PlayerConfig
+public class PlayerConfig : IPlayerConfig
 {
-    public long PlayerID => (long)_playerData.SelectToken("playerId");
-    public string Rank => (string)_playerData.SelectToken("rank");
-    public string Name => (string)_playerData.SelectToken("name");
-    public string Champion => (string)_playerData.SelectToken("champion");
-    public string Team => (string)_playerData.SelectToken("team");
-    public short Skin => (short)_playerData.SelectToken("skin");
-    public string Summoner1 => (string)_playerData.SelectToken("summoner1");
-    public string Summoner2 => (string)_playerData.SelectToken("summoner2");
-    public short Ribbon => (short)_playerData.SelectToken("ribbon");
-    public int Icon => (int)_playerData.SelectToken("icon");
-    public string BlowfishKey => (string)_playerData.SelectToken("blowfishKey");
+    public long PlayerID { get; private set; }
+    public string Rank { get; private set; }
+    public string Name { get; private set; }
+    public string Champion { get; private set; }
+    public string Team { get; private set; }
+    public short Skin { get; private set; }
+    public string Summoner1 { get; private set; }
+    public string Summoner2 { get; private set; }
+    public short Ribbon { get; private set; }
+    public int Icon { get; private set; }
+    public string BlowfishKey { get; private set; }
     public IRuneCollection Runes { get; }
-
-    private JToken _playerData;
 
     public PlayerConfig(JToken playerData)
     {
-        _playerData = playerData;
+        PlayerID = (long)playerData.SelectToken("playerId");
+        Rank = (string)playerData.SelectToken("rank");
+        Name = (string)playerData.SelectToken("name");
+        Champion = (string)playerData.SelectToken("champion");
+        Team = (string)playerData.SelectToken("team");
+        Skin = (short)playerData.SelectToken("skin");
+        Summoner1 = (string)playerData.SelectToken("summoner1");
+        Summoner2 = (string)playerData.SelectToken("summoner2");
+        Ribbon = (short)playerData.SelectToken("ribbon");
+        Icon = (int)playerData.SelectToken("icon");
+        BlowfishKey = (string)playerData.SelectToken("blowfishKey");
+
         try
         {
-            var runes = _playerData.SelectToken("runes");
+            var runes = playerData.SelectToken("runes");
             Runes = new RuneCollection();
 
             foreach (JProperty runeCategory in runes)
@@ -437,5 +450,22 @@ public class PlayerConfig
         {
             // no runes set in config
         }
+    }
+
+    public PlayerConfig(string name, string champion, long playerId = -1, string rank = "", string team = "BLUE", short skin = 0, string summoner1 = "SummonerHeal", string summoner2 = "SummonerFlash", short ribbon = 0, int icon = 0, string blowfishKey = "")
+    {
+        PlayerID = playerId;
+        Rank = rank;
+        Name = name;
+        Champion = champion;
+        Team = team;
+        Skin = skin;
+        Summoner1 = summoner1;
+        Summoner2 = summoner2;
+        Ribbon = ribbon;
+        Icon = icon;
+        BlowfishKey = blowfishKey;
+
+        Runes = new RuneCollection();
     }
 }

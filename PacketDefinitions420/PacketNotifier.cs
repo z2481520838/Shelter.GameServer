@@ -254,11 +254,11 @@ namespace PacketDefinitions420
         }
 
         /// <summary>
-        /// Sends a packet to the specified user that informs them of their summoner data such as runes, summoner spells, masteries (or talents as named internally), etc.
+        /// Sends a packet to the specified user or all users informing them of the given client's summoner data such as runes, summoner spells, masteries (or talents as named internally), etc.
         /// </summary>
-        /// <param name="userId">User to send the packet to.</param>
         /// <param name="client">Info about the player's summoner data.</param>
-        public void NotifyAvatarInfo(int userId, ClientInfo client)
+        /// <param name="userId">User to send the packet to. Set to -1 to broadcast.</param>
+        public void NotifyAvatarInfo(ClientInfo client, int userId = -1)
         {
             var avatar = new AvatarInfo_Server();
             avatar.SenderNetID = client.Champion.NetId;
@@ -273,6 +273,13 @@ namespace PacketDefinitions420
                 avatar.ItemIDs[i] = (uint)runeValue;
             }
             // TODO: add talents
+
+            if (userId < 0)
+            {
+                _packetHandlerManager.BroadcastPacket(avatar.GetBytes(), Channel.CHL_S2C);
+                return;
+            }
+
             _packetHandlerManager.SendPacket(userId, avatar.GetBytes(), Channel.CHL_S2C);
         }
 
@@ -353,7 +360,21 @@ namespace PacketDefinitions420
             };
             _packetHandlerManager.BroadcastPacketVision(attacker, basicAttackPacket.GetBytes(), Channel.CHL_S2C);
         }
-
+        /// <summary>
+        /// Sends a packet to all players detailing that the specified building has died.
+        /// </summary>
+        /// <param name="deathData"></param>
+        public void NotifyBuilding_Die(IDeathData deathData)
+        {
+            var buildingDie = new Building_Die
+            {
+                SenderNetID = deathData.Unit.NetId,
+                AttackerNetID = deathData.Killer.NetId,
+                //TODO: Unhardcode this when an assists system gets implemented
+                LastHeroNetID = 0
+            };
+            _packetHandlerManager.BroadcastPacket(buildingDie.GetBytes(), Channel.CHL_S2C);
+        }
         /// <summary>
         /// Sends a packet to the player attempting to buy an item that their purchase was successful.
         /// </summary>
@@ -602,7 +623,6 @@ namespace PacketDefinitions420
             };
             _packetHandlerManager.BroadcastPacketTeam(team, misPacket.GetBytes(), Channel.CHL_S2C);
         }
-
         /// <summary>
         /// Sends a packet to either all players with vision of a target, or the specified player.
         /// The packet displays the specified message of the specified type as floating text over a target.
@@ -1050,34 +1070,6 @@ namespace PacketDefinitions420
         }
 
         /// <summary>
-        /// Sends packets to all players which force the players' cameras to the nexus being destroyed, hides their UI, and ends the game.
-        /// </summary>
-        /// <param name="cameraPosition">Position of the nexus being destroyed.</param>
-        /// <param name="nexus">Nexus being destroyed.</param>
-        /// <param name="players">All players that can receive packets.</param>
-        public void NotifyGameEnd(Vector3 cameraPosition, INexus nexus, List<Tuple<uint, ClientInfo>> players)
-        {
-            var losingTeam = nexus.Team;
-
-            foreach (var p in players)
-            {
-                var cam = new MoveCamera(p.Item2.Champion, cameraPosition.X, cameraPosition.Y, cameraPosition.Z, 2);
-                _packetHandlerManager.SendPacket((int)p.Item2.PlayerId, cam, Channel.CHL_S2C);
-                _packetHandlerManager.SendPacket((int)p.Item2.PlayerId, new HideUi(), Channel.CHL_S2C);
-            }
-
-            _packetHandlerManager.BroadcastPacket(new ExplodeNexus(nexus), Channel.CHL_S2C);
-
-            var timer = new Timer(5000) { AutoReset = false };
-            timer.Elapsed += (a, b) =>
-            {
-                var gameEndPacket = new GameEnd(losingTeam != TeamId.TEAM_BLUE);
-                _packetHandlerManager.BroadcastPacket(gameEndPacket, Channel.CHL_S2C);
-            };
-            timer.Start();
-        }
-
-        /// <summary>
         /// Sends a packet to all players detailing that the game has started. Sent when all players have finished loading.
         /// </summary>
         public void NotifyGameStart()
@@ -1124,18 +1116,6 @@ namespace PacketDefinitions420
             }
             var packet = new InhibitorStateUpdate(inhibitor);
             _packetHandlerManager.BroadcastPacket(packet, Channel.CHL_S2C);
-        }
-
-        /// <summary>
-        /// Sends a packet to all players with vision of the specified Champion detailing that the Champion's items have been swapped.
-        /// </summary>
-        /// <param name="c">Champion who swapped their items.</param>
-        /// <param name="fromSlot">Slot the item was previously in.</param>
-        /// <param name="toSlot">Slot the item was swapped to.</param>
-        public void NotifyItemsSwapped(IChampion c, byte fromSlot, byte toSlot)
-        {
-            var sia = new SwapItemsResponse(c, fromSlot, toSlot);
-            _packetHandlerManager.BroadcastPacketVision(c, sia, Channel.CHL_S2C);
         }
 
         /// <summary>
@@ -1633,7 +1613,7 @@ namespace PacketDefinitions420
                     IsHidden = buffs[i].IsHidden
                 };
 
-                if(buffs[i].OriginSpell != null)
+                if (buffs[i].OriginSpell != null)
                 {
                     entry.CasterNetID = buffs[i].OriginSpell.CastInfo.Owner.NetId;
                 }
@@ -1705,7 +1685,7 @@ namespace PacketDefinitions420
                 CasterNetID = 0
             };
 
-            if(b.OriginSpell != null)
+            if (b.OriginSpell != null)
             {
                 replacePacket.CasterNetID = b.OriginSpell.CastInfo.Owner.NetId;
             }
@@ -1738,7 +1718,7 @@ namespace PacketDefinitions420
                     Slot = buffs[i].Slot
                 };
 
-                if(buffs[i].OriginSpell != null)
+                if (buffs[i].OriginSpell != null)
                 {
                     entry.CasterNetID = buffs[i].OriginSpell.CastInfo.Owner.NetId;
                 }
@@ -1800,7 +1780,7 @@ namespace PacketDefinitions420
                     Count = (byte)buffs[i].StackCount
                 };
 
-                if(buffs[i].OriginSpell != null)
+                if (buffs[i].OriginSpell != null)
                 {
                     entry.CasterNetID = buffs[i].OriginSpell.CastInfo.Owner.NetId;
                 }
@@ -2007,7 +1987,7 @@ namespace PacketDefinitions420
                 // TODO: Typo :(
                 AveliablePoints = c.SkillPoints
             };
-            
+
             _packetHandlerManager.BroadcastPacketVision(c, levelUp.GetBytes(), Channel.CHL_S2C);
         }
 
@@ -2104,17 +2084,6 @@ namespace PacketDefinitions420
 
             //Logging->writeLine("loaded: %f, ping: %f, %f", loadInfo->loaded, loadInfo->ping, loadInfo->f3);
             _packetHandlerManager.BroadcastPacket(response, Channel.CHL_LOW_PRIORITY, PacketFlags.None);
-        }
-
-        /// <summary>
-        /// Sends a packet to all players detailing the stats (CS, kills, deaths, etc) of the player who owns the specified Champion.
-        /// </summary>
-        /// <param name="champion">Champion owned by the player.</param>
-        public void NotifyPlayerStats(IChampion champion)
-        {
-            var response = new PlayerStats(champion);
-            // TODO: research how to send the packet
-            _packetHandlerManager.BroadcastPacket(response, Channel.CHL_S2C);
         }
 
         /// <summary>
@@ -2322,11 +2291,11 @@ namespace PacketDefinitions420
         }
 
         /// <summary>
-        /// Sends a packet to the specified user detailing that the hero designated to the given clientInfo has been created.
+        /// Sends a packet to the specified user or all users detailing that the hero designated to the given clientInfo has been created.
         /// </summary>
-        /// <param name="userId">User to send the packet to.</param>
         /// <param name="clientInfo">Information about the client which had their hero created.</param>
-        public void NotifyS2C_CreateHero(int userId, ClientInfo clientInfo)
+        /// <param name="userId">User to send the packet to. Set to -1 to broadcast.</param>
+        public void NotifyS2C_CreateHero(ClientInfo clientInfo, int userId = -1)
         {
             var champion = clientInfo.Champion;
             var heroPacket = new S2C_CreateHero()
@@ -2337,7 +2306,7 @@ namespace PacketDefinitions420
                 // For bots (0 = Beginner, 1 = Intermediate)
                 SkillLevel = 0,
                 // TODO: Implement bots and unhardcode this.
-                IsBot = false,
+                IsBot = champion.IsBot,
                 // BotRank, deprecated as of v4.18
                 // TODO: Unhardcode
                 SpawnPositionIndex = 0,
@@ -2355,6 +2324,12 @@ namespace PacketDefinitions420
             else
             {
                 heroPacket.TeamIsOrder = false;
+            }
+
+            if (userId < 0)
+            {
+                _packetHandlerManager.BroadcastPacket(heroPacket.GetBytes(), Channel.CHL_S2C);
+                return;
             }
 
             _packetHandlerManager.SendPacket(userId, heroPacket.GetBytes(), Channel.CHL_S2C);
@@ -2388,6 +2363,37 @@ namespace PacketDefinitions420
         }
 
         /// <summary>
+        /// Disables the U.I when the game ends 
+        /// </summary>
+        /// <param name="player"></param>
+        public void NotifyS2C_DisableHUDForEndOfGame(Tuple<uint, ClientInfo> player)
+        {
+            var disableHud = new S2C_DisableHUDForEndOfGame { SenderNetID = 0 };
+            _packetHandlerManager.SendPacket((int)player.Item2.PlayerId, disableHud.GetBytes(), Channel.CHL_S2C);
+        }
+
+        /// <summary>
+        /// Sends packets to all players notifying the result of a match (Victory or defeat)
+        /// </summary>
+        /// <param name="losingTeam">The Team that lost the match</param>
+        /// <param name="time">The offset for the result to actually be displayed</param>
+        public void NotifyS2C_EndGame(TeamId losingTeam, float time = 5000)
+        {
+            var timer = new Timer(time) { AutoReset = false };
+            timer.Elapsed += (a, b) =>
+            {
+                var gameEndPacket = new S2C_EndGame
+                {
+                    SenderNetID = 0,
+                    IsTeamOrderWin = losingTeam != TeamId.TEAM_BLUE
+                };
+                _packetHandlerManager.BroadcastPacket(gameEndPacket.GetBytes(), Channel.CHL_S2C);
+            };
+
+            timer.Start();
+        }
+
+        /// <summary>
         /// Sends a side bar tip to the specified player (ex: quest tips).
         /// </summary>
         /// <param name="userId">User to send the packet to.</param>
@@ -2410,6 +2416,17 @@ namespace PacketDefinitions420
                 TipID = targetNetId
             };
             _packetHandlerManager.SendPacket(userId, packet.GetBytes(), Channel.CHL_S2C);
+        }
+
+        /// <summary>
+        /// Sends a packet to all players detailing the stats (CS, kills, deaths, etc) of the player who owns the specified Champion.
+        /// </summary>
+        /// <param name="champion">Champion owned by the player.</param>
+        public void NotifyS2C_HeroStats(IChampion champion)
+        {
+            var response = new S2C_HeroStats { Data = champion.ChampStats.GetBytes() };
+            // TODO: research how to send the packet
+            _packetHandlerManager.BroadcastPacket(response.GetBytes(), Channel.CHL_S2C);
         }
 
         /// <summary>
@@ -2437,6 +2454,34 @@ namespace PacketDefinitions420
             };
             _packetHandlerManager.BroadcastPacketTeam(client.Team, response.GetBytes(), Channel.CHL_S2C);
         }
+
+        /// <summary>
+        /// Sends a packet to the specified player which forces their camera to move to a specified point given certain parameters.
+        /// </summary>
+        /// <param name="player">Player who'll it's camera moved</param>
+        /// <param name="startPosition">The starting position of the camera (Not yet known how to get it's values)</param>
+        /// <param name="endPosition">End point to where the camera will move</param>
+        /// <param name="travelTime">The time the camera will have to travel the given distance</param>
+        /// <param name="startFromCurretPosition">Wheter or not it starts from current position</param>
+        /// <param name="unlockCamera">Whether or not the camera is unlocked</param>
+        public void NotifyS2C_MoveCameraToPoint(Tuple<uint, ClientInfo> player, Vector3 startPosition, Vector3 endPosition, float travelTime = 0, bool startFromCurretPosition = true, bool unlockCamera = false)
+        {
+            var cam = new S2C_MoveCameraToPoint
+            {
+                SenderNetID = player.Item2.Champion.NetId,
+                StartFromCurrentPosition = startFromCurretPosition,
+                UnlockCamera = unlockCamera,
+                TravelTime = travelTime,
+                TargetPosition = endPosition
+            };
+            if (startPosition != Vector3.Zero)
+            {
+                cam.StartPosition = startPosition;
+            }
+
+            _packetHandlerManager.SendPacket((int)player.Item2.PlayerId, cam.GetBytes(), Channel.CHL_S2C);
+        }
+
         /// <summary>
         /// Sends a packet to all players detailing that the specified unit has been killed by the specified killer.
         /// </summary>
@@ -2940,15 +2985,21 @@ namespace PacketDefinitions420
         }
 
         /// <summary>
-        /// Sends a packet to the specified player detailing that the GameObject associated with the specified NetID has spawned.
+        /// Sends a packet to all players with vision of the specified Champion detailing that the Champion's items have been swapped.
         /// </summary>
-        /// <param name="userId">User to send the packet to.</param>
-        /// <param name="netId">NetID of the GameObject that has spawned.</param>
-        /// TODO: Remove this and replace all usages with NotifyEnterVisibilityClient, refer to the MinionSpawn2 packet as it uses the same packet command.
-        public void NotifyStaticObjectSpawn(int userId, uint netId)
+        /// <param name="c">Champion who swapped their items.</param>
+        /// <param name="fromSlot">Slot the item was previously in.</param>
+        /// <param name="toSlot">Slot the item was swapped to.</param>
+        public void NotifySwapItemAns(IChampion c, byte fromSlot, byte toSlot)
         {
-            var minionSpawnPacket = new MinionSpawn2(netId);
-            _packetHandlerManager.SendPacket(userId, minionSpawnPacket, Channel.CHL_S2C);
+            //TODO: reorganize in alphabetic order
+            var swapItem = new SwapItemAns
+            {
+                SenderNetID = c.NetId,
+                Source = fromSlot,
+                Destination = toSlot
+            };
+            _packetHandlerManager.BroadcastPacketVision(c, swapItem.GetBytes(), Channel.CHL_S2C);
         }
 
         /// <summary>

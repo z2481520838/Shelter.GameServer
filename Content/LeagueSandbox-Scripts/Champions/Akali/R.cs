@@ -48,7 +48,7 @@ namespace Spells
             //ForceMovement(owner, target, "Spell4", 1000, 0, 0, 0, 200);
             ForceMovement(owner, "Spell4", target.Position, 2200, 0, 0, 0);
             //ForceMovement(spell.CastInfo.Owner, "Spell4", trueCoords, 2200, 0, 0, 0);
-            AddParticleTarget(owner, target, "akali_shadowDance_tar.troy", target);
+            AddParticleTarget(owner, target, "akali_shadowDance_tar", target);
         }
 
         public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
