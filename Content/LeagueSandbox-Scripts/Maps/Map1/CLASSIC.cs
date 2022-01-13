@@ -14,7 +14,7 @@ namespace MapScripts.Map1
 {
     public class CLASSIC : IMapScript
     {
-        public IMapScriptMetadata MapScriptMetadata { get; set; } = new MapScriptMetadata 
+        public IMapScriptMetadata MapScriptMetadata { get; set; } = new MapScriptMetadata
         {
             MinionPathingOverride = true,
             EnableBuildingProtection = true
@@ -263,7 +263,7 @@ namespace MapScripts.Map1
             map.ChangeTowerOnMapList("Turret_T1_C_07_A", TeamId.TEAM_BLUE, LaneID.MIDDLE, LaneID.BOTTOM);
 
             // Announcer events
-            
+
             // Welcome to "Map"
             map.AddAnnouncement(30 * 1000, EventID.OnStartGameMessage1, true);
             // 30 seconds until minions spawn
@@ -279,7 +279,7 @@ namespace MapScripts.Map1
         }
         public virtual void OnMatchStart()
         {
-            foreach(var nexus in _map.NexusList)
+            foreach (var nexus in _map.NexusList)
             {
                 ApiEventManager.OnDeath.AddListener(this, nexus, OnNexusDeath, true);
             }
@@ -416,7 +416,7 @@ namespace MapScripts.Map1
                     return 50;
             }
         }
-            public void OnNexusDeath(IDeathData deathaData)
+        public void OnNexusDeath(IDeathData deathaData)
         {
             var nexus = deathaData.Unit;
             _map.EndGame(nexus.Team, new Vector3(nexus.Position.X, nexus.GetHeight(), nexus.Position.Y), deathData: deathaData);
