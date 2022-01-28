@@ -69,7 +69,7 @@ namespace GameServerCore.Domain.GameObjects
         // TODO: Implement AI Scripting for this (for AI in general).
         bool IsBot { get; }
 
-        void LoadPassiveScript(ISpell spell);
+        void LoadCharScript(ISpell spell);
         /// <summary>
         /// Function called by this AI's auto attack projectile when it hits its target.
         /// </summary>
@@ -78,7 +78,7 @@ namespace GameServerCore.Domain.GameObjects
         /// Cancels any auto attacks this AI is performing and resets the time between the next auto attack if specified.
         /// </summary>
         /// <param name="reset">Whether or not to reset the delay between the next auto attack.</param>
-        void CancelAutoAttack(bool reset);
+        void CancelAutoAttack(bool reset, bool fullCancel = false);
         /// <summary>
         /// Forces this AI unit to perform a dash which follows the specified AttackableUnit.
         /// </summary>
@@ -149,6 +149,16 @@ namespace GameServerCore.Domain.GameObjects
         /// <param name="unit">Unit to cast the spell on.</param>
         void SetSpellToCast(ISpell s, Vector2 location, IAttackableUnit unit = null);
         /// <summary>
+        /// Sets the spell that this unit is currently casting.
+        /// </summary>
+        /// <param name="s">Spell that is being cast.</param>
+        void SetCastSpell(ISpell s);
+        /// <summary>
+        /// Gets the spell this unit is currently casting.
+        /// </summary>
+        /// <returns>Spell that is being cast.</returns>
+        ISpell GetCastSpell();
+        /// <summary>
         /// Sets this AI's current target unit. This relates to both auto attacks as well as general spell targeting.
         /// </summary>
         /// <param name="target">Unit to target.</param>
@@ -178,5 +188,9 @@ namespace GameServerCore.Domain.GameObjects
         /// <param name="order">OrderType to set.</param>
         /// <param name="publish">Whether or not to trigger the move order update event.</param>
         void UpdateMoveOrder(OrderType order, bool publish = true);
+        ClassifyUnit ClassifyTarget(IAttackableUnit target);
+        bool RecalculateAttackPosition();
+        bool IsAiPaused();
+        void PauseAi(bool isPaused);
     }
 }

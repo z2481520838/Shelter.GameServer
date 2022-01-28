@@ -19,12 +19,15 @@ namespace MapScripts.Map1
             MinionPathingOverride = true,
             EnableBuildingProtection = true
         };
+        public IMapScriptHandler _map;
         public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
         public bool HasFirstBloodHappened { get; set; } = false;
         public List<IMonsterCamp> JungleCamps { get; set; }
         public long NextSpawnTime { get; set; } = 90 * 1000;
-        public IMapScriptHandler _map;
+        public string LaneMinionAI { get; set; } = "LaneMinionAI";
+        public string LaneTurretAI { get; set; } = "TurretAI";
 
+        public Dictionary<TeamId, Dictionary<int, Dictionary<int, Vector2>>> PlayerSpawnPoints { get; }
 
         //Tower type enumeration might vary slightly from map to map, so we set that up here
         public TurretType GetTurretType(int trueIndex, LaneID lane, TeamId teamId)

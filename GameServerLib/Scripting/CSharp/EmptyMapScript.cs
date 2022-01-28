@@ -17,11 +17,14 @@ namespace MapScripts
         {
             MinionPathingOverride = true,
         };
+        private IMapScriptHandler _map;
         public virtual IGlobalData GlobalData { get; set; } = new GlobalData();
         public bool HasFirstBloodHappened { get; set; } = false;
         public long NextSpawnTime { get; set; } = 90 * 1000;
-        public List<IMonsterCamp> JungleCamps { get; set; }
-        private IMapScriptHandler _map;
+        public string LaneMinionAI { get; set; } = "LaneMinionAI";
+        public string LaneTurretAI { get; set; } = "TurretAI";
+
+        public Dictionary<TeamId, Dictionary<int, Dictionary<int, Vector2>>> PlayerSpawnPoints { get; }
 
         //Tower type enumeration might vary slightly from map to map, so we set that up here
         public TurretType GetTurretType(int trueIndex, LaneID lane, TeamId teamId)
@@ -56,7 +59,6 @@ namespace MapScripts
                 {TurretType.FOUNTAIN_TURRET, "ChaosTurretShrine" }
             } }
         };
-        public Dictionary<MonsterSpawnType, string> MonsterModels { get; set; }
 
         //Turret Items
         public Dictionary<TurretType, int[]> TurretItems { get; set; } = new Dictionary<TurretType, int[]>

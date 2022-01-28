@@ -294,7 +294,7 @@ namespace LeagueSandbox.GameServer
             {
                 foreach (var champion in ObjectManager.GetAllChampions())
                 {
-                    champion.LoadPassiveScript(champion.Spells[(int)SpellSlotType.PassiveSpellSlot]);
+                    champion.LoadCharScript(champion.Spells[(int)SpellSlotType.PassiveSpellSlot]);
                     champion.GetBuffs().ForEach(buff => buff.LoadScript());
                     champion.Spells.Values.ToList().ForEach(spell => spell.LoadScript());
                 }
@@ -420,7 +420,10 @@ namespace LeagueSandbox.GameServer
                 return;
             }
             IsPaused = true;
-            PacketNotifier.NotifyPauseGame((int)PauseTimeLeft, true);
+            foreach(var player in PlayerManager.GetPlayers())
+            {
+                PacketNotifier.NotifyPausePacket(player.Item2, (int)PauseTimeLeft, true);
+            }
         }
 
         /// <summary>
