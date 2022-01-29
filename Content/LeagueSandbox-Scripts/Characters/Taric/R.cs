@@ -37,55 +37,23 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            var owner = spell.CastInfo.Owner;
-            var p1 = AddParticleTarget(owner, owner, "TaricHammerSmash_nova", owner);
-            var p2 = AddParticleTarget(owner, owner, "TaricHammerSmash_shatter", owner);
-            var hasbuff = owner.HasBuff("Radiance");
-            var ap = owner.Stats.AbilityPower.Total * 0.5f;
+            var owner = spell.CastInfo.Owner as IChampion;
+            var ap = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.5f;
             var damage = 50 + spell.CastInfo.SpellLevel * 100 + ap;
 
-            foreach (var enemyTarget in GetUnitsInRange(owner.Position, 375, true)
-                .Where(x => x.Team == CustomConvert.GetEnemyTeam(owner.Team)))
+            AddParticleTarget(owner, owner, "TaricHammerSmash_nova.troy", owner, 1f);
+            AddParticleTarget(owner, owner, "TaricHammerSmash_shatter.troy", owner, 1f);
+            
+            var units = GetUnitsInRange(owner.Position, 400f, true);
+            for (int i = 0; i < units.Count; i++)
             {
-                if (enemyTarget is IAttackableUnit)
+                if (!(units[i].Team == owner.Team || units[i] is IBaseTurret || units[i] is IObjBuilding || units[i] is IInhibitor))
                 {
-                    enemyTarget.TakeDamage(spell.CastInfo.Owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                    var ep1 = AddParticleTarget(owner, owner, "Taric_GemStorm_Tar", enemyTarget, size: 1.25f);
-                    var ep2 = AddParticleTarget(owner, owner, "Taric_GemStorm_Aura", enemyTarget, size: 1.25f);
-                    var ep3 = AddParticleTarget(owner, owner, "Taric_ShoulderFlare", enemyTarget, size: 1.25f);
-                    CreateTimer(1f, () =>
-                    {
-                        RemoveParticle(ep1);
-                        RemoveParticle(ep2);
-                        RemoveParticle(ep3);
-                    });
+                    units[i].TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
+                    AddParticleTarget(owner, units[i], "Taric_GemStorm_Tar.troy", units[i], 1f);
                 }
             }
-
-            foreach (var allyTarget in GetUnitsInRange(owner.Position, 1100, true)
-                .Where(x => x.Team != CustomConvert.GetEnemyTeam(owner.Team)))
-            {
-                if (allyTarget is IObjAiBase && owner != allyTarget && hasbuff == false)
-                {
-                    AddBuff("Radiance_ally", 10.0f, 1, spell, allyTarget, owner);
-                }
-            }
-            if (owner == spell.CastInfo.Targets[0].Unit && hasbuff == false)
-            {
-                var p3 = AddParticleTarget(owner, owner, "taricgemstorm", owner);
-                AddBuff("Radiance", 10.0f, 1, spell, owner, owner);
-                CreateTimer(10.0f, () =>
-                {
-                    RemoveParticle(p3);
-                });
-            }
-
-            CreateTimer(10.0f, () =>
-            {
-                RemoveParticle(p1);
-                RemoveParticle(p2);
-            }
-            );
+            AddBuff("Radiance", 10f, 1, spell, owner, owner);
         }
 
         public void OnSpellChannel(ISpell spell)

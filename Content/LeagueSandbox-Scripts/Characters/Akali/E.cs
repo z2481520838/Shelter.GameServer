@@ -52,20 +52,24 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
-            var AP = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.3f;
-            var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
-            var damage = 40 + spell.CastInfo.SpellLevel * 30 + AP + AD;
-            var MarkAPratio = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.5f;
-            var MarkDamage = 45 + 25 * (owner.GetSpell("AkaliMota").CastInfo.SpellLevel - 1) + MarkAPratio;
-
-            if (target.HasBuff("AkaliMota"))
+            if (!(target is IBaseTurret || target is ILaneTurret || target.Team == owner.Team || target == owner))
             {
-                target.TakeDamage(owner, MarkDamage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_PROC, false);
-                AddParticleTarget(owner, target, "akali_mark_impact_tar", target, 1f);
-                RemoveBuff(target, "AkaliMota");
+                var AP = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.3f;
+                var AD = spell.CastInfo.Owner.Stats.AttackDamage.Total * 0.6f;
+                var damage = 40 + spell.CastInfo.SpellLevel * 30 + AP + AD;
+                var MarkAPratio = spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.5f;
+                var MarkDamage = 45 + 25 * (owner.GetSpell("AkaliMota").CastInfo.SpellLevel - 1) + MarkAPratio;
+
+                if (target.HasBuff("AkaliMota"))
+                {
+                    target.TakeDamage(owner, MarkDamage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_PROC, false);
+                    AddParticleTarget(owner, target, "akali_mark_impact_tar.troy", target, 1f);
+                    RemoveBuff(target, "AkaliMota");
+                }
+
+                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
+                AddParticleTarget(owner, target, "akali_shadowSwipe_tar.troy", target, 1f);
             }
-            target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_PHYSICAL, DamageSource.DAMAGE_SOURCE_SPELLAOE, false);
-            AddParticleTarget(owner, target, "akali_shadowSwipe_tar", target, 1f);
         }
 
 

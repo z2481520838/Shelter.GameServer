@@ -25,8 +25,8 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            float ap = owner.Stats.AbilityPower.Total; //100% AP Ratio
-            float newHealth = target.Stats.CurrentHealth + 80 + ap;
+            float APratio = owner.Stats.AbilityPower.Total;
+            float newHealth = target.Stats.CurrentHealth + 80f + APratio;
             target.Stats.CurrentHealth = Math.Min(newHealth, target.Stats.HealthPoints.Total);
         }
 

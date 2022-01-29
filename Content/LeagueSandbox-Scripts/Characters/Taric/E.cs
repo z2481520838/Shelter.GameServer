@@ -5,7 +5,10 @@ using GameServerCore.Domain.GameObjects.Spell.Missile;
 using static LeagueSandbox.GameServer.API.ApiFunctionManager;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using System.Numerics;
+using LeagueSandbox.GameServer.API;
+using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
@@ -13,12 +16,17 @@ namespace Spells
     {
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Target
+            },
             TriggersSpellCasts = true
             // TODO
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
         {
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
         }
 
         public void OnDeactivate(IObjAiBase owner, ISpell spell)
@@ -35,18 +43,11 @@ namespace Spells
 
         public void OnSpellPostCast(ISpell spell)
         {
-            if (Vector2.DistanceSquared(spell.CastInfo.Owner.Position, spell.CastInfo.Targets[0].Unit.Position) > 625 * 625)
-            {
-                return;
-            }
-            else
-            {
-                //spell.AddProjectileTarget("Dazzle", spell.CastInfo.SpellCastLaunchPosition, spell.CastInfo.Targets[0].Unit, HitResult.HIT_Normal, true);
-            }
         }
 
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
+            var owner = spell.CastInfo.Owner as IChampion;
             var time = 1.1f + 0.1f * spell.CastInfo.SpellLevel;
             var ap = owner.Stats.AbilityPower.Total;
             var damage = 10 + spell.CastInfo.SpellLevel * 30 + ap * 0.2f;
@@ -61,17 +62,8 @@ namespace Spells
             }
 
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-
-            AddBuff("TaricEHud", time, 1, spell, target, owner);
-            AddBuff("Stun", time, 1, spell, target, owner);
-            AddParticleTarget(owner, target, "Dazzle_tar", target);
-            var p103 = AddParticleTarget(owner, target, "Taric_HammerFlare", target);
-
-            CreateTimer(time, () =>
-            {
-                RemoveParticle(p103);
-            });
-
+            AddBuff("Dazzle", time, 1, spell, target, owner); //TODO: Find Proper Buff name
+            AddParticleTarget(owner, target, "Dazzle_tar.troy", target, 1f);
             missile.SetToRemove();
         }
 

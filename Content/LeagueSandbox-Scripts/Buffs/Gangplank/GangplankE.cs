@@ -22,10 +22,19 @@ namespace Buffs
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             var owner = ownerSpell.CastInfo.Owner;
-            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (10f + 20f * ownerSpell.CastInfo.SpellLevel) / 100f;
-            StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (10f + 5f * ownerSpell.CastInfo.SpellLevel) / 100f;
-            StatsModifier.AttackDamage.PercentBonus = StatsModifier.AttackDamage.PercentBonus + (10f + 10f * ownerSpell.CastInfo.SpellLevel) / 100f;
-            unit.AddStatModifier(StatsModifier);
+            var ADbuff = 12f + 7f * (ownerSpell.CastInfo.SpellLevel - 1);
+            var MSbuff = 0.08f + 0.03f * (ownerSpell.CastInfo.SpellLevel - 1);
+
+            if (unit == ownerSpell.CastInfo.Owner)
+            {
+                StatsModifier.MoveSpeed.PercentBonus = MSbuff;
+                StatsModifier.AttackDamage.FlatBonus = ADbuff;
+            }
+            else
+            {
+                StatsModifier.MoveSpeed.PercentBonus = MSbuff / 2f;
+                StatsModifier.AttackDamage.FlatBonus = ADbuff / 2f;
+            }
 
             //_hudvisual = AddBuffHUDVisual("RaiseMorale", time, 1, unit);
 

@@ -14,6 +14,7 @@ namespace Spells
         public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
         {
             // TODO
+            TriggersSpellCasts = true
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
@@ -26,10 +27,26 @@ namespace Spells
 
         public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
         {
-            AddParticleTarget(owner, target, "Global_SS_Smite", target);
-            var damage = new float[] {390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 420,
-                760, 800, 850, 900, 950, 1000}[owner.Stats.Level - 1];
+            var damage = new float[] {390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 420, 760, 800, 850, 900, 950, 1000 }[owner.Stats.Level - 1];
+
+
             target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_TRUE, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            if (target is IMonster)
+            {
+                owner.Stats.CurrentHealth += owner.Stats.HealthPoints.Total * 0.15f;
+            }
+            else
+            {
+                owner.Stats.CurrentHealth += 50f;
+            }
+            if (!target.IsDead)
+            {
+                AddParticleTarget(owner, null, "Global_SS_Smite.troy", target);
+            }
+            else
+            {
+                AddParticle(owner, null, "Global_SS_Smite.troy", target.Position);
+            }
         }
 
         public void OnSpellCast(ISpell spell)

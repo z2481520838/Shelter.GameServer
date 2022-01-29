@@ -5,7 +5,10 @@ using GameServerCore.Enums;
 using LeagueSandbox.GameServer.Scripting.CSharp;
 using GameServerCore.Domain.GameObjects.Spell;
 using GameServerCore.Domain.GameObjects.Spell.Missile;
+using LeagueSandbox.GameServer.API;
+using System.Collections.Generic;
 using GameServerCore.Scripting.CSharp;
+using GameServerCore.Domain.GameObjects.Spell.Sector;
 
 namespace Spells
 {
@@ -31,42 +34,95 @@ namespace Spells
 
         public void OnSpellCast(ISpell spell)
         {
-            var owner = spell.CastInfo.Owner;
-            AddParticleTarget(owner, owner,  "ezreal_bow_yellow", owner, bone: "L_HAND");
+            AddParticleTarget(spell.CastInfo.Owner, spell.CastInfo.Owner, "ezreal_bow_yellow.troy", spell.CastInfo.Owner, 1f, bone: "L_HAND");
         }
 
         public void OnSpellPostCast(ISpell spell)
         {
-            var current = new Vector2(spell.CastInfo.Owner.Position.X, spell.CastInfo.Owner.Position.Y);
-            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var to = Vector2.Normalize(spellPos - current);
-            var range = to * 1000;
-            var trueCoords = current + range;
-            //spell.AddProjectile("EzrealEssenceFluxMissile", new Vector2(spell.CastInfo.SpellCastLaunchPosition.X, spell.CastInfo.SpellCastLaunchPosition.Z), trueCoords, trueCoords, overrideCastPosition: true);
+            var owner = spell.CastInfo.Owner as IChampion;
+            var trueCoords = GetPointFromUnit(owner, 1000f);
+
+            SpellCast(owner, 2, SpellSlotType.ExtraSlots, trueCoords, trueCoords, false, Vector2.Zero);
         }
 
-        public void ApplyEffects(IObjAiBase owner, IAttackableUnit target, ISpell spell, ISpellMissile missile)
+        public void OnSpellChannel(ISpell spell)
+        {
+        }
+
+        public void OnSpellChannelCancel(ISpell spell, ChannelingStopSource reason)
+        {
+        }
+
+        public void OnSpellPostChannel(ISpell spell)
+        {
+        }
+
+        public void OnUpdate(float diff)
+        {
+        }
+    }
+    public class EzrealEssenceFluxMissile : ISpellScript
+    {
+        public ISpellScriptMetadata ScriptMetadata { get; private set; } = new SpellScriptMetadata()
+        {
+            MissileParameters = new MissileParameters
+            {
+                Type = MissileType.Circle
+            },
+            IsDamagingSpell = true
+            // TODO
+        };
+
+
+        public void OnActivate(IObjAiBase owner, ISpell spell)
+        {
+            ApiEventManager.OnSpellHit.AddListener(this, spell, TargetExecute, false);
+        }
+
+        public void OnDeactivate(IObjAiBase owner, ISpell spell)
+        {
+        }
+
+        public void OnSpellPreCast(IObjAiBase owner, ISpell spell, IAttackableUnit target, Vector2 start, Vector2 end)
+        {
+        }
+
+        public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var champion = target as IChampion;
-
+            var owner = spell.CastInfo.Owner as IChampion;
+            var spellLevel = owner.GetSpell("EzrealEssenceFlux").CastInfo.SpellLevel;
             if (champion == null)
             {
                 return;
             }
 
-            var buffTime = 5f;
-            var ownerAbilityPowerTotal = owner.Stats.AbilityPower.Total;
-
-            if (champion.Team.Equals(owner.Team) && !champion.Equals(owner))
+            if (champion.Team == owner.Team && champion != owner)
             {
-                AddBuff("EzrealWBuff", buffTime, 1, spell, champion, owner);
+                AddBuff("EzrealEssenceFlux", 5f, 1, spell, champion, owner);
+                AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
+            }
+            else if (champion == owner) //TODO: Fix getting self proc at cast (you are supposed to have to E/Flash into it in order to get the buff i think)
+            {
+                AddBuff("EzrealEssenceFlux", 5f, 1, spell, champion, owner);
             }
             else
             {
-                var damage = 25 + (45 * spell.CastInfo.SpellLevel) + (ownerAbilityPowerTotal * 0.8f);
+                var APratio = owner.Stats.AbilityPower.Total * 0.8f;
+                var damage = 25 + (45 * spellLevel) + APratio;
 
-                target.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, DamageResultType.RESULT_NORMAL);
+                champion.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+                AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
             }
+            AddParticleTarget(owner, champion, "Ezreal_essenceflux_tar.troy", champion, lifetime: 1f);
+        }
+
+        public void OnSpellCast(ISpell spell)
+        {
+        }
+
+        public void OnSpellPostCast(ISpell spell)
+        {
         }
 
         public void OnSpellChannel(ISpell spell)

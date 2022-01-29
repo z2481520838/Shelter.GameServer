@@ -51,14 +51,14 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
-            if (missile is ISpellCircleMissile skillshot)
-            {
-                var reduc = Math.Min(skillshot.ObjectsHit.Count, 7);
-                var bonusAd = owner.Stats.AttackDamage.Total - owner.Stats.AttackDamage.BaseValue;
-                var ap = owner.Stats.AbilityPower.Total * 0.9f;
-                var damage = 200f + (150f * (spell.CastInfo.SpellLevel - 1)) + bonusAd + ap;
-                target.TakeDamage(owner, damage * (1f - (reduc - 1f) / 10f), DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-            }
+            var skillshot = missile as ISpellCircleMissile;
+
+            var reduc = Math.Min(skillshot.ObjectsHit.Count, 7);
+            var bonusAd = owner.Stats.AttackDamage.Total - owner.Stats.AttackDamage.BaseValue;
+            var ap = owner.Stats.AbilityPower.Total * 0.9f;
+            var damage = 200f + (150f * (spell.CastInfo.SpellLevel - 1)) + bonusAd + ap;
+            target.TakeDamage(owner, damage * (1f - (reduc - 1f) / 10f), DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+
         }
 
         public void OnSpellChannel(ISpell spell)

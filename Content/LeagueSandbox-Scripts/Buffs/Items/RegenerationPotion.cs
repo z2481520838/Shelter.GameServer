@@ -11,7 +11,7 @@ namespace Buffs
     {
         public BuffType BuffType => BuffType.HEAL;
         public BuffAddType BuffAddType => BuffAddType.STACKS_AND_CONTINUE;
-        public int MaxStacks => 25;
+        public int MaxStacks => 5;
         public bool IsHidden => false;
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
@@ -20,15 +20,12 @@ namespace Buffs
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            var caster = ownerSpell.CastInfo.Owner;
             StatsModifier.HealthRegeneration.FlatBonus = 10f;
             unit.AddStatModifier(StatsModifier);
-            potion = AddParticleTarget(caster, unit, "GLOBAL_Item_HealthPotion", unit, buff.Duration, bone: "Buffbone_Glb_Ground_Loc");
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            potion.SetToRemove();
         }
 
         public void OnUpdate(float diff)

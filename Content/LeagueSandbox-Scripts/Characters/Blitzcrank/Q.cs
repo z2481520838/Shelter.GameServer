@@ -100,8 +100,10 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             var owner = spell.CastInfo.Owner;
+            var spellLevel = owner.GetSpell("RocketGrab").CastInfo.SpellLevel;
             var ap = owner.Stats.AbilityPower.Total;
-            var damage = 80 + ((spell.CastInfo.SpellLevel - 1) * 55) + ap;
+            var damage = 80 + (spellLevel - 1) * 55 + ap;
+
             var dist = System.Math.Abs(Vector2.Distance(target.Position, owner.Position));
             var time = dist / 1350f;
 

@@ -55,7 +55,7 @@ namespace Spells
 
             if (target != null)
             {
-                if (!(target is IBaseTurret))
+                if (!(target is IBaseTurret && target.Team != owner.Team))
                 {
                     FaceDirection(target.Position, owner, true);
                     SpellCast(owner, 1, SpellSlotType.ExtraSlots, true, target, trueCoords);
@@ -118,7 +118,9 @@ namespace Spells
         public void TargetExecute(ISpell spell, IAttackableUnit target, ISpellMissile missile, ISpellSector sector)
         {
             target.TakeDamage(spell.CastInfo.Owner, 75f + ((spell.CastInfo.SpellLevel - 1) * 50f) + spell.CastInfo.Owner.Stats.AbilityPower.Total * 0.75f,
-                DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
+            AddBuff("EzrealRisingSpellForce", 6f, 1, spell, spell.CastInfo.Owner, spell.CastInfo.Owner);
+
             missile.SetToRemove();
         }
 

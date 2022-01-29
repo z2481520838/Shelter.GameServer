@@ -42,16 +42,10 @@ namespace Spells
         {
             var owner = spell.CastInfo.Owner as IChampion;
             var ownerSkinID = owner.SkinID;
-            var targetPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
-            var ownerPos = owner.Position;
-            var distance = Vector2.Distance(ownerPos, targetPos);
+            var targetPos = GetPointFromUnit(owner, 1150.0f);
+
             FaceDirection(targetPos, owner);
-
-            if (distance > 1200.0)
-            {
-                targetPos = GetPointFromUnit(owner, 1150.0f);
-            }
-
+            //If skin is Pulsefire Ezreal
             if (ownerSkinID == 5)
             {
                 SpellCast(owner, 3, SpellSlotType.ExtraSlots, targetPos, targetPos, false, Vector2.Zero);
@@ -121,8 +115,7 @@ namespace Spells
 
             AddParticleTarget(owner, target, "Ezreal_mysticshot_tar", target);
             missile.SetToRemove();
-
-            // SpellBuffAdd EzrealRisingSpellForce
+            AddBuff("EzrealRisingSpellForce", 6f, 1, spell, owner, owner);
         }
 
         public void OnSpellCast(ISpell spell)

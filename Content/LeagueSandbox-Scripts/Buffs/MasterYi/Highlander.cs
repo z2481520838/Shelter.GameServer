@@ -4,6 +4,7 @@ using GameServerCore.Domain.GameObjects;
 using GameServerCore.Domain.GameObjects.Spell;
 using LeagueSandbox.GameServer.GameObjects.Stats;
 using GameServerCore.Scripting.CSharp;
+using LeagueSandbox.GameServer.API;
 
 namespace Buffs
 {
@@ -16,22 +17,34 @@ namespace Buffs
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
-        IParticle highlander;
-
+        IParticle p;
+        string particle;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
             var owner = ownerSpell.CastInfo.Owner;
-            highlander = AddParticleTarget(owner, unit, "Highlander_buf", unit);
 
-            StatsModifier.MoveSpeed.PercentBonus = StatsModifier.MoveSpeed.PercentBonus + (15f + ownerSpell.CastInfo.SpellLevel * 10) / 100f;
-            StatsModifier.AttackSpeed.PercentBonus = StatsModifier.AttackSpeed.PercentBonus + (5f + ownerSpell.CastInfo.SpellLevel * 25) / 100f;
+            switch (ownerSpell.CastInfo.SpellLevel)
+            {
+                case 1:
+                    particle = "MasterYi_Base_R_Buf.troy";
+                        break;
+                case 2:
+                    particle = "MasterYi_Base_R_Buf_Lvl2.troy";
+                        break;
+                case 3:
+                    particle = "MasterYi_Base_R_Buf_Lvl3.troy";
+                        break;
+            }
+            p = AddParticleTarget(owner, unit, particle, unit, buff.Duration);
+
+            StatsModifier.MoveSpeed.PercentBonus += 0.15f + (ownerSpell.CastInfo.SpellLevel * 0.10f);
+            StatsModifier.AttackSpeed.PercentBonus += 0.05f + (ownerSpell.CastInfo.SpellLevel * 0.25f);
             unit.AddStatModifier(StatsModifier);
             // TODO: add immunity to slows
         }
-
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
-            RemoveParticle(highlander);
+            RemoveParticle(p);
         }
 
         private void OnAutoAttack(IAttackableUnit target, bool isCrit)
