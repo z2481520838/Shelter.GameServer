@@ -7,7 +7,7 @@ using LeagueSandbox.GameServer.Scripting.CSharp;
 
 namespace Buffs
 {
-    internal class InternalTestBuff : IBuffGameScript
+    internal class OdinPlayerBuff : IBuffGameScript
     {
         public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
         {
@@ -17,32 +17,33 @@ namespace Buffs
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
+        IChampion Champion;
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell = null)
         {
-            //TODO: Set up NotifyS2C_HandleTipUpdate in order to update the stats in the buff's tooltip
-            if(unit is IChampion champion)
+            if(unit is IChampion ch)
             {
-                StatsModifier.CooldownReduction.FlatBonus += 0.8f;
-                StatsModifier.Tenacity.FlatBonus += 0.25f;
-                StatsModifier.MoveSpeed.FlatBonus += 60;
-                //TODO: Add +35% Resistance Against Dinosaurs
-                if (!champion.IsMelee)
-                {
-                    StatsModifier.CriticalDamage.FlatBonus += 0.25f;
-                    //TODO: Add +100% attack speed multiplier here               
-                }
+                Champion = ch;
+            }
 
-                unit.AddStatModifier(StatsModifier);
+            //TODO: Add 2% mana regeneration per 1% missing mana
+            if(unit.Stats.ParType == PrimaryAbilityResourceType.Energy)
+            {
+                StatsModifier.ManaRegeneration.FlatBonus += 2.0f;
             }
         }
 
         public void OnDeactivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {
         }
-
+        float XpCounter = 0;
         public void OnUpdate(float diff)
         {
-
+            XpCounter += diff;
+            if(XpCounter > 1000 && Champion != null)
+            {
+                Champion.AddExperience(7.2f, false);
+                XpCounter = 0;
+            }
         }
     }
 }

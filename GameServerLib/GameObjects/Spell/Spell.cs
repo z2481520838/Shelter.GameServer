@@ -236,7 +236,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
             var attackType = AttackType.ATTACK_TYPE_RADIAL;
             var stats = CastInfo.Owner.Stats;
 
-            if ((SpellData.ManaCost[CastInfo.SpellLevel] * (1 - stats.SpellCostReduction) >= stats.CurrentMana && !CastInfo.IsAutoAttack) || State != SpellState.STATE_READY)
+            if ((SpellData.ManaCost[CastInfo.SpellLevel] * (1 - stats.SpellCostReduction) > stats.CurrentMana && !CastInfo.IsAutoAttack) || State != SpellState.STATE_READY)
             {
                 return false;
             }
@@ -427,7 +427,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
                 if (CastInfo.SpellSlot >= 45 && CastInfo.SpellSlot <= 60)
                 {
                     // Extra Spells which UseAttackCastTime just use the base auto attack's cast time.
-                    index = 64;
+                    index = 0;
                 }
 
                 float autoAttackTotalTime = CastInfo.Owner.CharData.GlobalCharData.AttackDelay * (1.0f + CastInfo.Owner.CharData.AttackDelayOffsetPercent[0]);
@@ -506,7 +506,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
 
             if (cast)
             {
-                if ((SpellData.ManaCost[CastInfo.SpellLevel] * (1 - stats.SpellCostReduction) >= stats.CurrentMana && !CastInfo.IsAutoAttack) || State != SpellState.STATE_READY)
+                if ((SpellData.ManaCost[CastInfo.SpellLevel] * (1 - stats.SpellCostReduction) > stats.CurrentMana && !CastInfo.IsAutoAttack) || State != SpellState.STATE_READY)
                 {
                     return false;
                 }
@@ -634,7 +634,7 @@ namespace LeagueSandbox.GameServer.GameObjects.Spell
                 if (CastInfo.SpellSlot >= 45 && CastInfo.SpellSlot <= 60)
                 {
                     // Extra Spells which UseAttackCastTime just use the base auto attack's cast time.
-                    index = 64;
+                    index = 0;
                 }
 
                 float autoAttackTotalTime = CastInfo.Owner.CharData.GlobalCharData.AttackDelay * (1.0f + CastInfo.Owner.CharData.AttackDelayOffsetPercent[0]);
