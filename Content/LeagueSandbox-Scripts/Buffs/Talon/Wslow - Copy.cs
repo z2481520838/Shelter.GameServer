@@ -12,10 +12,11 @@ namespace Buffs
 {
     class TalonDummyBuff : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.INTERNAL;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_OVERLAPS;
-        public int MaxStacks => 5;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffAddType = BuffAddType.STACKS_AND_OVERLAPS,
+            MaxStacks = 5
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 

@@ -12,10 +12,10 @@ namespace Buffs
 {
     internal class BantamTrap : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.DAMAGE;
-        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
-        public int MaxStacks => 1;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.DAMAGE
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 

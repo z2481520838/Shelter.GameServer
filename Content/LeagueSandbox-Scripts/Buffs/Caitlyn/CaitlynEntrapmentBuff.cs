@@ -12,11 +12,11 @@ namespace Buffs
     //Still Gotta find Proper Buff Name (Using the missile name as a buff cuz the "CaitlynEntrapment" causes Morgana's dark bind particles to appear for some reason)
     internal class CaitlynEntrapmentMissile : IBuffGameScript
     {
-
-        public BuffType BuffType => BuffType.SLOW;
-        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
-        public int MaxStacks => 1;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.SLOW,
+            BuffAddType = BuffAddType.REPLACE_EXISTING
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 

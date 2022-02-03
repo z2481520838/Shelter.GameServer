@@ -14,10 +14,12 @@ namespace Buffs
 {
     internal class KennenMarkOfStorm : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.COMBAT_DEHANCER;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_RENEWS;
-        public int MaxStacks => 3;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.COMBAT_DEHANCER,
+            BuffAddType = BuffAddType.STACKS_AND_RENEWS,
+            MaxStacks = 3
+        };
 
         public IStatsModifier StatsModifier { get; private set; }
 

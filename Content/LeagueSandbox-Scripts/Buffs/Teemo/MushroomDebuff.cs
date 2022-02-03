@@ -11,6 +11,11 @@ namespace Buffs //TODO: Find proper Buff Name
 {
     internal class NoxiousTrap : IBuffGameScript
     {
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.COMBAT_DEHANCER
+        };
+
         public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
         public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
         public int MaxStacks => 1;

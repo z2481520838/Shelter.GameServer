@@ -11,10 +11,10 @@ namespace Buffs //TODO: Find Proper Buff Name
 {
     internal class MoveQuickPassive : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.HASTE;
-        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
-        public int MaxStacks => 1;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.HASTE
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 

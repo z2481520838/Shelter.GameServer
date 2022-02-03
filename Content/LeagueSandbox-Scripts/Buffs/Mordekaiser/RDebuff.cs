@@ -13,12 +13,11 @@ namespace Buffs
 {
     internal class MordekaiserChildrenOfTheGrave : IBuffGameScript
     {
-
-
-        public BuffType BuffType => BuffType.SLOW;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_RENEWS;
-        public int MaxStacks => 1;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.SLOW,
+            BuffAddType = BuffAddType.STACKS_AND_RENEWS
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 

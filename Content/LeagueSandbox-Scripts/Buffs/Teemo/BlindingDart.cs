@@ -9,10 +9,10 @@ namespace Buffs
 {
     internal class BlindingDart : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.BLIND;
-        public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
-        public int MaxStacks => 1;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.BLIND
+        };
 
         public IStatsModifier StatsModifier { get; private set; }
 

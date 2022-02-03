@@ -15,10 +15,11 @@ namespace Buffs
 {
     class VeigarW : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.INTERNAL;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_OVERLAPS;
-        public int MaxStacks => int.MaxValue;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffAddType = BuffAddType.STACKS_AND_OVERLAPS,
+            MaxStacks = byte.MaxValue
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
         ISpellSector DamageSector;

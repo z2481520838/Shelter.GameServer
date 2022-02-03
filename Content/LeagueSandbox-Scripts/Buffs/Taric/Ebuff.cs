@@ -11,10 +11,11 @@ namespace Buffs //TaricGemcraftBuff passsive buff name
 {
     internal class Dazzle : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.STUN;
-        public BuffAddType BuffAddType => BuffAddType.REPLACE_EXISTING;
-        public int MaxStacks => 1;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.STUN,
+            BuffAddType = BuffAddType.REPLACE_EXISTING
+        };
 
         public IStatsModifier StatsModifier { get; private set; }
 

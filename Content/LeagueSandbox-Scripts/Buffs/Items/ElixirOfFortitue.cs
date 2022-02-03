@@ -11,11 +11,10 @@ namespace Buffs
 {
     internal class PotionOfGiantStrength : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.HEAL;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_CONTINUE;
-        public int MaxStacks => 1;
-        public bool IsHidden => false;
-
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.HEAL
+        };
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 
         IParticle potion;

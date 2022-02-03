@@ -11,10 +11,11 @@ namespace Buffs
 {
     internal class YellowTriket : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.INTERNAL;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_CONTINUE;
-        public int MaxStacks => 1;
-        public bool IsHidden => true;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.INTERNAL,
+            BuffAddType = BuffAddType.RENEW_EXISTING
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
 

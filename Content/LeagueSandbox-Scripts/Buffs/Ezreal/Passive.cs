@@ -11,13 +11,14 @@ namespace Buffs
 {
     class EzrealRisingSpellForce : IBuffGameScript
     {
-        public BuffType BuffType => BuffType.COMBAT_ENCHANCER;
-        public BuffAddType BuffAddType => BuffAddType.STACKS_AND_RENEWS;
-        public int MaxStacks => 5;
-        public bool IsHidden => false;
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.COMBAT_ENCHANCER,
+            BuffAddType = BuffAddType.STACKS_AND_RENEWS,
+            MaxStacks = 5
+        };
 
         public IStatsModifier StatsModifier { get; private set; } = new StatsModifier();
-
 
         public void OnActivate(IAttackableUnit unit, IBuff buff, ISpell ownerSpell)
         {

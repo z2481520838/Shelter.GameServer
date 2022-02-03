@@ -12,6 +12,11 @@ namespace Buffs
 {
     internal class Deceive : IBuffGameScript
     {
+        public IBuffScriptMetaData BuffMetaData { get; set; } = new BuffScriptMetaData
+        {
+            BuffType = BuffType.DAMAGE,
+            BuffAddType = BuffAddType.RENEW_EXISTING
+        };
         public BuffType BuffType => BuffType.DAMAGE;
         public BuffAddType BuffAddType => BuffAddType.RENEW_EXISTING;
         public int MaxStacks => 1;
