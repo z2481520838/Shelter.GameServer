@@ -53,6 +53,10 @@ namespace GameServerCore.Domain.GameObjects.Spell
         /// Whether or not the script for this spell is the default empty script.
         /// </summary>
         bool HasEmptyScript { get; }
+        /// <summary>
+        /// Used to update player ability tool tip values.
+        /// </summary>
+        IToolTipData ToolTipData { get; }
 
         /// <returns>spell's unique ID</returns>
         int GetId();
@@ -61,6 +65,12 @@ namespace GameServerCore.Domain.GameObjects.Spell
         /// Called by projectiles when they land / hit, this is where we apply damage/slows etc.
         /// </summary>
         void ApplyEffects(IAttackableUnit u, ISpellMissile p = null, ISpellSector s = null);
+
+        /// <summary>
+        /// Whether or not this spell can be cancelled during cast.
+        /// </summary>
+        /// <returns></returns>
+        bool CastCancelCheck();
 
         /// <summary>
         /// Called when the character casts this spell. Initializes the CastInfo for this spell and begins casting.
@@ -129,6 +139,8 @@ namespace GameServerCore.Domain.GameObjects.Spell
         /// </summary>
         /// <param name="toggle">True/False.</param>
         void SetSpellToggle(bool toggle);
+        void SetTargetUnits(List<ICastTarget> targets);
+        void SetToolTipVar<T>(int tipIndex, T value) where T : struct;
 
         /// <summary>
         /// Used to load the script for the spell.

@@ -18,7 +18,6 @@ namespace Spells
             TriggersSpellCasts = true,
             IsDamagingSpell = false,
             NotSingleTargetSpell = true
-            // TODO
         };
 
         public void OnActivate(IObjAiBase owner, ISpell spell)
@@ -40,7 +39,17 @@ namespace Spells
         public void OnSpellPostCast(ISpell spell)
         {
             var owner = spell.CastInfo.Owner;
-            var trueCoords = GetPointFromUnit(owner, 425f);
+            var current = new Vector2(owner.Position.X, owner.Position.Y);
+            var spellPos = new Vector2(spell.CastInfo.TargetPosition.X, spell.CastInfo.TargetPosition.Z);
+            var dist = Vector2.Distance(current, spellPos);
+
+            if (dist > 425.0f)
+            {
+                dist = 425.0f;
+            }
+
+            FaceDirection(spellPos, owner, true);
+            var trueCoords = GetPointFromUnit(owner, dist);
 
             ForceMovement(owner, "Spell3", trueCoords, 1200, 0, 0, 0);
             AddBuff("Quickdraw", 4.0f, 1, spell, owner, owner);

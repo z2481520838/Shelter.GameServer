@@ -3,6 +3,7 @@ using System.Numerics;
 using GameServerCore.Domain.GameObjects;
 using GameServerCore.Enums;
 using LeagueSandbox.GameServer.GameObjects.Stats;
+using static GameServerLib.API.APIMapFunctionManager;
 
 namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
 {
@@ -35,10 +36,8 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits.AI
             PathingWaypoints = mainWaypoints;
             _aiPaused = false;
 
-            var spawnSpecifics = _game.Map.GetMinionSpawnPosition(BarracksName);
+            var spawnSpecifics = GetMinionSpawnPosition(BarracksName);
             SetPosition(spawnSpecifics.Item2.X, spawnSpecifics.Item2.Y);
-
-            _game.Map.MapScript.SetMinionStats(this); // Let the map decide how strong this minion has to be.
 
             StopMovement();
 

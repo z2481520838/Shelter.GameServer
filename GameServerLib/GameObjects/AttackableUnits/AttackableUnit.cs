@@ -41,11 +41,6 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         /// </summary>
         public bool IsModelUpdated { get; set; }
         /// <summary>
-        /// The "score" of this Unit which increases as kills are gained and decreases as deaths are inflicted.
-        /// Used in determining kill gold rewards.
-        /// </summary>
-        public int KillDeathCounter { get; set; }
-        /// <summary>
         /// Number of minions this Unit has killed. Unused besides in replication which is used for packets, refer to NotifyUpdateStats in PacketNotifier.
         /// </summary>
         /// TODO: Verify if we want to move this to ObjAIBase since AttackableUnits cannot attack or kill anything.
@@ -111,7 +106,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
             int visionRadius = 0,
             uint netId = 0,
             TeamId team = TeamId.TEAM_NEUTRAL
-        ) : base(game, position, collisionRadius, visionRadius, netId, team)
+        ) : base(game, position, collisionRadius, collisionRadius, visionRadius, netId, team)
 
         {
             Logger = LoggerProvider.GetLogger();
@@ -132,7 +127,20 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         public override void OnAdded()
         {
             base.OnAdded();
-            _game.ObjectManager.AddVisionUnit(this);
+            _game.ObjectManager.AddVisionProvider(this, Team);
+        }
+
+        public override void OnRemoved()
+        {
+            base.OnRemoved();
+            _game.ObjectManager.RemoveVisionProvider(this, Team);
+        }
+
+        public override void SetTeam(TeamId team)
+        {
+            _game.ObjectManager.RemoveVisionProvider(this, Team);
+            base.SetTeam(team);
+            _game.ObjectManager.AddVisionProvider(this, Team);
         }
 
         /// <summary>
@@ -173,7 +181,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
             // Reevaluate our current path to account for the starting position being changed.
             if (repath && !IsPathEnded())
             {
-                List<Vector2> safePath = _game.Map.NavigationGrid.GetPath(Position, _game.Map.NavigationGrid.GetClosestTerrainExit(Waypoints.Last(), CollisionRadius));
+                List<Vector2> safePath = _game.Map.NavigationGrid.GetPath(Position, _game.Map.NavigationGrid.GetClosestTerrainExit(Waypoints.Last(), PathfindingRadius));
 
                 // TODO: When using this safePath, sometimes we collide with the terrain again, so we use an unsafe path the next collision, however,
                 // sometimes we collide again before we can finish the unsafe path, so we end up looping collisions between safe and unsafe paths, never actually escaping (ex: sharp corners).
@@ -231,12 +239,6 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
             UpdateStatus();
         }
 
-        public override void OnRemoved()
-        {
-            base.OnRemoved();
-            _game.ObjectManager.RemoveVisionUnit(this);
-        }
-
         /// <summary>
         /// Called when this unit collides with the terrain or with another GameObject. Refer to CollisionHandler for exact cases.
         /// </summary>
@@ -245,7 +247,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         public override void OnCollision(IGameObject collider, bool isTerrain = false)
         {
             // We do not want to teleport out of missiles, sectors, owned regions, or buildings. Buildings in particular are already baked into the Navigation Grid.
-            if (collider is ISpellMissile || collider is ISpellSector || collider is IObjBuilding || (collider is IRegion region && (region.CollisionUnit == this || !region.HasCollision)))
+            if (collider is ISpellMissile || collider is ISpellSector || collider is IObjBuilding || (collider is IRegion region && region.CollisionUnit == this))
             {
                 return;
             }
@@ -260,7 +262,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                 }
 
                 // only time we would collide with terrain is if we are inside of it, so we should teleport out of it.
-                Vector2 exit = _game.Map.NavigationGrid.GetClosestTerrainExit(Position, CollisionRadius + 1.0f);
+                Vector2 exit = _game.Map.NavigationGrid.GetClosestTerrainExit(Position, PathfindingRadius + 1.0f);
                 TeleportTo(exit.X, exit.Y, true);
             }
             else
@@ -276,7 +278,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
 
                 // We should not teleport here because Pathfinding should handle it.
                 // TODO: Implement a PathfindingHandler, and remove currently implemented manual pathfinding.
-                Vector2 exit = Extensions.GetCircleEscapePoint(Position, CollisionRadius + 1, collider.Position, collider.CollisionRadius);
+                Vector2 exit = Extensions.GetCircleEscapePoint(Position, PathfindingRadius + 1, collider.Position, collider.PathfindingRadius);
                 TeleportTo(exit.X, exit.Y, true);
             }
         }
@@ -341,6 +343,12 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         {
             // Only case where AttackableUnit should move is if it is forced.
             return MovementParameters != null;
+        }
+
+        public virtual bool CanChangeWaypoints()
+        {
+            // Only case where we can change waypoints is if we are being forced to move towards a target.
+            return MovementParameters != null && MovementParameters.FollowNetID != 0;
         }
 
         /// <summary>
@@ -512,16 +520,14 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                     _game.Config.IsDamageTextGlobal, attackerId, targetId);
             }
 
-            // TODO: send this in one place only
-            _game.PacketNotifier.NotifyUpdatedStats(this, false);
-
             // Get health from lifesteal/spellvamp
             if (regain > 0)
             {
-                attackerStats.CurrentHealth = Math.Min(attackerStats.HealthPoints.Total,
-                    attackerStats.CurrentHealth + regain * postMitigationDamage);
-                // TODO: send this in one place only (preferably a central EventHandler class)
-                _game.PacketNotifier.NotifyUpdatedStats(attacker, false);
+                attackerStats.CurrentHealth = Math.Min
+                (
+                    attackerStats.HealthPoints.Total,
+                    attackerStats.CurrentHealth + regain * postMitigationDamage
+                );
             }
         }
 
@@ -644,16 +650,14 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                     _game.Config.IsDamageTextGlobal, attackerId, targetId);
             }
 
-            // TODO: send this in one place only
-            _game.PacketNotifier.NotifyUpdatedStats(this, false);
-
             // Get health from lifesteal/spellvamp
             if (regain > 0)
             {
-                attackerStats.CurrentHealth = Math.Min(attackerStats.HealthPoints.Total,
-                    attackerStats.CurrentHealth + regain * postMitigationDamage);
-                // TODO: send this in one place only (preferably a central EventHandler class)
-                _game.PacketNotifier.NotifyUpdatedStats(attacker, false);
+                attackerStats.CurrentHealth = Math.Min
+                (
+                    attackerStats.HealthPoints.Total,
+                    attackerStats.CurrentHealth + regain * postMitigationDamage
+                );
             }
         }
 
@@ -695,17 +699,19 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
             SetToRemove();
 
             ApiEventManager.OnDeath.Publish(data);
-            var exp = _game.Map.MapScript.GetExperienceFor(this);
-            var champs = _game.ObjectManager.GetChampionsInRange(Position, EXP_RANGE, true);
-            //Cull allied champions
-            champs.RemoveAll(l => l.Team == Team);
-
-            if (champs.Count > 0)
+            if (data.Unit is IObjAiBase obj)
             {
-                var expPerChamp = exp / champs.Count;
-                foreach (var c in champs)
+                var champs = _game.ObjectManager.GetChampionsInRange(Position, EXP_RANGE, true);
+                //Cull allied champions
+                champs.RemoveAll(l => l.Team == Team);
+
+                if (champs.Count > 0)
                 {
-                    c.AddExperience(expPerChamp);
+                    var expPerChamp = obj.CharData.ExpGivenOnDeath / champs.Count;
+                    foreach (var c in champs)
+                    {
+                        c.AddExperience(expPerChamp);
+                    }
                 }
             }
 
@@ -919,9 +925,9 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         {
             var position = new Vector2(x, y);
 
-            if (!_game.Map.NavigationGrid.IsWalkable(x, y, CollisionRadius))
+            if (!_game.Map.NavigationGrid.IsWalkable(x, y, PathfindingRadius))
             {
-                position = _game.Map.NavigationGrid.GetClosestTerrainExit(new Vector2(x, y), CollisionRadius + 1.0f);
+                position = _game.Map.NavigationGrid.GetClosestTerrainExit(new Vector2(x, y), PathfindingRadius + 1.0f);
             }
 
             SetPosition(position, repath);
@@ -952,7 +958,11 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
 
             Direction = new Vector3(dirTemp.X, 0.0f, dirTemp.Y);
 
-            FaceDirection(Direction, false);
+            //TODO: Turns in the direction of travel automatically, no need to call.
+            if (MovementParameters != null && !MovementParameters.KeepFacingDirection)
+            {
+                FaceDirection(Direction, false);
+            }
 
             var moveSpeed = GetMoveSpeed();
 
@@ -979,7 +989,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
                 KeyValuePair<bool, Vector2> pathBlocked = _game.Map.NavigationGrid.IsAnythingBetween(Position, nextPos);
                 if (pathBlocked.Key)
                 {
-                    nextPos = _game.Map.NavigationGrid.GetClosestTerrainExit(pathBlocked.Value, CollisionRadius + 1.0f);
+                    nextPos = _game.Map.NavigationGrid.GetClosestTerrainExit(pathBlocked.Value, PathfindingRadius + 1.0f);
                 }
             }
 
@@ -1053,8 +1063,10 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         public void SetWaypoints(List<Vector2> newWaypoints, bool networked = true)
         {
             // Waypoints should always have an origin at the current position.
-            // Can't set waypoints if we can't move. Dashes are also excluded as their paths should be set before being applied.
-            if (newWaypoints.Count <= 1 || newWaypoints[0] != Position || !CanMove())
+            // Dashes are excluded as their paths should be set before being applied.
+            // TODO: Find out the specific cases where we shouldn't be able to set our waypoints. Perhaps CC?
+            // Setting waypoints during auto attacks is allowed.
+            if (newWaypoints.Count <= 1 || newWaypoints[0] != Position || !CanChangeWaypoints())
             {
                 return;
             }
@@ -1109,192 +1121,189 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         /// TODO: Probably needs a refactor to lessen thread usage. Make sure to stick very closely to the current method; just optimize it.
         public void AddBuff(IBuff b)
         {
-            lock (_buffsLock)
+            // If this is the first buff of this name to be added, then add it to the parent buffs list (regardless of its add type).
+            if (!ParentBuffs.ContainsKey(b.Name))
             {
-                // If this is the first buff of this name to be added, then add it to the parent buffs list (regardless of its add type).
-                if (!ParentBuffs.ContainsKey(b.Name))
+                // If the parent buff has ended, make the next oldest buff the parent buff.
+                if (HasBuff(b.Name))
                 {
-                    // If the parent buff has ended, make the next oldest buff the parent buff.
-                    if (HasBuff(b.Name))
-                    {
-                        var buff = GetBuffsWithName(b.Name)[0];
-                        ParentBuffs.Add(b.Name, buff);
-                        return;
-                    }
-                    // If there is no other buffs of this name, make it the parent and add it normally.
-                    ParentBuffs.Add(b.Name, b);
-                    BuffList.Add(b);
-                    // Add the buff to the visual hud.
-                    if (!b.IsHidden)
-                    {
-                        _game.PacketNotifier.NotifyNPC_BuffAdd2(b, b.Duration, b.TimeElapsed);
-                    }
-                    // Activate the buff for BuffScripts
-                    b.ActivateBuff();
+                    var buff = GetBuffsWithName(b.Name)[0];
+                    ParentBuffs.Add(b.Name, buff);
+                    return;
                 }
-                // If the buff is supposed to replace any existing buff instances of the same name
-                else if (b.BuffAddType == BuffAddType.REPLACE_EXISTING)
+                // If there is no other buffs of this name, make it the parent and add it normally.
+                ParentBuffs.Add(b.Name, b);
+                BuffList.Add(b);
+                // Add the buff to the visual hud.
+                if (!b.IsHidden)
                 {
-                    // Removing the previous buff of the same name.
-                    var prevbuff = ParentBuffs[b.Name];
+                    _game.PacketNotifier.NotifyNPC_BuffAdd2(b, b.Duration, b.TimeElapsed);
+                }
+                // Activate the buff for BuffScripts
+                b.ActivateBuff();
+            }
+            // If the buff is supposed to replace any existing buff instances of the same name
+            else if (b.BuffAddType == BuffAddType.REPLACE_EXISTING)
+            {
+                // Removing the previous buff of the same name.
+                var prevbuff = ParentBuffs[b.Name];
 
-                    prevbuff.DeactivateBuff();
-                    RemoveBuff(b.Name, false);
+                prevbuff.DeactivateBuff();
+                RemoveBuff(b.Name, false);
 
-                    // Clear the newly given buff's slot since we will move it into the previous buff's slot.
+                // Clear the newly given buff's slot since we will move it into the previous buff's slot.
+                RemoveBuffSlot(b);
+
+                // Adding the newly given buff instance into the slot of the previous buff.
+                BuffSlots[prevbuff.Slot] = b;
+                b.SetSlot(prevbuff.Slot);
+
+                // Add the buff as a parent and normally.
+                ParentBuffs.Add(b.Name, b);
+                BuffList.Add(b);
+
+                // Update the visual buff in-game (usually just resets the buff time of the visual icon).
+                if (!b.IsHidden)
+                {
+                    _game.PacketNotifier.NotifyNPC_BuffReplace(b);
+                }
+
+                // New buff means new script, so we need to activate it.
+                b.ActivateBuff();
+            }
+            else if (b.BuffAddType == BuffAddType.RENEW_EXISTING)
+            {
+                // Clear the newly created buff's slot so we aren't wasting slots.
+                if (b != ParentBuffs[b.Name])
+                {
                     RemoveBuffSlot(b);
-
-                    // Adding the newly given buff instance into the slot of the previous buff.
-                    BuffSlots[prevbuff.Slot] = b;
-                    b.SetSlot(prevbuff.Slot);
-
-                    // Add the buff as a parent and normally.
-                    ParentBuffs.Add(b.Name, b);
-                    BuffList.Add(b);
-
-                    // Update the visual buff in-game (usually just resets the buff time of the visual icon).
-                    if (!b.IsHidden)
-                    {
-                        _game.PacketNotifier.NotifyNPC_BuffReplace(b);
-                    }
-
-                    // New buff means new script, so we need to activate it.
-                    b.ActivateBuff();
                 }
-                else if (b.BuffAddType == BuffAddType.RENEW_EXISTING)
-                {
-                    // Clear the newly created buff's slot so we aren't wasting slots.
-                    if (b != ParentBuffs[b.Name])
-                    {
-                        RemoveBuffSlot(b);
-                    }
 
-                    // Reset the already existing buff's timer.
+                // Reset the already existing buff's timer.
+                ParentBuffs[b.Name].ResetTimeElapsed();
+
+                // Update the visual buff in-game (just resets the time on the icon).
+                if (!b.IsHidden)
+                {
+                    _game.PacketNotifier.NotifyNPC_BuffReplace(ParentBuffs[b.Name]);
+                }
+            }
+            // If the buff is supposed to be a single stackable buff with a timer = Duration * StackCount
+            else if (b.BuffAddType == BuffAddType.STACKS_AND_CONTINUE)
+            {
+                // If we've hit the max stacks count for this buff add type
+                if (ParentBuffs[b.Name].StackCount >= ParentBuffs[b.Name].MaxStacks)
+                {
                     ParentBuffs[b.Name].ResetTimeElapsed();
 
-                    // Update the visual buff in-game (just resets the time on the icon).
                     if (!b.IsHidden)
                     {
-                        _game.PacketNotifier.NotifyNPC_BuffReplace(ParentBuffs[b.Name]);
-                    }
-                }
-                // If the buff is supposed to be a single stackable buff with a timer = Duration * StackCount
-                else if (b.BuffAddType == BuffAddType.STACKS_AND_CONTINUE)
-                {
-                    // If we've hit the max stacks count for this buff add type
-                    if (ParentBuffs[b.Name].StackCount >= ParentBuffs[b.Name].MaxStacks)
-                    {
-                        ParentBuffs[b.Name].ResetTimeElapsed();
-
-                        if (!b.IsHidden)
-                        {
-                            // If the buff is a counter buff (ex: Nasus Q stacks), then use a packet specialized for big buff stack counts (int.MaxValue).
-                            if (ParentBuffs[b.Name].BuffType == BuffType.COUNTER)
-                            {
-                                _game.PacketNotifier.NotifyNPC_BuffUpdateNumCounter(ParentBuffs[b.Name]);
-                            }
-                            // Otherwise, use the normal buff stack (254) update (usually just adds one to the number on the icon and refreshes the time of the icon).
-                            else
-                            {
-                                _game.PacketNotifier.NotifyNPC_BuffUpdateCount(ParentBuffs[b.Name], ParentBuffs[b.Name].Duration, ParentBuffs[b.Name].TimeElapsed);
-                            }
-                        }
-
-                        return;
-                    }
-
-                    ParentBuffs[b.Name].IncrementStackCount();
-
-                    if (!b.IsHidden)
-                    {
-                        _game.PacketNotifier.NotifyNPC_BuffUpdateCount(ParentBuffs[b.Name], ParentBuffs[b.Name].Duration - ParentBuffs[b.Name].TimeElapsed, ParentBuffs[b.Name].TimeElapsed);
-                    }
-                }
-                // If the buff is supposed to be applied alongside any existing buff instances of the same name.
-                else if (b.BuffAddType == BuffAddType.STACKS_AND_OVERLAPS)
-                {
-                    // If we've hit the max stacks count for this buff add type (usually 254 for this BuffAddType).
-                    if (ParentBuffs[b.Name].StackCount >= ParentBuffs[b.Name].MaxStacks)
-                    {
-                        // Get and remove the oldest buff of the same name so we can free up space for the newly given buff instance.
-                        var oldestbuff = ParentBuffs[b.Name];
-
-                        oldestbuff.DeactivateBuff();
-                        RemoveBuff(b.Name, true);
-
-                        // Move the next oldest buff of the same name into the position of the removed oldest buff.
-                        var tempbuffs = GetBuffsWithName(b.Name);
-
-                        BuffSlots[oldestbuff.Slot] = tempbuffs[0];
-                        ParentBuffs.Add(oldestbuff.Name, tempbuffs[0]);
-                        BuffList.Add(b);
-
-                        if (!b.IsHidden)
-                        {
-                            // If the buff is a counter buff (ex: Nasus Q stacks), then use a packet specialized for big buff stack counts (int.MaxValue).
-                            if (ParentBuffs[b.Name].BuffType == BuffType.COUNTER)
-                            {
-                                _game.PacketNotifier.NotifyNPC_BuffUpdateNumCounter(ParentBuffs[b.Name]);
-                            }
-                            // Otherwise, use the normal buff stack (254) update (usually just adds one to the number on the icon and refreshes the time of the icon).
-                            else
-                            {
-                                _game.PacketNotifier.NotifyNPC_BuffUpdateCount(b, b.Duration, b.TimeElapsed);
-                            }
-                        }
-                        b.ActivateBuff();
-
-                        return;
-                    }
-                    // If we haven't hit the max stack count (usually 254).
-                    BuffList.Add(b);
-
-                    // Increment the number of stacks on the parent buff, which is the buff instance which is used for packets.
-                    ParentBuffs[b.Name].IncrementStackCount();
-
-                    // Increment the number of stacks on every buff of the same name (so if any of them become the parent, there is no problem).
-                    GetBuffsWithName(b.Name).ForEach(buff => buff.SetStacks(ParentBuffs[b.Name].StackCount));
-
-                    if (!b.IsHidden)
-                    {
-                        if (b.BuffType == BuffType.COUNTER)
+                        // If the buff is a counter buff (ex: Nasus Q stacks), then use a packet specialized for big buff stack counts (int.MaxValue).
+                        if (ParentBuffs[b.Name].BuffType == BuffType.COUNTER)
                         {
                             _game.PacketNotifier.NotifyNPC_BuffUpdateNumCounter(ParentBuffs[b.Name]);
                         }
+                        // Otherwise, use the normal buff stack (254) update (usually just adds one to the number on the icon and refreshes the time of the icon).
+                        else
+                        {
+                            _game.PacketNotifier.NotifyNPC_BuffUpdateCount(ParentBuffs[b.Name], ParentBuffs[b.Name].Duration, ParentBuffs[b.Name].TimeElapsed);
+                        }
+                    }
+
+                    return;
+                }
+
+                ParentBuffs[b.Name].IncrementStackCount();
+
+                if (!b.IsHidden)
+                {
+                    _game.PacketNotifier.NotifyNPC_BuffUpdateCount(ParentBuffs[b.Name], ParentBuffs[b.Name].Duration - ParentBuffs[b.Name].TimeElapsed, ParentBuffs[b.Name].TimeElapsed);
+                }
+            }
+            // If the buff is supposed to be applied alongside any existing buff instances of the same name.
+            else if (b.BuffAddType == BuffAddType.STACKS_AND_OVERLAPS)
+            {
+                // If we've hit the max stacks count for this buff add type (usually 254 for this BuffAddType).
+                if (ParentBuffs[b.Name].StackCount >= ParentBuffs[b.Name].MaxStacks)
+                {
+                    // Get and remove the oldest buff of the same name so we can free up space for the newly given buff instance.
+                    var oldestbuff = ParentBuffs[b.Name];
+
+                    oldestbuff.DeactivateBuff();
+                    RemoveBuff(b.Name, true);
+
+                    // Move the next oldest buff of the same name into the position of the removed oldest buff.
+                    var tempbuffs = GetBuffsWithName(b.Name);
+
+                    BuffSlots[oldestbuff.Slot] = tempbuffs[0];
+                    ParentBuffs.Add(oldestbuff.Name, tempbuffs[0]);
+                    BuffList.Add(b);
+
+                    if (!b.IsHidden)
+                    {
+                        // If the buff is a counter buff (ex: Nasus Q stacks), then use a packet specialized for big buff stack counts (int.MaxValue).
+                        if (ParentBuffs[b.Name].BuffType == BuffType.COUNTER)
+                        {
+                            _game.PacketNotifier.NotifyNPC_BuffUpdateNumCounter(ParentBuffs[b.Name]);
+                        }
+                        // Otherwise, use the normal buff stack (254) update (usually just adds one to the number on the icon and refreshes the time of the icon).
                         else
                         {
                             _game.PacketNotifier.NotifyNPC_BuffUpdateCount(b, b.Duration, b.TimeElapsed);
                         }
                     }
                     b.ActivateBuff();
+
+                    return;
                 }
-                // If the buff is supposed to add a stack to any existing buffs of the same name and refresh their timer.
-                // Essentially the method is: have one parent buff which has the stacks, and just refresh its time, this means no overlapping buff instances, but functionally it is the same.
-                else if (ParentBuffs[b.Name].BuffAddType == BuffAddType.STACKS_AND_RENEWS)
+                // If we haven't hit the max stack count (usually 254).
+                BuffList.Add(b);
+
+                // Increment the number of stacks on the parent buff, which is the buff instance which is used for packets.
+                ParentBuffs[b.Name].IncrementStackCount();
+
+                // Increment the number of stacks on every buff of the same name (so if any of them become the parent, there is no problem).
+                GetBuffsWithName(b.Name).ForEach(buff => buff.SetStacks(ParentBuffs[b.Name].StackCount));
+
+                if (!b.IsHidden)
                 {
-                    // Don't need the newly added buff instance as we already have a parent who we can add stacks to.
-                    RemoveBuffSlot(b);
-
-                    // Refresh the time of the parent buff and adds a stack if Max Stacks wasn't reached.
-                    ParentBuffs[b.Name].ResetTimeElapsed();
-                    if (ParentBuffs[b.Name].IncrementStackCount())
+                    if (b.BuffType == BuffType.COUNTER)
                     {
-                        ParentBuffs[b.Name].ActivateBuff();
+                        _game.PacketNotifier.NotifyNPC_BuffUpdateNumCounter(ParentBuffs[b.Name]);
                     }
-
-                    if (!b.IsHidden)
+                    else
                     {
-                        if (ParentBuffs[b.Name].BuffType == BuffType.COUNTER)
-                        {
-                            _game.PacketNotifier.NotifyNPC_BuffUpdateNumCounter(ParentBuffs[b.Name]);
-                        }
-                        else
-                        {
-                            _game.PacketNotifier.NotifyNPC_BuffUpdateCount(ParentBuffs[b.Name], ParentBuffs[b.Name].Duration, ParentBuffs[b.Name].TimeElapsed);
-                        }
+                        _game.PacketNotifier.NotifyNPC_BuffUpdateCount(b, b.Duration, b.TimeElapsed);
                     }
-                    // TODO: Unload and reload all data of buff script here.
                 }
+                b.ActivateBuff();
+            }
+            // If the buff is supposed to add a stack to any existing buffs of the same name and refresh their timer.
+            // Essentially the method is: have one parent buff which has the stacks, and just refresh its time, this means no overlapping buff instances, but functionally it is the same.
+            else if (ParentBuffs[b.Name].BuffAddType == BuffAddType.STACKS_AND_RENEWS)
+            {
+                // Don't need the newly added buff instance as we already have a parent who we can add stacks to.
+                RemoveBuffSlot(b);
+
+                // Refresh the time of the parent buff and adds a stack if Max Stacks wasn't reached.
+                ParentBuffs[b.Name].ResetTimeElapsed();
+                if (ParentBuffs[b.Name].IncrementStackCount())
+                {
+                    ParentBuffs[b.Name].ActivateBuff();
+                }
+
+                if (!b.IsHidden)
+                {
+                    if (ParentBuffs[b.Name].BuffType == BuffType.COUNTER)
+                    {
+                        _game.PacketNotifier.NotifyNPC_BuffUpdateNumCounter(ParentBuffs[b.Name]);
+                    }
+                    else
+                    {
+                        _game.PacketNotifier.NotifyNPC_BuffUpdateCount(ParentBuffs[b.Name], ParentBuffs[b.Name].Duration, ParentBuffs[b.Name].TimeElapsed);
+                    }
+                }
+                // TODO: Unload and reload all data of buff script here.
             }
         }
 
@@ -1595,7 +1604,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         /// TODO: Implement Dash class which houses these parameters, then have that as the only parameter to this function (and other Dash-based functions).
         public void DashToLocation(Vector2 endPos, float dashSpeed, string animation = "", float leapGravity = 0.0f, bool keepFacingLastDirection = true)
         {
-            var newCoords = _game.Map.NavigationGrid.GetClosestTerrainExit(endPos, CollisionRadius + 1.0f);
+            var newCoords = _game.Map.NavigationGrid.GetClosestTerrainExit(endPos, PathfindingRadius + 1.0f);
 
             // False because we don't want this to be networked as a normal movement.
             SetWaypoints(new List<Vector2> { Position, newCoords }, false);
@@ -1634,7 +1643,7 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
         /// </summary>
         /// <param name="state">State to set. True = dashing, false = not dashing.</param>
         /// TODO: Implement ForcedMovement methods and enumerators to handle different kinds of dashes.
-        public virtual void SetDashingState(bool state)
+        public virtual void SetDashingState(bool state, MoveStopReason reason = MoveStopReason.Finished)
         {
             if (MovementParameters != null && state == false)
             {
@@ -1642,13 +1651,24 @@ namespace LeagueSandbox.GameServer.GameObjects.AttackableUnits
 
                 var animPairs = new Dictionary<string, string> { { "RUN", "" } };
                 SetAnimStates(animPairs);
+
+                ApiEventManager.OnMoveEnd.Publish(this);
+
+                if (reason == MoveStopReason.Finished)
+                {
+                    ApiEventManager.OnMoveSuccess.Publish(this);
+                }
+                else if (reason != MoveStopReason.Finished)
+                {
+                    ApiEventManager.OnMoveFailure.Publish(this);
+                }
             }
 
             // TODO: Implement this as a parameter.
-            Stats.SetActionState(ActionState.CAN_ATTACK, !state);
-            Stats.SetActionState(ActionState.CAN_NOT_ATTACK, state);
-            Stats.SetActionState(ActionState.CAN_MOVE, !state);
-            Stats.SetActionState(ActionState.CAN_NOT_MOVE, state);
+            SetStatus(StatusFlags.CanAttack, !state);
+            // TODO: Verify if changing cast status is correct.
+            SetStatus(StatusFlags.CanCast, !state);
+            SetStatus(StatusFlags.CanMove, !state);
         }
 
         /// <summary>

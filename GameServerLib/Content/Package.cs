@@ -143,14 +143,28 @@ namespace LeagueSandbox.GameServer.Content
             foreach (var Object in mapObjects)
             {
                 string referenceName = Object.Value<string>("Name");
-                toReturnMapData.MapObjects.Add(referenceName, AddMapObject(referenceName, contentType, mapName, mapId));
+
+                IMapObject objToAdd = AddMapObject(referenceName, contentType, mapName, mapId);
+
+                // Skip empty map objects.
+                if (objToAdd != IMapObject.Empty)
+                {
+                    toReturnMapData.MapObjects.Add(referenceName, objToAdd);
+                }
             }
             //Map1's Room file doesn't contain the Fountains, so we have to get that manually
             if (!toReturnMapData.MapObjects.ContainsKey("__Spawn_T1"))
             {
-                for (int i = 1; i <= 2; i++)
+                //This is to avoid crashes when loading maps that don't have fountain files at all (Map11)
+                try
                 {
-                    toReturnMapData.MapObjects.Add($"__Spawn_T{i}", AddMapObject($"__Spawn_T{i}", contentType, mapName, mapId));
+                    for (int i = 1; i <= 2; i++)
+                    {
+                        toReturnMapData.MapObjects.Add($"__Spawn_T{i}", AddMapObject($"__Spawn_T{i}", contentType, mapName, mapId));
+                    }
+                }
+                catch
+                {
                 }
             }
 
@@ -179,6 +193,13 @@ namespace LeagueSandbox.GameServer.Content
                 {
                     toReturnMapData.ExpCurve.Add(expFile.GetFloat("EXP", $"Level{i}"));
                 }
+            }
+
+            if (expFile.Values.ContainsKey("ExpGrantedOnDeath"))
+            {
+                toReturnMapData.BaseExpMultiple = expFile.GetFloat("ExpGrantedOnDeath", "BaseExpMultiple", 0);
+                toReturnMapData.LevelDifferenceExpMultiple = expFile.GetFloat("ExpGrantedOnDeath", "LevelDifferenceExpMultiple", 0);
+                toReturnMapData.MinimumExpMultiple = expFile.GetFloat("ExpGrantedOnDeath", "MinimumExpMultiple", 0);
             }
 
             if (deathTimefile.Values.ContainsKey("TimeDeadPerLevel"))
@@ -241,34 +262,45 @@ namespace LeagueSandbox.GameServer.Content
             return toReturnMapData;
         }
 
-        public MapData.MapObject AddMapObject(string objectName, string contentType, string mapName, int mapId)
+        public IMapObject AddMapObject(string objectName, string contentType, string mapName, int mapId)
         {
             // Define the full path to the object file.
             var objectFileName = $"{mapName}/Scene/{objectName}.sco";
             var objectFilePath = $"{GetContentTypePath(contentType)}/{objectFileName}.json";
 
             // Create empty mapObject so we can fill it after we successfully read the object file.
-            MapData.MapObject mapObject;
+            IMapObject mapObject;
 
             try
             {
-                // Read the object file
-                var objectData = JObject.Parse(File.ReadAllText(objectFilePath));
+                var tryFiles = Directory.GetFiles(GetContentTypePath(contentType), $"{objectFileName}.json", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
 
-                // Grab the Name and CentralPoint
-                var name = objectData.Value<string>("Name");
-                var pointJson = objectData.SelectToken("CentralPoint");
-                var point = new Vector3
+                if (tryFiles.Length > 0)
                 {
-                    X = pointJson.Value<float>("X"),
-                    Y = pointJson.Value<float>("Y"),
-                    Z = pointJson.Value<float>("Z")
-                };
-                mapObject = new MapData.MapObject(name, point, mapId);
+                    objectFilePath = tryFiles[0];
+
+                    // Read the object file
+                    var objectData = JObject.Parse(File.ReadAllText(objectFilePath));
+
+                    // Grab the Name and CentralPoint
+                    var name = objectData.Value<string>("Name");
+                    var pointJson = objectData.SelectToken("CentralPoint");
+                    var point = new Vector3
+                    {
+                        X = pointJson.Value<float>("X"),
+                        Y = pointJson.Value<float>("Y"),
+                        Z = pointJson.Value<float>("Z")
+                    };
+                    mapObject = new MapData.MapObject(name, point, mapId);
+                }
+                else
+                {
+                    return MapData.MapObject.Empty;
+                }
             }
             catch (JsonReaderException)
             {
-                return null;
+                return MapData.MapObject.Empty;
             }
 
             // Add the reference name and filled map object.

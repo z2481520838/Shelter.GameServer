@@ -191,6 +191,9 @@ public class MapData : IMapData
     /// Experience required to level, ordered from 2 and up.
     /// </summary>
     public List<float> ExpCurve { get; private set; }
+    public float BaseExpMultiple { get; set; }
+    public float LevelDifferenceExpMultiple { get; set; }
+    public float MinimumExpMultiple { get; set; }
     /// <summary>
     /// Amount of time death should last depending on level.
     /// </summary>
@@ -213,8 +216,8 @@ public class MapData : IMapData
 
     public class MapObject : IMapObject
     {
-        public string Name { get; private set; }
-        public Vector3 CentralPoint { get; private set; }
+        public string Name { get; private set; } = "";
+        public Vector3 CentralPoint { get; private set; } = Vector3.Zero;
         public int ParentMapId { get; private set; }
 
         public MapObject(string name, Vector3 point, int id)
@@ -222,6 +225,11 @@ public class MapData : IMapData
             Name = name;
             CentralPoint = point;
             ParentMapId = id;
+        }
+
+        public static IMapObject Empty
+        {
+            get;
         }
 
         public GameObjectTypes GetGameObjectType()
